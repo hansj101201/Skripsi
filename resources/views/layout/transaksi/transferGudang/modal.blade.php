@@ -51,7 +51,7 @@
                         <label for="gudang" class="col-form-label">GUDANG TUJUAN</label>
                     </div>
                     <div class="col-sm-6">
-                        <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
+                        <select class="form-control" id="gudang_tujuan" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
                             @foreach($gudang as $Gudang)
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
@@ -121,12 +121,6 @@
                         <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="satuan" name="SATUAN" maxlength="6" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">QTY ORDER</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="qtyorder" name="QTYORDER" maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -342,8 +336,8 @@
 
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(4)').text();
-                var idSatuan = $(row).find('td:eq(5)').text(); // Index adjusted if needed
+                var qtyKirim = $(row).find('td:eq(3)').text();
+                var idSatuan = $(row).find('td:eq(4)').text(); // Index adjusted if needed
 
                 arrBarang.push([idBarang, qtyKirim, idSatuan]);
             });
@@ -356,7 +350,7 @@
 
             if (tanggal != ''){
                 $.ajax({
-                    url: "{{ route('postTrnCanvas') }}",
+                    url: "{{ route('postTransferGudang') }}",
                     method: 'POST',
                     data : {
                         _token: _token,
@@ -429,24 +423,21 @@
                 $('#'+idEdit).empty();
             let createRow ='';
             createRow +=
-            `
-                <td>${kode}</td>
-                <td>${nama}</td>
-                <td>${satuan}</td>
-                <td>${qtyorder}</td>
-                <td>${qty}</td>
-                <td class="hide">${idsatuan}</td>
-                <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
-                    data-kode="${kode}"
-                    data-nama="${nama}"
-                    data-satuan="${satuan}"
-                    data-qtyorder="${qtyorder}"
-                    data-qtykirim="${qtykirim}"
-                    data-idsatuan="${idsatuan}"
-                    ><i class="fas fa-pencil-alt"></i></button></td>
-            `;
-
-            $('#'+idEdit).append(createRow);
+                `<tr id="${kode}">
+                    <td>${kode}</td>
+                    <td>${nama}</td>
+                    <td>${satuan}</td>
+                    <td>${qty}</td>
+                    <td class="hide">${idsatuan}</td>
+                    <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
+                        data-kode="${kode}"
+                        data-nama="${nama}"
+                        data-satuan="${satuan}"
+                        data-qty="${qty}"
+                        data-idsatuan="${idsatuan}"
+                        ><i class="fas fa-pencil-alt"></i></button></td>
+                </tr>`
+            $('#listBarang').append(createRow);
 
             $('#editDataModal').hide();
             $('.modal-backdrop').remove();
@@ -478,113 +469,6 @@
 
             $('#editDetailModal').hide();
             $('.modal-backdrop').remove();
-        }
-        function fetchDataById(id) {
-            $.ajax({
-                url: "{{ url('transaksi/pengeluaran/fetch-data') }}/" + id ,
-                method: 'GET',
-                success: function (data) {
-                    console.log(data[0]);
-                    $('#gudang').val(data[0].ID_GUDANG);
-                    $('#gudang_tujuan').val(data[0].gudang_sales);
-                    $.ajax({
-                        url: "{{ url('transaksi/pengeluaran/fetch-detail') }}/" +data[0].BUKTI+'/'+data[0].PERIODE,
-                        method: 'GET',
-
-                        success: function (data) {
-                            console.log (data);
-                            console.log (data.length);
-                            $('#detailBarang').empty();
-                            let createTable = "";
-                            let i = 0
-                            createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
-                                <thead>
-                                    <th> Kode Barang </th>
-                                    <th> Nama Barang </th>
-                                    <th> Satuan </th>
-                                    <th> QTY Minta </th>
-                                    <th> QTY Kirim </th>
-                                    <th> Aksi </th>
-                                </thead>
-                                <tbody>`;
-                                    while(i < data.length){
-                                        let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
-                                        // console.log(data[i]);
-                                        createTable +=
-                                            `<tr id="${data[i].ID_BARANG}">
-                                                <td>${data[i].ID_BARANG}</td>
-                                                <td>${data[i].nama_barang}</td>
-                                                <td>${data[i].nama_satuan}</td>
-                                                <td>${qty}</td>
-                                                <td>0</td>
-                                                <td class="hide">${data[i].ID_SATUAN}</td>
-                                                <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
-                                                    data-kode="${data[i].ID_BARANG}"
-                                                    data-nama="${data[i].nama_barang}"
-                                                    data-satuan="${data[i].nama_satuan}"
-                                                    data-qty="${qty}"
-                                                    data-idsatuan="${data[i].ID_SATUAN}"
-                                                    ><i class="fas fa-pencil-alt"></i></button></td>
-                                            </tr>`;
-                                        i++;
-                                        }
-                                    createTable +=`</tbody>
-                                </table>`;
-                            $('#detailBarang').append(createTable);
-                        }
-                    })
-                },
-                error: function () {
-                    console.error('Error fetching data');
-                    toastr.error('Data tidak ditemukan');
-                }
-            });
-        }
-        function fetchDetail(bukti,periode){
-            $.ajax({
-                url: "{{ url('transaksi/transfergudang/getDetail') }}/"+bukti+"/"+periode,
-                method: "GET",
-                success: function (data) {
-                    $('#detailTrnJadi').empty();
-                            let createTable = "";
-                            let i = 0
-                            createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
-                                <thead>
-                                    <th> Kode Barang </th>
-                                    <th> Nama Barang </th>
-                                    <th> Satuan </th>
-                                    <th> Qty </th>
-                                    <th> Aksi </th>
-                                    </thead>
-
-                                    <tbody>
-                                        `;
-                                        while(i < data.length){
-                                            let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
-                                            // console.log(data[i]);
-                                            createTable +=
-                                                `<tr id="${data[i].ID_BARANG}">
-                                                    <td>${data[i].ID_BARANG}</td>
-                                                    <td>${data[i].nama_barang}</td>
-                                                    <td>${data[i].nama_satuan}</td>
-                                                    <td>${qty}</td>
-                                                     <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
-                                                        data-kode="${data[i].ID_BARANG}"
-                                                        data-nama="${data[i].nama_barang}"
-                                                        data-satuan="${data[i].nama_satuan}"
-                                                        data-qty="${qty}"
-                                                        ><i class="fas fa-pencil-alt"></i></button></td>
-                                                        </tr>`;
-                                            i++;
-
-                                        }
-                                        createTable +=`</tbody>
-                                </table>`;
-                                $('#detailTrnJadi').append(createTable);
-                                    // Jika tidak, sembunyikan tombol Simpan
-                                    $('#simpanButton').show();
-                        }
-            });
         }
         function simpanDataTrnJadi(){
             $('#tableData tbody tr').each(function(index, row) {
@@ -678,7 +562,6 @@
                 var bukti = $(this).data('bukti');
                 var tanggal = dateFormat($(this).data('tanggal'));
                 var periode = $(this).data('periode');
-
 
                 $('#detailbukti').val(bukti);
                 $('#detailtanggal').val(tanggal);

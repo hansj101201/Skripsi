@@ -183,6 +183,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('index', 'index');
             Route::get('datatable', 'datatable')->name('transfer.datatable');
             Route::get('getDetail/{bukti}/{periode}','getDetail');
+            Route::post('postTransferGudang', 'postTransferGudang')->name('postTransferGudang');
             Route::put('postDetailTransferGudang', 'postDetailTransferGudang')->name('postDetailTransferGudang');
 
             Route::get('getSatuan', 'getSatuan')->name('getDetailSatuan');
