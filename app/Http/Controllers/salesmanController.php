@@ -16,12 +16,6 @@ class salesmanController extends Controller
         return view('layout.setup.salesman.index', compact('depo'));
     }
 
-    public function getSalesman(){
-        $salesman = salesman::with('depo')->get();
-        return response()->json($salesman);
-
-    }
-
     public function datatable(){
         $salesman = salesman::join("depo","salesman.ID_DEPO","depo.ID_DEPO")
         ->select("salesman.*", "depo.NAMA AS nama_depo");

@@ -18,11 +18,6 @@ class gudangController extends Controller
         return view('layout.setup.gudang.index', compact('depo'));
     }
 
-    public function getGudang(){
-        $gudang = gudang::with('depo')->get();
-        return response()->json($gudang);
-    }
-
     public function datatable(){
         $gudang = gudang::join("depo","gudang.ID_DEPO","depo.ID_DEPO")
         ->select("gudang.*", "depo.NAMA AS nama_depo");

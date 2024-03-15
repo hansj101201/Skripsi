@@ -29,25 +29,17 @@
 
                 <div class="form-group row">
                     <div class="col-sm-3">
-                        <label for="nomor_po" class="col-form-label"> No PO</label>
+                        <label for="nomor_po" class="col-form-label"> No Permintaan</label>
                     </div>
                     <div class="col-sm-6"> <!-- Combine both input and button in the same column -->
                         <div class="input-group"> <!-- Use input-group for better alignment -->
-                            <input type="text" id="nomorpo" class="form-control" placeholder="Enter ID">
+                            <input type="text" id="nomorpermintaan" class="form-control" placeholder="Enter ID">
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary" id="fetchDataBtn">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label for="supplier" class="col-form-label">Supplier</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" id="supplier" name="ID_SUPPLIER" maxlength="40" readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -65,20 +57,28 @@
                     <div class="col-sm-6">
                         <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
                             @foreach($gudang as $Gudang)
-                                <option value="{{ $Gudang->ID_GUDANG }}">{{ $Gudang->NAMA }}</option>
+                                <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-                <div id="detailBarang">
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label for="gudang" class="col-form-label">GUDANG TUJUAN</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="gudang_tujuan" name="ID_GUDANG_TUJUAN" readonly>
+                    </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-3">
                         <label for="bukti" class="col-form-label">Keterangan</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="keterangan" name="KETERANGAN" maxlength="40" readonly>
+                        <input type="text" class="form-control" id="keterangan" name="KETERANGAN" maxlength="40">
                     </div>
+                </div>
+                <div id="detailBarang">
                 </div>
             </div>
             <div class="modal-footer">
@@ -123,17 +123,17 @@
 
                 <div class="form-group row">
                     <div class="col-sm-3">
-                        <label for="nomor_po" class="col-form-label"> No PO</label>
+                        <label for="nomor_po" class="col-form-label"> No Permintaan</label>
                     </div>
                     <div class="col-sm-6"> <!-- Combine both input and button in the same column -->
-                        <input type="text" id="detailnomorpo" class="form-control" placeholder="Enter ID" readonly>
+                        <input type="text" id="detailnomorpermintaan" class="form-control" placeholder="Enter ID" readonly>
                     </div>
                 </div>
                 <div id="detailTrnJadi">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onClick="simpanDataTrnJadi()" id="simpanButton" style="display: none;">Simpan</button>
+                <button type="button" class="btn btn-primary" onClick="simpanDataTrnJadi()" id="simpanButton">Simpan</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearDetail()">Close</button>
             </div>
         </div>
@@ -174,12 +174,6 @@
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY ORDER</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="qtyorder" name="QTYORDER" maxlength="6" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SUDAH TERIMA</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="qtyterima" maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -279,10 +273,10 @@
 
         function clearModal() {
             $('#tanggal').val("");
-            $('#nomorpo').val("");
+            $('#nomorpermintaan').val("");
             $('#bukti').val("");
-            $('#gudang').val("");
-            $('#supplier').val("");
+            $('#gudang_asal').val("");
+            $('#gudang_tujuan').val("");
             $('#detailBarang').empty();
         }
         function clearDetail() {
@@ -312,17 +306,20 @@
 
             if (tanggal != ''){
                 $.ajax({
-                    url: "{{ route('postTrnJadi') }}",
+                    url: "{{ route('postTrnCanvas') }}",
                     method: 'POST',
                     data : {
                         _token: _token,
                         data : arrBarang,
                         tanggal : $('#tanggal').val(),
-                        gudang : $('#gudang').val(),
-                        nomorpo : $('#nomorpo').val(),
+                        gudang_asal : $('#gudang').val(),
+                        gudang_tujuan : $('#gudang_tujuan').val(),
+                        // nomorpo : $('#nomorpo').val(),
                         periode : getPeriode($('#tanggal').val()),
-                        supplier : $('#supplier').val().split('-')[0].trim(),
-                        nomorpo : $('#nomorpo').val(),
+                        salesman : $('#salesman').val(),
+                        // supplier : $('#supplier').val().split('-')[0].trim(),
+                        // nomorpo : $('#nomorpo').val(),
+                        nopermintaan : $('#nomorpermintaan').val(),
                         keterangan : $('#keterangan').val(),
                     },
 
@@ -342,69 +339,15 @@
                 toastr.error('Tanggal harus diisi');
             }
         }
-        function getData(){
-            $.ajax({
-                url: "{{ route ('getTrnSales')}}",
-                method: 'GET',
-
-                success: function (data) {
-                    console.log (data);
-                    console.log (data.length);
-                    $('#listData').empty();
-                    let createTable = "";
-                    let i = 0
-                    createTable += `<table class="table table-stripped table-bordered myTable" id = "myTable">
-                        <thead>
-                            <th> Tanggal </th>
-                            <th> Bukti </th>
-                            <th> Supplier </th>
-                            <th> Nomor PO </th>
-                            <th> Aksi </th>
-                            </thead>
-
-                            <tbody>
-                                `;
-                                while(i < data.length){
-                                    console.log(data[i].TANGGAL);
-                                    createTable +=
-                                        `<tr>
-                                            <td>${data[i].TANGGAL}</td>
-                                            <td>${data[i].BUKTI}</td>
-                                            <td>${data[i].supplier.NAMA}</td>
-                                            <td>${data[i].NOMORPO}</td>
-                                            <td><button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-bukti="${data[i].BUKTI}" data-tanggal="${data[i].TANGGAL}" data-nomorpo="${data[i].NOMORPO}" data-periode="${data[i].PERIODE}" data-jumlah="${data[i].JUMLAH}"><span class="fas fa-eye"></span></button> &nbsp`;
-
-
-                                            if(data[i].JUMLAH == 0){
-                                                createTable+= `<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="${data[i].BUKTI}" data-periode="${data[i].PERIODE}"><i class="fas fa-trash"></i></button></td>`;
-                                            } else {
-                                                createTable+= `<td></td>`;
-                                            }
-                                        createTable += `</tr>`;
-                                    i++;
-
-                                }
-                                createTable +=`</tbody>
-                        </table>`;
-
-                        $('#listData').append(createTable);
-                        $('#myTable').DataTable(
-                        {
-                            "order": [[0, "desc"]] // This will sort the first column (index 0) in descending order
-                        });
-                }
-            })
-        }
         function editTableBarang(){
             var kode = $('#kode_barang').val();
             var nama = $('#nama_barang').val();
             var satuan = $('#satuan').val();
             var qtyorder = parseFloat($('#qtyorder').val()); // Parse as float
-            var qtykirim = parseFloat($('#qtyterima').val()); // Parse as float
             var qty = parseFloat($('#qtykirim').val()); // Parse as float
             var idsatuan = $('#id_satuan').val();
 
-            if(qty > (qtyorder - qtykirim)){
+            if(qty > (qtyorder)){
                 toastr.error("qty kirim tidak boleh lebih besar");
                 console.log(qtyorder);
             console.log(qtykirim);
@@ -464,14 +407,16 @@
         }
         function fetchDataById(id) {
             $.ajax({
-                url: "{{ url('transaksi/gudang/fetch-data') }}/" + id ,
+                url: "{{ url('transaksi/pengeluaran/fetch-data') }}/" + id ,
                 method: 'GET',
                 success: function (data) {
                     console.log(data[0]);
+                    $('#gudang').val(data[0].ID_GUDANG);
+                    $('#gudang_tujuan').val(data[0].gudang_sales);
                     // $('#kode_barang').val(data[0].NOMORPO);
-                    $('#supplier').val(data[0].ID_SUPPLIER+' - '+data[0].supplier.NAMA);
+                    // $('#supplier').val(data[0].ID_SUPPLIER+' - '+data[0].supplier.NAMA);
                     $.ajax({
-                        url: "{{ url('transaksi/gudang/fetch-detail') }}/" +data[0].BUKTI+'/'+data[0].PERIODE,
+                        url: "{{ url('transaksi/pengeluaran/fetch-detail') }}/" +data[0].BUKTI+'/'+data[0].PERIODE,
                         method: 'GET',
 
                         success: function (data) {
@@ -485,29 +430,27 @@
                                     <th> Kode Barang </th>
                                     <th> Nama Barang </th>
                                     <th> Satuan </th>
-                                    <th> Qty Order </th>
-                                    <th> Qty Kirim </th>
+                                    <th> QTY Minta </th>
+                                    <th> QTY Kirim </th>
                                     <th> Aksi </th>
                                 </thead>
                                 <tbody>`;
                                     while(i < data.length){
-                                        let qtyOrder = parseFloat(data[i].QTYORDER).toFixed(0); // Round to 0 decimal places
-                                        let qtyKirim = parseFloat(data[i].QTYKIRIM).toFixed(0); // Round to 0 decimal places
+                                        let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
                                         // console.log(data[i]);
                                         createTable +=
                                             `<tr id="${data[i].ID_BARANG}">
                                                 <td>${data[i].ID_BARANG}</td>
                                                 <td>${data[i].nama_barang}</td>
                                                 <td>${data[i].nama_satuan}</td>
-                                                <td>${qtyOrder}</td>
+                                                <td>${qty}</td>
                                                 <td>0</td>
                                                 <td class="hide">${data[i].ID_SATUAN}</td>
                                                 <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                                                     data-kode="${data[i].ID_BARANG}"
                                                     data-nama="${data[i].nama_barang}"
                                                     data-satuan="${data[i].nama_satuan}"
-                                                    data-qtyorder="${qtyOrder}"
-                                                    data-qtykirim="${qtyKirim}"
+                                                    data-qty="${qty}"
                                                     data-idsatuan="${data[i].ID_SATUAN}"
                                                     ><i class="fas fa-pencil-alt"></i></button></td>
                                             </tr>`;
@@ -527,7 +470,7 @@
         }
         function fetchDetail(bukti,periode){
             $.ajax({
-                url: "{{ url('transaksi/gudang/getDetail') }}/"+bukti+"/"+periode,
+                url: "{{ url('transaksi/pengeluaran/getDetail') }}/"+bukti+"/"+periode,
                 method: "GET",
                 success: function (data) {
                     $('#detailTrnJadi').empty();
@@ -583,10 +526,6 @@
             });
         }
         function simpanDataTrnJadi(){
-            // for(var i = 1; i < $('#tableData tr').length; i++)
-            // {
-            //     arrBarang.push([$('#tableData tr:eq('+i+')').find('td:eq('+0+')').html(), $('#tableData tr:eq('+i+')').find('td:eq('+3+')').html()]);
-            // }
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(3)').text();
@@ -598,7 +537,7 @@
             var _token = $('meta[name="csrf-token"]').attr('content');
 
             $.ajax({
-                url: "{{ route('postDetailTrnJadi') }}",
+                url: "{{ route('postDetailTrnCanvas') }}",
                 method: 'PUT',
                 data : {
                     _token: _token,
@@ -648,20 +587,18 @@
             $(document).on('click', '.view-detail', function (e) {
                 e.preventDefault();
 
-                var nomorpo = $(this).data('nomorpo');
+                var nomorpermintaan = $(this).data('nomorpermintaan');
                 var bukti = $(this).data('bukti');
                 var tanggal = dateFormat($(this).data('tanggal'));
                 var periode = $(this).data('periode');
-                var jumlah = $(this).data('jumlah');
 
-                console.log("Nomor PO"+nomorpo);
+                console.log("Nomor Permintaan"+nomorpermintaan);
 
 
                 $('#detailbukti').val(bukti);
-                $('#detailnomorpo').val(nomorpo);
+                $('#detailnomorpermintaan').val(nomorpermintaan);
                 $('#detailtanggal').val(tanggal);
                 $('#detailperiode').val(periode);
-                $('#detailjumlah').val(jumlah);
 
                 console.log($('#detailjumlah').val());
                 fetchDetail(bukti,periode);
@@ -671,16 +608,14 @@
                 console.log(kode);
                 var nama = $(this).data('nama');
                 var satuan = $(this).data('satuan');
-                var qtyorder = $(this).data('qtyorder');
-                var qtykirim = $(this).data('qtykirim');
+                var qty = $(this).data('qty');
                 var idsatuan = $(this).data('idsatuan')
                 // Isi nilai input field sesuai dengan data yang akan diedit
                 $('#kode_barang').val(kode); // Tambahkan atribut readonly
                 $('#nama_barang').val(nama); // Tambahkan atribut readonly
                 $('#satuan').val(satuan);
-                $('#qtyorder').val(qtyorder);
-                $('#qtyterima').val(qtykirim);
-                $('#qtykirim').val(qtyorder-qtykirim);
+                $('#qtyorder').val(qty);
+                $('#qtykirim').val(qty);
                 $('#id_satuan').val(idsatuan);
                 idEdit = kode;
             });
@@ -698,7 +633,7 @@
                 idEdit = kode;
             });
             $('#fetchDataBtn').click(function () {
-                var id = $('#nomorpo').val();
+                var id = $('#nomorpermintaan').val();
                 console.log(id);
                 if (id) {
                     fetchDataById(id);

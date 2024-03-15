@@ -7,7 +7,7 @@
         <div class="input-group mb-3">
             <input type="text" name="ID_USER"
                 class="form-control {{ $errors->has('ID_USER') ? 'is-invalid' : '' }}"
-                value="{{ old('ID_USER') }}" placeholder="{ID USER" autofocus>
+                value="{{ old('ID_USER') }}" placeholder="ID USER" autofocus>
             <div class="input-group-append">
                 <div class="input-group-text">
                     <span class="fas fa-envelope {{ config('adminlte.classes_auth_icon', '') }}"></span>

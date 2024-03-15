@@ -26,13 +26,23 @@ class penerimaanPOController extends Controller
 
     public function fetchDataById($id)
     {
-        $trnorder = trninvorder::where('NOMORPO',$id)->with('supplier')->get();
-        return response()->json($trnorder);
+        $trnorder = trninvorder::where('NOMORPO',$id)
+        ->where('STATUS',0)
+        ->with('supplier')->get();
+        if($trnorder->isNotEmpty()){
+            return response()->json($trnorder);
+        } else {
+            return response()->json(['error','message'=> 'Data tidak ditemukan'],404);
+        }
     }
 
-    public function fetchDetailData($id)
+    public function fetchDetailData($id, $periode)
     {
-        $dtlorder = dtlinvorder::where('BUKTI',$id)->with('barang')->with('satuan')->get();
+        $dtlorder = dtlinvorder::where('PERIODE',$periode)
+        ->where('BUKTI',$id)
+        ->join('barang','dtlinvorder.ID_BARANG','barang.ID_BARANG')
+        ->join('satuan','dtlinvorder.ID_SATUAN','satuan.ID_SATUAN')
+        ->select('dtlinvorder.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')->get();
         return response()->json($dtlorder);
     }
 
@@ -42,8 +52,7 @@ class penerimaanPOController extends Controller
         ->where('ID_DEPO',getIdDepo())
         ->orderBy('TANGGAL','desc')
         ->select('trnsales.*','supplier.NAMA AS nama_supplier')
-        ->limit(50)
-        ->get();
+        ->limit(50);
 
         return DataTables::of($trnsales)
         ->editColumn('ID_SUPPLIER', function ($row) {
@@ -52,8 +61,6 @@ class penerimaanPOController extends Controller
         ->addColumn('action', function ($row) {
             // Initialize the action buttons HTML
             $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpo="'.$row->NOMORPO.'" data-periode="'.$row->PERIODE.'" data-jumlah="'.$row->JUMLAH.'"><span class="fas fa-eye"></span></button>';
-
-
             // Check if $row->jumlah is zero
             if ($row->JUMLAH == 0) {
                 // If $row->jumlah is zero, add the delete button
@@ -70,8 +77,9 @@ class penerimaanPOController extends Controller
         $data = trnjadi::where('KDTRN','01')
         ->where('PERIODE', $periode)
         ->where('BUKTI',$bukti)
-        ->with('barang')
-        ->with('satuan')
+        ->join('barang','trnjadi.ID_BARANG','barang.ID_BARANG')
+        ->join('satuan','trnjadi.ID_SATUAN','satuan.ID_SATUAN')
+        ->select('trnjadi.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
         ->orderBy('NOMOR','asc')
         ->get();
 
@@ -80,7 +88,7 @@ class penerimaanPOController extends Controller
 
     public function generateBukti($tanggal){
         // $topBukti = $this->fetchTopBukti($tanggal);
-        $Tanggal = DateTime::createFromFormat('d/m/Y', $tanggal);
+        $Tanggal = DateTime::createFromFormat('d-m-Y', $tanggal);
         // Retrieve the top 1 BUKTI for the current year using Eloquent
         $topBukti = trnsales::select('BUKTI')
             ->where('KDTRN','01')
@@ -120,7 +128,7 @@ class penerimaanPOController extends Controller
 
 
             // Format tanggal
-            $Tanggal = DateTime::createFromFormat('d/m/Y', $request->tanggal);
+            $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
@@ -139,6 +147,7 @@ class penerimaanPOController extends Controller
                 'ID_DEPO' => getIdDepo(),
                 'ID_SUPPLIER' => $request->supplier,
                 'NOMORPO' => $request->nomorpo,
+                'KETERANGAN' => $request->keterangan,
                 'USERENTRY' => getUserLoggedIn()->ID_USER,
                 'TGLENTRY' => $currentDateTime
             ]);
@@ -166,7 +175,7 @@ class penerimaanPOController extends Controller
             DB::commit();
 
             // Return a success response
-            return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan'], 200);
+            return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan dengan No Bukti '. $bukti, 'bukti' => $bukti], 200);
         } catch (\Exception $e) {
             // Rollback the transaction if an error occurs
             DB::rollback();

@@ -15,11 +15,6 @@ class satuanController extends Controller
         return view('layout.setup.satuan.index');
     }
 
-    public function getSatuan () {
-        $satuan =satuan::all();
-        return response()->json($satuan);
-    }
-
     public function datatable(){
         $satuan =satuan::all();
         return DataTables::of($satuan)

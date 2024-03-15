@@ -81,8 +81,6 @@
         }
 
         $(document).ready(function() {
-            // getData();
-
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode'); // Mengambil mode dari tombol

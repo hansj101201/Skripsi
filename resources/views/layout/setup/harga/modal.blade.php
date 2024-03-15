@@ -166,7 +166,7 @@
     <script>
         $(document).ready(function() {
             $('.datepicker').datepicker({
-                format: 'dd/mm/yyyy', // Set your desired date format
+                format: 'dd-mm-yyyy', // Set your desired date format
                 minDate: 0,
                 defaultDate: 'now', // Set default date to 'now'
                 autoclose: true // Close the datepicker when a date is selected

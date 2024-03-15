@@ -17,12 +17,6 @@ class barangController extends Controller
         return view('layout.setup.barang.index', compact('satuan'));
     }
 
-    // public function getBarang(){
-    //     $barang = barang::with('satuan')->get();
-
-    //     return response()->json($barang);
-    // }
-
     public function datatable(){
         $barang = barang::join("satuan","barang.ID_SATUAN","satuan.ID_SATUAN")
         ->select("barang.*", "satuan.NAMA AS nama_satuan");

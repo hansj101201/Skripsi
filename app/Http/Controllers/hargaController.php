@@ -64,7 +64,7 @@ class hargaController extends Controller
 
         // dd($validatedData);
 
-        $mulai_berlaku = DateTime::createFromFormat('d/m/Y', $validatedData['MULAI_BERLAKU']);
+        $mulai_berlaku = DateTime::createFromFormat('d-m-Y', $validatedData['MULAI_BERLAKU']);
 
         // Mengatur zona waktu ke Asia/Jakarta
         $mulai_berlaku->setTimezone(new DateTimeZone('Asia/Jakarta'));

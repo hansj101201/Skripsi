@@ -13,6 +13,8 @@ use App\Http\Controllers\satuanController;
 use App\Http\Controllers\supplierController;
 use App\Http\Controllers\customerController;
 use App\Http\Controllers\penerimaanPOController;
+use App\Http\Controllers\pengeluaranBarangKanvasController;
+use App\Http\Controllers\transferGudangController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +41,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('barang.store');
             Route::put('update','update')->name('barang.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getBarang', 'getBarang')->name('fetchBarang');
             Route::get('getDetail/{ID}', 'getDetail');
             Route::get('datatable', 'datatable')->name('barang.datatable');
         });
@@ -51,7 +52,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('gudang.store');
             Route::put('update','update')->name('gudang.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getGudang','getGudang')->name('fetchGudang');
             Route::get('datatable','datatable')->name('gudang.datatable');
             Route::get('getDetail/{ID}','getDetail');
         });
@@ -63,7 +63,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('depo.store');
             Route::put('update','update')->name('depo.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getDepo','getDepo')->name('fetchDepo');
             Route::get('datatable','datatable')->name('depo.datatable');
             Route::get('getDetail/{ID}','getDetail');
         });
@@ -75,7 +74,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('salesman.store');
             Route::put('update','update')->name('salesman.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getSalesman','getSalesman')->name('fetchSalesman');
             Route::get('datatable','datatable')->name('salesman.datatable');
             Route::get('getDetail/{ID}','getDetail');
         });
@@ -87,7 +85,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('driver.store');
             Route::put('update','update')->name('driver.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getDriver', 'getDriver')->name('fetchDriver');
             Route::get('datatable','datatable')->name('driver.datatable');
             Route::get('getDetail/{ID}','getDetail');
         });
@@ -110,7 +107,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('satuan.store');
             Route::put('update','update')->name('satuan.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getSatuan','getSatuan')->name('fetchSatuan');
             Route::get('datatable', 'datatable')->name('satuan.datatable');
             Route::get('getDetail/{ID}','getDetail');
         });
@@ -122,7 +118,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('supplier.store');
             Route::put('update','update')->name('supplier.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getSupplier','getSupplier')->name('fetchSupplier');
             Route::get('datatable','datatable')->name('supplier.datatable');
             Route::get('getDetail/{ID}','getDetail');
         });
@@ -155,10 +150,9 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
 Route::prefix('transaksi')->middleware(['Login'])->group(function () {
     Route::prefix('gudang')->group(function (){
         Route::controller(penerimaanPOController::class)->group(function () {
-            Route::get('terimaPO', 'index')->name('gudang.terimaPO');
-            Route::post('/orders', 'store');
+            Route::get('index', 'index')->name('gudang.terimaPO');
             Route::get('fetch-data/{id}', 'fetchDataById')->where('id', '.*');
-            Route::get('fetch-detail/{id}','fetchDetailData');
+            Route::get('fetch-detail/{id}/{periode}','fetchDetailData');
 
             Route::get('getTrnSales','getTrnSales')->name('getTrnSales');
             Route::post('postTrnJadi','postTrnJadi')->name('postTrnJadi');
@@ -172,6 +166,27 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
     });
 
     Route::prefix('pengeluaran')->middleware(['Login'])->group(function (){
+        Route::controller(pengeluaranBarangKanvasController::class)->group(function () {
+            Route::get('index', 'index');
+            Route::get('datatable', 'datatable')->name('pengeluaran.datatable');
+            Route::get('fetch-data/{id}', 'fetchData')->where('id', '.*');
+            Route::get('fetch-detail/{id}/{periode}', 'fetchDetail');
+
+            Route::post('postTrnCanvas', 'postTrnCanvas')->name('postTrnCanvas');
+            Route::get('getDetail/{bukti}/{periode}','getDetail');
+            Route::put('postDetailTrnCanvas','postDetailTrnCanvas')->name('postDetailTrnCanvas');
+        });
+    });
+
+    Route::prefix('transfergudang')->middleware(['Login'])->group(function(){
+        Route::controller(transferGudangController::class)->group(function () {
+            Route::get('index', 'index');
+            Route::get('datatable', 'datatable')->name('transfer.datatable');
+            Route::get('getDetail/{bukti}/{periode}','getDetail');
+            Route::put('postDetailTransferGudang', 'postDetailTransferGudang')->name('postDetailTransferGudang');
+
+            Route::get('getSatuan', 'getSatuan')->name('getDetailSatuan');
+        });
     });
 });
 

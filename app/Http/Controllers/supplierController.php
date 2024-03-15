@@ -17,11 +17,6 @@ class supplierController extends Controller
         return view('layout.setup.supplier.index');
     }
 
-    public function getSupplier(){
-        $supplier = supplier::all();
-        return response()->json($supplier);
-    }
-
     public function datatable(){
         $supplier = supplier::all();
         return DataTables::of($supplier)

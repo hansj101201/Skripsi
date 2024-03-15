@@ -19,12 +19,6 @@ class depoController extends Controller
         return view('layout.setup.depo.index');
     }
 
-    public function getDepo(){
-        $depo = depo::all();
-
-        return response()->json($depo);
-    }
-
     public function datatable () {
         $depo = depo::all();
         return DataTables::of($depo)

@@ -16,11 +16,6 @@ class driverController extends Controller
         return view('layout.setup.driver.index', compact('depo'));
     }
 
-    public function getDriver(){
-        $driver = driver::with('depo')->get();
-        return response()->json($driver);
-    }
-
     public function datatable(){
         $driver = driver::join("depo","driver.ID_DEPO","depo.ID_DEPO")
         ->select("driver.*", "depo.NAMA AS nama_depo");
