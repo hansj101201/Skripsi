@@ -39,12 +39,15 @@ class users extends Authenticatable
         'TGLENTRY' => 'datetime',
         'TGLEDIT' => 'datetime',
     ];
-
     public function depo()
     {
         return $this->belongsTo(depo::class, 'ID_DEPO', 'ID_DEPO');
     }
 
+    public function Role()
+    {
+        return $this->hasOne(role::class, 'ROLE_ID', 'ROLE_ID');
+    }
     public function adminlte_image()
     {
         return "https://picsum.photos/id/200/300/300";

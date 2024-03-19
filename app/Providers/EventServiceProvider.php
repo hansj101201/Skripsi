@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
 use Illuminate\Support\Str;
 
@@ -29,6 +30,9 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Event::listen(BuildingMenu::class, function (BuildingMenu $event) {
+            // $userRoles = auth()->user()->Role()->pluck('ROLE_NAMA')->toArray();
+            // Log::info('Current user roles: ' . implode(', ', $userRoles));
+
             $menuList = Menu::orderBy("MENU_URUTAN")->get();
             foreach ($menuList as $menu) {
                 /**
@@ -38,15 +42,19 @@ class EventServiceProvider extends ServiceProvider
                     $event->menu->add([
                         'key' => $menu->MENU_GROUP,
                         'header' => Str::upper($menu->MENU_GROUP),
+                        // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+
                     ]);
                 }
 
+                // Log::info('Menu item: ' . $menu->MENU_SUBMENU . ' - Roles: ' . implode(', ', $menu->Roles->pluck('ROLE_NAMA')->toArray()));
                 if ($menu->MENU_SUBMENU == "") {
                     $key = Str::lower(Str::replace(" ", "_", $menu->MENU_GROUP . "_" . $menu->MENU_SUBGROUP));
 
                     $temp = [
                         'key' => $key,
                         'text' => $menu->MENU_SUBGROUP,
+                        // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
                     ];
 
                     if (Str::contains($menu->MENU_ICON, "fas")) {
@@ -69,6 +77,7 @@ class EventServiceProvider extends ServiceProvider
                     $temp = [
                         'key' => $key,
                         'text' => $menu->MENU_SUBMENU,
+                        // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
                     ];
 
                     if (Str::contains($menu->MENU_ICON, "fas")) {
@@ -82,7 +91,14 @@ class EventServiceProvider extends ServiceProvider
                     $event->menu->addIn($keyParent,$temp);
                 }
             }
+            // $superadminRoleId = 1; // Change this to match your actual role name
+            // if (auth()->check() && auth()->user()->ROLE_ID == $superadminRoleId) {
+            //     // Grant access to all menus for superadmin
+
+            // }
         });
+
+
 
     }
 

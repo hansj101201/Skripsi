@@ -13,10 +13,12 @@
 @section('content')
 
     <div class="card mb-4">
-        <div class="card-header">
-            <h1 class="card-title">Master Harga</h1>
-            <div class="card-tools">
-                <button type="button" class="btn btn-primary mt-4 mb-4" data-toggle="modal" data-target="#addDataModal">
+        <div class="card-header" style="display: flex; flex-direction: column;">
+            <div>
+                <h1 class="card-title">Master Harga</h1>
+            </div>
+            <div class="mt-4 mb-4">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDataModal">
                     + Harga
                 </button>
             </div>
@@ -47,12 +49,12 @@
 
     <script src="{{ asset('/vendor/toastr/toastr.min.js') }}"></script>
     <script src="{{ asset('/js/submitForm.js') }}"></script>
-    <script src="{{ asset('/js/dateFormat.js') }}"></script>
+    <script src="{{ asset('/js/format.js') }}"></script>
     <script>
         var table;
         $(function () {
             table = $("#tableHasil").DataTable({
-                serverSide: true,
+                // serverSide: true,
                 processing: true,
                 ajax: '{{ url('setup/harga/datatable') }}',
                 order: [
@@ -67,9 +69,9 @@
                 }],
                 responsive: true,
                 layout: {
-                    top2Start:{
-                        buttons:['copy', 'csv', 'excel', 'pdf', 'print']
-                    },
+                    // top2Start:{
+                    //     buttons:['copy', 'csv', 'excel', 'pdf', 'print']
+                    // },
                     topStart: "pageLength"
                 },
                 columns: [
@@ -89,8 +91,8 @@
                         name: "BARANG_NAMA"
                     },
                     {
-                        data: "ID_SATUAN",
-                        name: "ID_SATUAN"
+                        data: "SATUAN_NAMA",
+                        name: "SATUAN_NAMA"
                     },
                     {
                         data: "HARGA",

@@ -102,7 +102,6 @@
             <!-- Input field for user to input ID -->
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" id ="_token">
-                <input type="hidden" id="detailjumlah">
                 <input type="hidden" id="detailperiode">
                 <div class="form-group row">
                     <div class="col-sm-3">
@@ -264,7 +263,7 @@
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-    <script src="{{ asset('/js/dateFormat.js') }}"></script>
+    <script src="{{ asset('/js/format.js') }}"></script>
     <script>
 
         let idEdit = '';
@@ -280,16 +279,15 @@
             $('#detailBarang').empty();
         }
         function clearDetail() {
-            $('#detailjumlah').val("");
             $('#detailperiode').val("");
             $('#detailbukti').val("");
             $('#detailtanggal').val("");
-            $('#detailnomorpo').val("");
+            $('#detailnomorpermintaan').val("");
             $('#detailtrnjadi').empty();
         }
 
         function simpanData(){
-
+            arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(4)').text();
@@ -330,6 +328,7 @@
                             toastr.success(response.message);
                             clearModal();
                             table.draw();
+                            ('#tableData').clear();
                         } else {
                             toastr.error(response.message);
                         }
@@ -474,58 +473,47 @@
                 method: "GET",
                 success: function (data) {
                     $('#detailTrnJadi').empty();
-                            let createTable = "";
-                            let i = 0
-                            createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
-                                <thead>
-                                    <th> Kode Barang </th>
-                                    <th> Nama Barang </th>
-                                    <th> Satuan </th>
-                                    <th> Qty </th>
-                                    <th> Aksi </th>
-                                    </thead>
+                    let createTable = "";
+                    let i = 0
+                    createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
+                        <thead>
+                            <th> Kode Barang </th>
+                            <th> Nama Barang </th>
+                            <th> Satuan </th>
+                            <th> Qty </th>
+                            <th> Aksi </th>
+                        </thead>
 
-                                    <tbody>
-                                        `;
-                                        while(i < data.length){
-                                            let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
-                                            // console.log(data[i]);
-                                            createTable +=
-                                                `<tr id="${data[i].ID_BARANG}">
-                                                    <td>${data[i].ID_BARANG}</td>
-                                                    <td>${data[i].nama_barang}</td>
-                                                    <td>${data[i].nama_satuan}</td>
-                                                    <td>${qty}</td>`
+                        <tbody>`;
+                            while(i < data.length){
+                                let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
+                                // console.log(data[i]);
+                                createTable +=
+                                    `<tr id="${data[i].ID_BARANG}">
+                                        <td>${data[i].ID_BARANG}</td>
+                                        <td>${data[i].nama_barang}</td>
+                                        <td>${data[i].nama_satuan}</td>
+                                        <td>${qty}</td>
+                                        <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
+                                            data-kode="${data[i].ID_BARANG}"
+                                            data-nama="${data[i].nama_barang}"
+                                            data-satuan="${data[i].nama_satuan}"
+                                            data-qty="${qty}"
+                                            ><i class="fas fa-pencil-alt"></i></button></td>
+                                        </tr>`;
+                                i++;
 
-                                                    if($('#detailjumlah').val()==0){
-                                                        createTable+= ` <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
-                                                        data-kode="${data[i].ID_BARANG}"
-                                                        data-nama="${data[i].nama_barang}"
-                                                        data-satuan="${data[i].nama_satuan}"
-                                                        data-qty="${qty}"
-                                                        ><i class="fas fa-pencil-alt"></i></button></td>`
-                                                    } else {
-                                                        createTable+= `<td></td>`;
-                                                    }
-                                                createTable+= `</tr>`;
-                                            i++;
-
-                                        }
-                                        createTable +=`</tbody>
-                                </table>`;
-                                $('#detailTrnJadi').append(createTable);
-                                if ($('#detailjumlah').val() == 0) {
-                                    // Jika tidak, sembunyikan tombol Simpan
-                                    $('#simpanButton').show();
-
-                                } else {
-                                    // Jika iya, tampilkan tombol Simpan
-                                    $('#simpanButton').hide();
-                                }
-                        }
+                            }
+                            createTable +=`</tbody>
+                        </table>`;
+                    $('#detailTrnJadi').append(createTable);
+                        // Jika tidak, sembunyikan tombol Simpan
+                    $('#simpanButton').show();
+                }
             });
         }
         function simpanDataTrnJadi(){
+            arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(3)').text();
@@ -552,6 +540,7 @@
                         $('#detailModal').modal('hide');
                         toastr.success(response.message);
                         clearDetail();
+                        ('#tableData').clear();
                     } else {
                         toastr.error(response.message);
                     }
@@ -599,8 +588,6 @@
                 $('#detailnomorpermintaan').val(nomorpermintaan);
                 $('#detailtanggal').val(tanggal);
                 $('#detailperiode').val(periode);
-
-                console.log($('#detailjumlah').val());
                 fetchDetail(bukti,periode);
             });
             $(document).on('click', '.edit-button', function () {
@@ -649,7 +636,7 @@
                 $('#confirmDeleteButton').on('click', function () {
                     $.ajax({
                         method: 'DELETE',
-                        url: "{{ url('transaksi/gudang/delete') }}/" + bukti+"/"+periode,
+                        url: "{{ url('transaksi/pengeluaran/delete') }}/" + bukti+"/"+periode,
                         data: {
                             '_token': '{{ csrf_token() }}',
                         },

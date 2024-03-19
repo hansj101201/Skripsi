@@ -270,12 +270,11 @@
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-    <script src="{{ asset('/js/dateFormat.js') }}"></script>
+    <script src="{{ asset('/js/format.js') }}"></script>
     <script>
 
         let idEdit = '';
         let arrBarang = [];
-
 
         function clearModal() {
             $('#tanggal').val("");
@@ -296,21 +295,23 @@
 
         function simpanData(){
 
-            $('#tableData tbody tr').each(function(index, row) {
-                var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(4)').text();
-                var idSatuan = $(row).find('td:eq(5)').text(); // Index adjusted if needed
-
-                arrBarang.push([idBarang, qtyKirim, idSatuan]);
-            });
-            console.log(arrBarang);
-            console.log($('#tanggal').val());
+            arrBarang = [];
 
             var _token = $('meta[name="csrf-token"]').attr('content');
 
             var tanggal = $('#tanggal').val();
 
             if (tanggal != ''){
+
+                $('#tableData tbody tr').each(function(index, row) {
+                    var idBarang = $(row).find('td:eq(0)').text();
+                    var qtyKirim = $(row).find('td:eq(4)').text();
+                    var idSatuan = $(row).find('td:eq(5)').text(); // Index adjusted if needed
+
+                    arrBarang.push([idBarang, qtyKirim, idSatuan]);
+                });
+                console.log(arrBarang);
+                console.log($('#tanggal').val());
                 $.ajax({
                     url: "{{ route('postTrnJadi') }}",
                     method: 'POST',
@@ -341,59 +342,6 @@
             } else {
                 toastr.error('Tanggal harus diisi');
             }
-        }
-        function getData(){
-            $.ajax({
-                url: "{{ route ('getTrnSales')}}",
-                method: 'GET',
-
-                success: function (data) {
-                    console.log (data);
-                    console.log (data.length);
-                    $('#listData').empty();
-                    let createTable = "";
-                    let i = 0
-                    createTable += `<table class="table table-stripped table-bordered myTable" id = "myTable">
-                        <thead>
-                            <th> Tanggal </th>
-                            <th> Bukti </th>
-                            <th> Supplier </th>
-                            <th> Nomor PO </th>
-                            <th> Aksi </th>
-                            </thead>
-
-                            <tbody>
-                                `;
-                                while(i < data.length){
-                                    console.log(data[i].TANGGAL);
-                                    createTable +=
-                                        `<tr>
-                                            <td>${data[i].TANGGAL}</td>
-                                            <td>${data[i].BUKTI}</td>
-                                            <td>${data[i].supplier.NAMA}</td>
-                                            <td>${data[i].NOMORPO}</td>
-                                            <td><button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-bukti="${data[i].BUKTI}" data-tanggal="${data[i].TANGGAL}" data-nomorpo="${data[i].NOMORPO}" data-periode="${data[i].PERIODE}" data-jumlah="${data[i].JUMLAH}"><span class="fas fa-eye"></span></button> &nbsp`;
-
-
-                                            if(data[i].JUMLAH == 0){
-                                                createTable+= `<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="${data[i].BUKTI}" data-periode="${data[i].PERIODE}"><i class="fas fa-trash"></i></button></td>`;
-                                            } else {
-                                                createTable+= `<td></td>`;
-                                            }
-                                        createTable += `</tr>`;
-                                    i++;
-
-                                }
-                                createTable +=`</tbody>
-                        </table>`;
-
-                        $('#listData').append(createTable);
-                        $('#myTable').DataTable(
-                        {
-                            "order": [[0, "desc"]] // This will sort the first column (index 0) in descending order
-                        });
-                }
-            })
         }
         function editTableBarang(){
             var kode = $('#kode_barang').val();
@@ -478,6 +426,7 @@
                             console.log (data);
                             console.log (data.length);
                             $('#detailBarang').empty();
+                            $('#tableData').empty();
                             let createTable = "";
                             let i = 0
                             createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
@@ -531,62 +480,60 @@
                 method: "GET",
                 success: function (data) {
                     $('#detailTrnJadi').empty();
-                            let createTable = "";
-                            let i = 0
-                            createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
-                                <thead>
-                                    <th> Kode Barang </th>
-                                    <th> Nama Barang </th>
-                                    <th> Satuan </th>
-                                    <th> Qty </th>
-                                    <th> Aksi </th>
-                                    </thead>
+                    $('#tableData').empty();
+                    let createTable = "";
+                    let i = 0
+                    createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
+                        <thead>
+                            <th> Kode Barang </th>
+                            <th> Nama Barang </th>
+                            <th> Satuan </th>
+                            <th> Qty </th>
+                            <th> Aksi </th>
+                            </thead>
 
-                                    <tbody>
-                                        `;
-                                        while(i < data.length){
-                                            let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
-                                            // console.log(data[i]);
-                                            createTable +=
-                                                `<tr id="${data[i].ID_BARANG}">
-                                                    <td>${data[i].ID_BARANG}</td>
-                                                    <td>${data[i].nama_barang}</td>
-                                                    <td>${data[i].nama_satuan}</td>
-                                                    <td>${qty}</td>`
+                            <tbody>
+                                `;
+                                while(i < data.length){
+                                    let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
+                                    // console.log(data[i]);
+                                    createTable +=
+                                        `<tr id="${data[i].ID_BARANG}">
+                                            <td>${data[i].ID_BARANG}</td>
+                                            <td>${data[i].nama_barang}</td>
+                                            <td>${data[i].nama_satuan}</td>
+                                            <td>${qty}</td>`
 
-                                                    if($('#detailjumlah').val()==0){
-                                                        createTable+= ` <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
-                                                        data-kode="${data[i].ID_BARANG}"
-                                                        data-nama="${data[i].nama_barang}"
-                                                        data-satuan="${data[i].nama_satuan}"
-                                                        data-qty="${qty}"
-                                                        ><i class="fas fa-pencil-alt"></i></button></td>`
-                                                    } else {
-                                                        createTable+= `<td></td>`;
-                                                    }
-                                                createTable+= `</tr>`;
-                                            i++;
+                                            if($('#detailjumlah').val()==0){
+                                                createTable+= ` <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
+                                                data-kode="${data[i].ID_BARANG}"
+                                                data-nama="${data[i].nama_barang}"
+                                                data-satuan="${data[i].nama_satuan}"
+                                                data-qty="${qty}"
+                                                ><i class="fas fa-pencil-alt"></i></button></td>`
+                                            } else {
+                                                createTable+= `<td></td>`;
+                                            }
+                                        createTable+= `</tr>`;
+                                    i++;
 
-                                        }
-                                        createTable +=`</tbody>
-                                </table>`;
-                                $('#detailTrnJadi').append(createTable);
-                                if ($('#detailjumlah').val() == 0) {
-                                    // Jika tidak, sembunyikan tombol Simpan
-                                    $('#simpanButton').show();
-
-                                } else {
-                                    // Jika iya, tampilkan tombol Simpan
-                                    $('#simpanButton').hide();
                                 }
+                                createTable +=`</tbody>
+                        </table>`;
+                        $('#detailTrnJadi').append(createTable);
+                        if ($('#detailjumlah').val() == 0) {
+                            // Jika tidak, sembunyikan tombol Simpan
+                            $('#simpanButton').show();
+
+                        } else {
+                            // Jika iya, tampilkan tombol Simpan
+                            $('#simpanButton').hide();
                         }
+                }
             });
         }
         function simpanDataTrnJadi(){
-            // for(var i = 1; i < $('#tableData tr').length; i++)
-            // {
-            //     arrBarang.push([$('#tableData tr:eq('+i+')').find('td:eq('+0+')').html(), $('#tableData tr:eq('+i+')').find('td:eq('+3+')').html()]);
-            // }
+            arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(3)').text();

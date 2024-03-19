@@ -12,11 +12,13 @@
 @section('content')
 
     <div class="card mb-4">
-        <div class="card-header">
-            <h1 class="card-title">Master Barang</h1>
-            <div class="card-tools">
-                <button type="button" class="btn btn-primary mt-4 mb-4" data-toggle="modal" data-target="#DataModal" data-mode="add">
-                    + Barang
+        <div class="card-header" style="display: flex; flex-direction: column;">
+            <div>
+                <h1 class="card-title">Master Gudang</h1>
+            </div>
+            <div class="mt-4 mb-4">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#DataModal" data-mode="add">
+                    + Gudang
                 </button>
             </div>
         </div>
@@ -64,9 +66,9 @@
                 }],
                 responsive: true,
                 layout: {
-                    top2Start:{
-                        buttons:['copy', 'csv', 'excel', 'pdf', 'print']
-                    },
+                    // top2Start:{
+                    //     buttons:['copy', 'csv', 'excel', 'pdf', 'print']
+                    // },
                     topStart: "pageLength"
                 },
                 columns: [

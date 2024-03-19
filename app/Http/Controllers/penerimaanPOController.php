@@ -78,7 +78,7 @@ class penerimaanPOController extends Controller
         ->where('PERIODE', $periode)
         ->where('BUKTI',$bukti)
         ->join('barang','trnjadi.ID_BARANG','barang.ID_BARANG')
-        ->join('satuan','trnjadi.ID_SATUAN','satuan.ID_SATUAN')
+        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
         ->select('trnjadi.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
         ->orderBy('NOMOR','asc')
         ->get();
@@ -162,7 +162,6 @@ class penerimaanPOController extends Controller
                     'ID_GUDANG' => $request->gudang,
                     'PERIODE' => $request->periode,
                     'ID_BARANG' => $item[0],
-                    'ID_SATUAN'=> $item[2],
                     'QTY' => $item[1],
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,

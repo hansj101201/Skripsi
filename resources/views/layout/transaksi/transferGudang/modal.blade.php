@@ -11,46 +11,35 @@
             <!-- Input field for user to input ID -->
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" id ="_token">
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label for="tanggal" class="col-form-label">Tanggal:</label>
-                    </div>
-                    <div class="col-sm-6"> <!-- Combine both input and button in the same column -->
-                        <div class="input-group"> <!-- Use input-group for better alignment -->
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label for="tanggal">Tanggal:</label>
+                        <div class="input-group">
                             <input type="text" class="form-control datepicker" id="tanggal" name="TANGGAL" readonly>
                             <div class="input-group-append">
                                 <span class="input-group-text">
-                                    <i class="fas fa-calendar-alt" id="datepicker"></i> <!-- Font Awesome calendar icon -->
+                                    <i class="fas fa-calendar-alt" id="datepicker"></i>
                                 </span>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label for="bukti" class="col-form-label">Bukti</label>
-                    </div>
-                    <div class="col-sm-6">
+                    <div class="form-group col">
+                        <label for="bukti">Bukti:</label>
                         <input type="text" class="form-control" id="bukti" name="BUKTI" maxlength="40" readonly>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label for="gudang" class="col-form-label">GUDANG</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
+
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label for="gudang">GUDANG:</label>
+                        <select class="form-control" id="gudang" name="ID_GUDANG">
                             @foreach($gudang as $Gudang)
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
                         </select>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label for="gudang" class="col-form-label">GUDANG TUJUAN</label>
-                    </div>
-                    <div class="col-sm-6">
+                    <div class="form-group col">
+                        <label for="gudang_tujuan">GUDANG TUJUAN:</label>
                         <select class="form-control" id="gudang_tujuan" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
                             @foreach($gudang as $Gudang)
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
@@ -58,6 +47,7 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="form-group row">
                     <div class="col-sm-3">
                         <label for="bukti" class="col-form-label">Keterangan</label>
@@ -66,9 +56,9 @@
                         <input type="text" class="form-control" id="keterangan" name="KETERANGAN" maxlength="40">
                     </div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-9 offset-sm-3"> <!-- Offset to align the button with input fields -->
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBarangModal">Tambah Data</button>
+                <div class="form-group row" id="tambahDataButton">
+                    <div class="col-sm-3"> <!-- Move the button to the left -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#dataModal" data-mode="add">Tambah Data</button>
                     </div>
                 </div>
                 <div id="detailBarang">
@@ -86,113 +76,25 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onClick="simpanData()">Simpan</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearModal()">Close</button>
+                <button type="button" class="btn btn-primary" id="saveBtn">Simpan</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal" id="editDataModal" tabindex="-1" role="dialog" aria-labelledby="editDataModalLabel" aria-hidden="true">
+<div class="modal" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editDataModalLabel">Edit Data</h5>
+                <h5 class="modal-title" id="dataModalLabel"></h5>
                 <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="btn-custom-close">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="container">
-                    <input type="hidden" id="id_satuan">
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_barang" name="ID_BARANG" maxlength="6" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">Nama Barang</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nama_barang" name="NAMA_BARANG" maxlength="6" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="satuan" name="SATUAN" maxlength="6" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="qtykirim" name="QTYKIRIM" maxlength="6" >
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Simpan</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailModalLabel">Detail</h5>
-                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="btn-custom-close">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            <!-- Input field for user to input ID -->
-
-                <input type="hidden" name="_token" value="{{ csrf_token() }}" id ="_token">
-                <input type="hidden" id="detailperiode">
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label for="bukti" class="col-form-label">Bukti</label>
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="text" class="form-control" id="detailbukti" name="BUKTI" maxlength="40" readonly>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-3">
-                        <label for="tanggal" class="col-form-label">Tanggal:</label>
-                    </div>
-                    <div class="col-sm-6"> <!-- Combine both input and button in the same column -->
-                        <input type="text" class="form-control" id="detailtanggal" name="TANGGAL" readonly>
-                    </div>
-                </div>
-                <div id="detailTrnJadi">
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onClick="simpanDataTrnJadi()" id="simpanButton">Simpan</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearDetail()">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="addBarangModal" tabindex="-1" role="dialog" aria-labelledby="addBarangModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addBarangModalLabel">Add Barang</h5>
-                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="btn-custom-close">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <input type="hidden" id="barang_id_satuan">
+                    <input type="hidden" id="editMode" name="editMode" value="add">
+                    <input type="hidden" id="stok_lama">
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
                         <div class="col-sm-9">
@@ -204,73 +106,33 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">NAMA</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_nama" name="NAMA" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_satuan" name="SATUAN" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_qty" name="QTY" maxlength="6" >
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="addTableBarang()">Simpan</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="editDetailModal" tabindex="-1" role="dialog" aria-labelledby="editDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editDetailModalLabel">Edit Data</h5>
-                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="btn-custom-close">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_kode_barang" name="ID_BARANG" maxlength="6" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Nama Barang</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_nama_barang" name="NAMA_BARANG" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="barang_nama" name="NAMA_BARANG" maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_satuan" name="SATUAN" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="barang_satuan" name="SATUAN" maxlength="6" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="kode_barang" class="col-sm-3 col-form-label">STOK</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_qty" name="QTY" maxlength="6" >
+                            <input type="text" class="form-control" id="barang_qty" name="QTY"  >
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Simpan</button>
+                <button type="button" class="btn btn-primary" id="saveButton">Simpan</button>
             </div>
         </div>
     </div>
@@ -303,26 +165,21 @@
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-    <script src="{{ asset('/js/dateFormat.js') }}"></script>
+    <script src="{{ asset('/js/format.js') }}"></script>
     <script>
 
         let idEdit = '';
         let arrBarang = [];
 
-
         function clearModal() {
             $('#tanggal').val("");
             $('#bukti').val("");
-            $('#gudang_asal').val("");
+            $('#gudang').val("");
             $('#gudang_tujuan').val("");
-            $('#detailBarang').empty();
-        }
-        function clearDetail() {
-            $('#detailjumlah').val("");
-            $('#detailperiode').val("");
-            $('#detailbukti').val("");
-            $('#detailtanggal').val("");
-            $('#detailtrnjadi').empty();
+            $('#gudang').prop('disabled', false);
+            $('#gudang_tujuan').prop('disabled', false);
+            $('#listBarang').empty();
+            $('#keterangan').val('');
         }
 
         function clearModalBarang() {
@@ -331,8 +188,47 @@
             $('#barang_satuan').val('');
             $('#barang_qty').val('');
             $('#barang_id_satuan').val('');
-         }
+            $('#barang_id_barang').prop('disabled', false);
+            $('#barang_saldo').val('');
+            $('#stok_lama').val('');
+        }
+
+        function getData(kode, tanggal, gudang) {
+            $.ajax({
+                url: "{{ route('getDetailBarang') }}", // Replace with the URL that handles the AJAX request
+                type: 'GET',
+                data: {
+                    'id_barang' : kode
+                },
+                success: function(data) {
+                    console.log(data);
+                    $('#barang_id_satuan').val(data.ID_SATUAN);
+                    $('#barang_nama').val(data.NAMA);
+                    $('#barang_satuan').val(data.nama_satuan);
+
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('getSaldoBarang') }}",
+                        data: {
+                            'tanggal' : tanggal,
+                            'barang_id' : kode,
+                            'gudang' : gudang
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            $('#barang_saldo').val(parseFloat(data).toFixed(0));
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    // Handle the error if necessary
+                }
+            });
+        }
+
         function simpanData(){
+            arrBarang = [];
 
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
@@ -346,9 +242,9 @@
 
             var _token = $('meta[name="csrf-token"]').attr('content');
 
-            var tanggal = $('#tanggal').val();
-
-            if (tanggal != ''){
+            if(arrBarang.length === 0){
+                toastr.error('Daftar barang tidak boleh kosong');
+            } else {
                 $.ajax({
                     url: "{{ route('postTransferGudang') }}",
                     method: 'POST',
@@ -374,23 +270,67 @@
                         }
                     }
                 })
-            } else {
-                toastr.error('Tanggal harus diisi');
             }
         }
 
+
+        function fetchData(bukti,periode){
+            $.ajax({
+                type: "GET",
+                url: "{{ url('transaksi/transfergudang/getData') }}/"+bukti+"/"+periode,
+                success: function (data) {
+                    console.log(data);
+                    $('#tanggal').val(dateFormat(data.TANGGAL));
+                    $('#bukti').val(data.BUKTI);
+                    $('#gudang').val(data.ID_GUDANG);
+                    $('#gudang_tujuan').val(data.ID_GUDANG_TUJUAN);
+                    $('#keterangan').val(data.KETERANGAN);
+                }
+            });
+        }
+
+        function fetchDetail(bukti,periode){
+            $.ajax({
+                url: "{{ url('transaksi/transfergudang/getDetail') }}/"+bukti+"/"+periode,
+                method: "GET",
+                success: function (data) {
+                    $('#listBarang').empty();
+                    let createTable = "";
+                    let i = 0
+                        while(i < data.length){
+                            let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
+                            // console.log(data[i]);
+                            createTable +=
+                                `<tr id="${data[i].ID_BARANG}">
+                                    <td>${data[i].ID_BARANG}</td>
+                                    <td>${data[i].nama_barang}</td>
+                                    <td>${data[i].nama_satuan}</td>
+                                    <td>${qty}</td>
+                                    <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
+                                        data-kode="${data[i].ID_BARANG}"
+                                        data-nama="${data[i].nama_barang}"
+                                        data-satuan="${data[i].nama_satuan}"
+                                        data-qty="${qty}"
+                                        ><i class="fas fa-pencil-alt"></i></button></td>
+                                </tr>`;
+                            i++;
+
+                        }
+                    $('#listBarang').append(createTable);
+                    $('#simpanButton').show();
+                }
+            });
+        }
         function addTableBarang(){
             var kode = $('#barang_id_barang').val();
             var nama = $('#barang_nama').val();
             var satuan = $('#barang_satuan').val();
             var qty = $('#barang_qty').val();
-            var idsatuan = $('#barang_id_satuan').val();
 
             console.log(kode);
             console.log(nama);
             console.log(satuan);
             console.log(qty);
-            console.log(idsatuan);
             let createTable = "";
 
             createTable +=
@@ -399,78 +339,51 @@
                     <td>${nama}</td>
                     <td>${satuan}</td>
                     <td>${qty}</td>
-                    <td class="hide">${idsatuan}</td>
-                    <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
+                    <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal" data-mode="editAdd"
                         data-kode="${kode}"
                         data-nama="${nama}"
                         data-satuan="${satuan}"
                         data-qty="${qty}"
-                        data-idsatuan="${idsatuan}"
+                        data-stok="${qty}"
                         ><i class="fas fa-pencil-alt"></i></button></td>
                 </tr>`
             $('#listBarang').append(createTable);
-            $('#addBarangModal').hide();
+            $('#dataModal').hide();
+            $('.modal-backdrop').remove();
+            clearModalBarang();
+            $("#tanggal").datepicker('destroy');
+            $('#gudang_tujuan').prop('disabled', true);
+            $('#gudang').prop('disabled', true);
+
+        }
+        function editTableBarang(){
+            var kode = $('#barang_id_barang').val();
+            var nama = $('#barang_nama').val();
+            var satuan = $('#barang_satuan').val();
+            var qty = $('#barang_qty').val();
+
+            var $existingRow = $('#' + kode);
+            $existingRow.find('td:eq(1)').text(nama);
+            $existingRow.find('td:eq(2)').text(satuan);
+            $existingRow.find('td:eq(3)').text(qty);
+
+            // Update the data attributes of the edit button
+            var $editButton = $existingRow.find('.edit-button');
+            $editButton.data('kode', kode);
+            $editButton.data('qty', qty);
+            var mode = $('#editMode').val();
+            if (mode === 'editAdd') {
+                $editButton.data('stok', 0); // Jika mode editAdd, set stok ke 0
+            } else {
+                $editButton.data('stok', qty); // Jika bukan mode editAdd, set stok ke qty
+            }
+
+            $('#dataModal').hide();
             $('.modal-backdrop').remove();
             clearModalBarang();
         }
-        function editTableBarang(){
-            var kode = $('#kode_barang').val();
-            var nama = $('#nama_barang').val();
-            var satuan = $('#satuan').val();
-            var qty = parseFloat($('#qtykirim').val()); // Parse as float
-            var idsatuan = $('#id_satuan').val();
-
-                $('#'+idEdit).empty();
-            let createRow ='';
-            createRow +=
-                `<tr id="${kode}">
-                    <td>${kode}</td>
-                    <td>${nama}</td>
-                    <td>${satuan}</td>
-                    <td>${qty}</td>
-                    <td class="hide">${idsatuan}</td>
-                    <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
-                        data-kode="${kode}"
-                        data-nama="${nama}"
-                        data-satuan="${satuan}"
-                        data-qty="${qty}"
-                        data-idsatuan="${idsatuan}"
-                        ><i class="fas fa-pencil-alt"></i></button></td>
-                </tr>`
-            $('#listBarang').append(createRow);
-
-            $('#editDataModal').hide();
-            $('.modal-backdrop').remove();
-
-        }
-        function editDetailTableBarang(){
-            var kode = $('#detail_kode_barang').val();
-            var nama = $('#detail_nama_barang').val();
-            var satuan = $('#detail_satuan').val();
-            var qty = parseFloat($('#detail_qty').val()); // Parse as float
-
-                $('#'+idEdit).empty();
-            let createRow ='';
-            createRow +=
-            `
-                <td>${kode}</td>
-                <td>${nama}</td>
-                <td>${satuan}</td>
-                <td>${qty}</td>
-                <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
-                    data-kode="${kode}"
-                    data-nama="${nama}"
-                    data-satuan="${satuan}"
-                    data-qty="${qty}"
-                    ><i class="fas fa-pencil-alt"></i></button></td>
-            `;
-
-            $('#'+idEdit).append(createRow);
-
-            $('#editDetailModal').hide();
-            $('.modal-backdrop').remove();
-        }
         function simpanDataTrnJadi(){
+            arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(3)').text();
@@ -487,16 +400,16 @@
                 data : {
                     _token: _token,
                     data : arrBarang,
-                    bukti : $('#detailbukti').val(),
-                    periode : $('#detailperiode').val(),
+                    bukti : $('#bukti').val(),
+                    periode : getPeriode($('#tanggal').val()),
                 },
 
                 success: function(response){
                     if (response.success) {
                         $('.modal-backdrop').remove();
-                        $('#detailModal').modal('hide');
+                        $('#addDataModal').modal('hide');
                         toastr.success(response.message);
-                        clearDetail();
+                        clearModal();
                     } else {
                         toastr.error(response.message);
                     }
@@ -504,126 +417,176 @@
             })
         }
 
+
+
         $(document).ready(function () {
         // Function to fetch data based on user input
 
-            $('#barang_id_barang').change(function(){
-                // Get the selected value of the select element
-                var selectedBarangId = $(this).val();
+            var editModeValue;
+            $('#addDataModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var mode = button.data('mode');
+                var modal = $(this);
 
-                // Send an AJAX request to retrieve the corresponding satuan based on the selected ID_BARANG
-                $.ajax({
-                    url: '{{ route("getDetailSatuan") }}', // Replace with the URL that handles the AJAX request
-                    type: 'GET',
-                    data: {
-                        'barang_id': selectedBarangId
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        console.log(response.id_satuan);
-                        console.log(response.satuan);
-                        console.log(response.nama);
-                        // Update the value of the 'satuan' input field with the retrieved value
-                        $('#barang_id_satuan').val(response.id_satuan);
-                        $('#barang_nama').val(response.nama);
-                        $('#barang_satuan').val(response.satuan);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                        // Handle the error if necessary
+                if (mode === 'viewDetail') {
+                    modal.find('.modal-title').text('View Detail');
+                    $("#tanggal").datepicker('destroy');
+                    $('#gudang').prop('disabled', true);
+                    $('#gudang_tujuan').prop('disabled', true);
+                    $('#tambahDataButton').hide();
+                    $('#datepicker').off('click');
+                    var bukti = button.data('bukti');
+                    var periode = button.data('periode');
+                    console.log(bukti);
+                    fetchData(bukti,periode);
+                    fetchDetail(bukti,periode);
+                    $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
+                } else {
+                    $('#tambahDataButton').show();
+                    modal.find('.modal-title').text('Add Data');
+                    $('#tanggal').datepicker({
+                        format: 'dd-mm-yyyy', // Set your desired date format
+                        minDate: 0,
+                        defaultDate: 'now', // Set default date to 'now'
+                        autoclose: true // Close the datepicker when a date is selected
+                    });
+                    $('#datepicker').on('click', function() {
+                        $('#tanggal').datepicker('show');
+                    });
+                    $('#saveBtn').attr('onclick', 'simpanData()');
+                }
+            });
+
+            $('#dataModal').on('hide.bs.modal', function(event) {
+                clearModalBarang();
+            });
+
+            $('#dataModal').on('show.bs.modal', function(event) {
+                var tanggal = $('#tanggal').val();
+                var gudang = $('#gudang').val();
+                var gudang_tujuan = $('#gudang_tujuan').val();
+                var kode;
+                var button = $(event.relatedTarget); // Tombol yang memicu modal
+                var mode = button.data('mode');
+
+                if (!tanggal){
+                    // e.preventDefault();
+                    $('#tanggal').addClass('is-invalid')
+                    toastr.error('Tanggal harus diisi');
+                    return false;
+                } else if(!gudang){
+                    $('#gudang').addClass('is-invalid')
+                    toastr.error('Gudang harus diisi');
+                    return false;
+                } else if(!gudang_tujuan){
+                    $('#gudang_tujuan').addClass('is-invalid')
+                    toastr.error('Gudang Tujuan harus diisi');
+                    return false;
+                } else if(gudang == gudang_tujuan){
+                    $('#gudang').addClass('is-invalid')
+                    $('#gudang_tujuan').addClass('is-invalid')
+                    toastr.error('Gudang Tujuan harus berbeda dari Gudang Asal');
+                    return false;
+                } else {
+                    var modal = $(this);
+                    if (mode === 'add') {
+                        modal.find('.modal-title').text('Tambah Data');
+                        $('#barang_id_barang').change(function(){
+                            kode = $(this).val();
+                            console.log(kode);
+                            $('#stok_lama').val(0);
+                            editModeValue = "add";
+                            getData(kode, tanggal, gudang);
+                        });
+                        $('#editMode').val('add');
+                    } else {
+                        modal.find('.modal-title').text('Edit Data');
+                        kode = button.data('kode');
+                        console.log(tanggal);
+                        console.log(gudang);
+                        console.log(kode);
+                        var qty = button.data('qty');
+                        $('#barang_id_barang').val(kode);
+                        $('#barang_id_barang').prop('disabled', true);
+                        getData(kode, tanggal, gudang);
+
+                        if (mode === 'editAdd') {
+                            $('#stok_lama').val(0);
+                            editModeValue = 'editAdd';
+                        } else if (mode === 'edit') {
+                            $('#stok_lama').val(qty);
+                            editModeValue = 'edit';
+                        }
+                        $('#editMode').val(editModeValue);
+                        $('#barang_qty').val(qty);
                     }
+                }
+            });
+
+            $('#barang_qty').on('input', function() {
+                var qty = parseFloat($(this).val());
+                var saldo = parseFloat($('#barang_saldo').val());
+                var stok = parseFloat($('#stok_lama').val());
+
+                // Pastikan qty dan harga merupakan angka yang valid
+                if (!isNaN(qty)) {
+                    if (qty > stok) {
+                        console.log("qty" + qty);
+                        console.log("stok" + stok);
+                        console.log("saldo" + saldo);
+                        if (qty - stok > saldo) {
+                            // Munculkan Toast
+                            toastr.error('Barang tidak boleh melebihi stok');
+                            return; // Hentikan eksekusi
+                        } else {
+                            if (editModeValue === 'editAdd' || editModeValue === "add") {
+                                $('#saveButton').attr('onclick', 'addTableBarang()');
+                            } else {
+                                $('#saveButton').attr('onclick', 'editTableBarang()');
+                            }
+                        }
+                    }
+                }
+            });
+
+
+            $(document).on('click', '#tanggal', function(){
+                $('#tanggal').removeClass('is-invalid');
+            });
+
+            $(document).on('click', '#gudang', function(){
+                $('#gudang').removeClass('is-invalid');
+            });
+
+            $(document).on('click', '#gudang_tujuan', function(){
+                $('#gudang_tujuan').removeClass('is-invalid');
+            });
+
+            $(document).on('click', '.delete-button', function () {
+                var bukti = $(this).data('bukti');
+                var periode = $(this).data('periode');
+                console.log("kode " + bukti);
+
+                $('#confirmDeleteButton').on('click', function () {
+                    $.ajax({
+                        method: 'DELETE',
+                        url: "{{ url('transaksi/transfergudang/delete') }}/" + bukti+"/"+periode,
+                        data: {
+                            '_token': '{{ csrf_token() }}',
+                        },
+                        success: function (response) {
+                            $('#deleteDataModal').modal('hide'); // Correct the selector here
+                            $('.modal-backdrop').remove();
+                            toastr.success(response.message);
+                            table.draw();
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle errors, for example, display error messages
+                            console.error(response.message);
+                        }
+                    });
                 });
             });
-
-            $('.datepicker').datepicker({
-                format: 'dd-mm-yyyy', // Set your desired date format
-                minDate: 0,
-                defaultDate: 'now', // Set default date to 'now'
-                autoclose: true // Close the datepicker when a date is selected
-            });
-
-            $('#datepicker').on('click', function() {
-                // Function to execute when the calendar icon is clicked
-                // For example, you can open the datepicker
-                $('#tanggal').datepicker('show');
-            });
-
-            $('#editDataModal').on('click', '.btn-primary', function() {
-                event.preventDefault();
-                // Call the editTableBarang function to handle the editing process
-                editTableBarang();
-            });
-            $('#editDetailModal').on('click', '.btn-primary', function () {
-                event.preventDefault();
-                editDetailTableBarang();
-            })
-            $(document).on('click', '.view-detail', function (e) {
-                e.preventDefault();
-                var bukti = $(this).data('bukti');
-                var tanggal = dateFormat($(this).data('tanggal'));
-                var periode = $(this).data('periode');
-
-                $('#detailbukti').val(bukti);
-                $('#detailtanggal').val(tanggal);
-                $('#detailperiode').val(periode);
-
-                console.log($('#detailjumlah').val());
-                fetchDetail(bukti,periode);
-            });
-            $(document).on('click', '.edit-button', function () {
-                var kode = $(this).data('kode');
-                console.log(kode);
-                var nama = $(this).data('nama');
-                var satuan = $(this).data('satuan');
-                var qty = $(this).data('qty');
-                var idsatuan = $(this).data('idsatuan')
-                // Isi nilai input field sesuai dengan data yang akan diedit
-                $('#kode_barang').val(kode); // Tambahkan atribut readonly
-                $('#nama_barang').val(nama); // Tambahkan atribut readonly
-                $('#satuan').val(satuan);
-                $('#qtyorder').val(qty);
-                $('#qtykirim').val(qty);
-                $('#id_satuan').val(idsatuan);
-                idEdit = kode;
-            });
-            $(document).on('click', '.edit-detail-button', function () {
-                var kode = $(this).data('kode');
-                console.log(kode);
-                var nama = $(this).data('nama');
-                var satuan = $(this).data('satuan');
-                var qty = $(this).data('qty');
-                // Isi nilai input field sesuai dengan data yang akan diedit
-                $('#detail_kode_barang').val(kode); // Tambahkan atribut readonly
-                $('#detail_nama_barang').val(nama); // Tambahkan atribut readonly
-                $('#detail_satuan').val(satuan);
-                $('#detail_qty').val(qty);
-                idEdit = kode;
-            });
-            // $(document).on('click', '.delete-button', function () {
-            //     var bukti = $(this).data('bukti');
-            //     var periode = $(this).data('periode');
-            //     console.log("kode " + bukti);
-
-            //     $('#confirmDeleteButton').on('click', function () {
-            //         $.ajax({
-            //             method: 'DELETE',
-            //             url: "{{ url('transaksi/gudang/delete') }}/" + bukti+"/"+periode,
-            //             data: {
-            //                 '_token': '{{ csrf_token() }}',
-            //             },
-            //             success: function (response) {
-            //                 $('#deleteDataModal').modal('hide'); // Correct the selector here
-            //                 $('.modal-backdrop').remove();
-            //                 toastr.success(response.message);
-            //                 table.draw();
-            //             },
-            //             error: function (xhr, status, error) {
-            //                 // Handle errors, for example, display error messages
-            //                 console.error(response.message);
-            //             }
-            //         });
-            //     });
-            // });
         });
     </script>
 @endpush

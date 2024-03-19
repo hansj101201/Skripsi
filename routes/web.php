@@ -14,6 +14,9 @@ use App\Http\Controllers\supplierController;
 use App\Http\Controllers\customerController;
 use App\Http\Controllers\penerimaanPOController;
 use App\Http\Controllers\pengeluaranBarangKanvasController;
+use App\Http\Controllers\penjualanController;
+use App\Http\Controllers\penyesuaianController;
+use App\Http\Controllers\stkjadiController;
 use App\Http\Controllers\transferGudangController;
 
 /*
@@ -32,6 +35,7 @@ use App\Http\Controllers\transferGudangController;
 Route::controller(Layout::class)->middleware(['Login'])->group(function (){
     Route::get('dashboard', 'index')->name('dashboard');
     Route::get('/','index');
+    Route::get('getRole', 'getRole')->name('getRole');
 });
 
 Route::prefix('setup')->middleware(['Login'])->group(function () {
@@ -41,7 +45,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::post('store','store')->name('barang.store');
             Route::put('update','update')->name('barang.update');
             Route::delete('/{ID}','destroy');
-            Route::get('getDetail/{ID}', 'getDetail');
+            Route::get('getDetailBarang', 'getDetailBarang')->name('getDetailBarang');
             Route::get('datatable', 'datatable')->name('barang.datatable');
         });
     });
@@ -79,17 +83,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('driver')->group(function () {
-        Route::controller(driverController::class)->group(function (){
-            Route::get('index','index')->name('driver.index');
-            Route::post('store','store')->name('driver.store');
-            Route::put('update','update')->name('driver.update');
-            Route::delete('/{ID}','destroy');
-            Route::get('datatable','datatable')->name('driver.datatable');
-            Route::get('getDetail/{ID}','getDetail');
-        });
-    });
-
     Route::prefix('harga')->group(function () {
         Route::controller(hargaController::class)->group(function (){
             Route::get('index','index')->name('harga.index');
@@ -98,6 +91,9 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::delete('/{ID}','destroy');
             Route::get('datatable','datatable')->name('harga.datatable');
             Route::get('getDetail/{iD}','getDetail');
+
+
+            Route::get('getHargaBarang', 'getHargaBarang')->name('getHargaBarang');
         });
     });
 
@@ -148,6 +144,9 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
 });
 
 Route::prefix('transaksi')->middleware(['Login'])->group(function () {
+    Route::controller(stkjadiController::class)->group(function () {
+        Route::get('getSaldoBarang', 'getSaldoBarang')->name('getSaldoBarang');
+    });
     Route::prefix('gudang')->group(function (){
         Route::controller(penerimaanPOController::class)->group(function () {
             Route::get('index', 'index')->name('gudang.terimaPO');
@@ -171,10 +170,10 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('datatable', 'datatable')->name('pengeluaran.datatable');
             Route::get('fetch-data/{id}', 'fetchData')->where('id', '.*');
             Route::get('fetch-detail/{id}/{periode}', 'fetchDetail');
-
             Route::post('postTrnCanvas', 'postTrnCanvas')->name('postTrnCanvas');
             Route::get('getDetail/{bukti}/{periode}','getDetail');
             Route::put('postDetailTrnCanvas','postDetailTrnCanvas')->name('postDetailTrnCanvas');
+            Route::delete('delete/{bukti}/{periode}','destroy');
         });
     });
 
@@ -183,10 +182,27 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('index', 'index');
             Route::get('datatable', 'datatable')->name('transfer.datatable');
             Route::get('getDetail/{bukti}/{periode}','getDetail');
+            Route::get('getData/{bukti}/{periode}','getData');
             Route::post('postTransferGudang', 'postTransferGudang')->name('postTransferGudang');
             Route::put('postDetailTransferGudang', 'postDetailTransferGudang')->name('postDetailTransferGudang');
+            Route::delete('delete/{bukti}/{periode}','destroy');
+        });
+    });
 
-            Route::get('getSatuan', 'getSatuan')->name('getDetailSatuan');
+    Route::prefix('penjualan')->middleware(['Login'])->group(function(){
+        Route::controller(penjualanController::class)->group(function () {
+            Route::get('index', 'index');
+            Route::get('datatable', 'datatable')->name('penjualan.datatable');
+            Route::post('postPenjualan', 'postPenjualan')->name('postPenjualan');
+            Route::get('getData/{bukti}/{periode}','getData');
+            Route::get('getDetail/{bukti}/{periode}','getDetail');
+            Route::put('postDetailPenjualan', 'postDetailPenjualan')->name('postDetailPenjualan');
+        });
+    });
+
+    Route::prefix('penyesuaian')->middleware(['Login'])->group(function(){
+        Route::controller(penyesuaianController::class)->group(function () {
+            Route::get('index', 'index');
         });
     });
 });

@@ -22,16 +22,20 @@ class hargaController extends Controller
 
     public function datatable(Request $request){
         $harga = harga::join('barang','harga.ID_BARANG','barang.ID_BARANG')
-        ->join('satuan','harga.ID_SATUAN','satuan.ID_SATUAN')
+        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
+        ->distinct()
         ->orderBy('MULAI_BERLAKU','desc')
         ->select('harga.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan');
 
         return DataTables::of($harga)
-        ->editColumn("ID_SATUAN", function ($row) {
-            return $row->nama_satuan;
-        })
         ->addColumn('BARANG_NAMA', function ($row) {
             return $row->nama_barang;
+        })
+        ->addColumn("SATUAN_NAMA", function ($row) {
+            return $row->nama_satuan;
+        })
+        ->orderColumn("SATUAN_NAMA",function($query, $order){
+            $query->orderBy('ID_BARANG', $order);
         })
         ->orderColumn("BARANG_NAMA",function($query, $order){
             $query->orderBy('ID_BARANG', $order);
@@ -46,10 +50,21 @@ class hargaController extends Controller
     public function getDetail($id){
         $harga = harga::where('harga.ID',$id)
         ->join('barang','harga.ID_BARANG','barang.ID_BARANG')
-        ->join('satuan','harga.ID_SATUAN','satuan.ID_SATUAN')
+        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
         ->select('harga.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
         ->get();
         return response()->json($harga);
+    }
+
+    public function getHargaBarang(Request $request){
+        $Tanggal = DateTime::createFromFormat('d-m-Y', $request->input('tanggal'));
+        $harga = harga::where('ID_BARANG', $request->input('barang_id'))
+            ->where('MULAI_BERLAKU','<=',$Tanggal)
+            ->orderBy('MULAI_BERLAKU','desc')
+            ->select('HARGA')
+            ->first();
+        $hargaValue = $harga ? $harga->HARGA : 0;
+        return response()->json($hargaValue);
     }
     public function store(Request $request)
     {
@@ -58,7 +73,6 @@ class hargaController extends Controller
         $validatedData = $request->validate([
             'MULAI_BERLAKU' => 'required', // Add your validation rules here
             'ID_BARANG.*' => 'required', // Validate each ID_BARANG field in the array
-            'ID_SATUAN.*' => 'required', // Validate each SATUAN field in the array
             'HARGA.*' => 'required', // Validate each HARGA field in the array
         ]);
 
@@ -81,7 +95,6 @@ class hargaController extends Controller
             $harga = new harga();
             $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
             $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
-            $harga->ID_SATUAN = $validatedData['ID_SATUAN'][$key];
             $harga->HARGA = $validatedData['HARGA'][$key];
             $harga->TGLENTRY = $currentDateTime;
             $harga->save();

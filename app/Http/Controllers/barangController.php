@@ -35,9 +35,11 @@ class barangController extends Controller
         ->rawColumns(["action"])
         ->make(true);
     }
-
-    public function getDetail($id) {
-        $barang = barang::where("ID_BARANG",$id)->get();
+    public function getDetailBarang(Request $request) {
+        $barang = Barang::where('ID_BARANG',$request->input('id_barang'))
+        ->join('satuan','satuan.ID_SATUAN','barang.ID_SATUAN')
+        ->select('barang.*','satuan.NAMA AS nama_satuan')
+        ->first();
         return response()->json($barang);
     }
 
@@ -113,5 +115,13 @@ class barangController extends Controller
             $brgjadi->delete();
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
         }
+    }
+
+
+    public function getAllBarang(){
+        $barang = barang::join('satuan', 'barang.ID_SATUAN', 'satuan.ID_SATUAN')
+        ->select('barang.*', 'satuan.NAMA AS nama_satuan')
+        ->get();
+        return response()->json($barang);
     }
 }

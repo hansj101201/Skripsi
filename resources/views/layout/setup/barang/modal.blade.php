@@ -96,12 +96,15 @@
                     var kode = button.data('kode');
                     $.ajax({
                         type: "GET",
-                        url: "{{ url('setup/barang/getDetail') }}/"+kode,
+                        url: "{{ route('getDetailBarang') }}",
+                        data : {
+                            'id_barang' : kode,
+                        },
                         success: function (data) {
                             console.log(data);
-                            var nama = data[0].NAMA;
-                            var satuan = data[0].ID_SATUAN;
-                            var aktif = data[0].ACTIVE;
+                            var nama = data.NAMA;
+                            var satuan = data.ID_SATUAN;
+                            var aktif = data.ACTIVE;
                             console.log(nama);
                             console.log(satuan);
                             // Isi nilai input field sesuai dengan data yang akan diedit

@@ -163,6 +163,7 @@
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('js/format.js') }}"></script>
     <script>
         $(document).ready(function() {
             $('.datepicker').datepicker({
@@ -248,7 +249,7 @@
                     success: function (data) {
                         console.log(data);
                         $('#id').val(kode);
-                        $('#edit_mulai').val(data[0].MULAI_BERLAKU);
+                        $('#edit_mulai').val(dateFormat(data[0].MULAI_BERLAKU));
                         $('#edit_kode').val(data[0].ID_BARANG); // Tambahkan atribut readonly
                         $('#edit_satuan').val(data[0].nama_barang); // Tambahkan atribut readonly
                         $('#edit_nama').val(data[0].nama_satuan);

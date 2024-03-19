@@ -18,7 +18,7 @@ class transferGudangController extends Controller
     //
     public function index(){
         $barang = barang::all();
-        $gudang = gudang::all();
+        $gudang = gudang::where('ID_DEPO',getIdDepo())->get();
         return view("layout.transaksi.transferGudang.index", compact('gudang','barang'));
     }
 
@@ -39,7 +39,7 @@ class transferGudangController extends Controller
         })
         ->addColumn('action', function ($row) {
             // Initialize the action buttons HTML
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpermintaan="'.$row->NOPERMINTAAN.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button>';
+            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-eye"></span></button>';
             // Check if $row->jumlah is zero
             if ($row->JUMLAH == 0) {
                 // If $row->jumlah is zero, add the delete button
@@ -52,12 +52,21 @@ class transferGudangController extends Controller
         ->make(true);
     }
 
+    public function getData($bukti,$periode){
+        $trnsales = trnsales::where('KDTRN','15')
+        ->where('PERIODE',$periode)
+        ->where('BUKTI',$bukti)
+        ->first();
+
+        return response()->json($trnsales);
+    }
+
     public function getDetail($bukti,$periode){
         $data = trnjadi::where('KDTRN','15')
         ->where('PERIODE', $periode)
         ->where('BUKTI',$bukti)
         ->join('barang','trnjadi.ID_BARANG','barang.ID_BARANG')
-        ->join('satuan','trnjadi.ID_SATUAN','satuan.ID_SATUAN')
+        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
         ->select('trnjadi.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
         ->orderBy('NOMOR','asc')
         ->get();
@@ -152,12 +161,11 @@ class transferGudangController extends Controller
                     'ID_GUDANG' => $request->gudang_asal,
                     'PERIODE' => $request->periode,
                     'ID_BARANG' => $item[0],
-                    'ID_SATUAN'=> $item[2],
                     'QTY' => $item[1],
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor++, // Increment nomor for each item
+                    'NOMOR' => $nomor, // Increment nomor for each item
                 ]);
 
                 trnjadi::create([
@@ -167,13 +175,13 @@ class transferGudangController extends Controller
                     'ID_GUDANG' => $request->gudang_tujuan,
                     'PERIODE' => $request->periode,
                     'ID_BARANG' => $item[0],
-                    'ID_SATUAN'=> $item[2],
                     'QTY' => $item[1],
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor++, // Increment nomor for each item
+                    'NOMOR' => $nomor, // Increment nomor for each item
                 ]);
+                $nomor++;
             }
 
             // Commit the transaction if all operations succeed
@@ -197,7 +205,7 @@ class transferGudangController extends Controller
             $data = $request->data;
             // dd($data);
             foreach ($data as $item) {
-                trnjadi::where('KDTRN', '15')
+                $trnjadi = trnjadi::where('KDTRN', '15')
                 ->where('BUKTI', $request->bukti)
                 ->where('PERIODE', $request->periode)
                 ->where('ID_BARANG', $item[0])
@@ -224,22 +232,41 @@ class transferGudangController extends Controller
         }
     }
 
-    public function getSatuan(Request $request){
-        $barangId = $request->input('barang_id');
+    public function destroy($bukti, $periode){
+        DB::beginTransaction();
+        try {
+            // Delete records from trnsales table
+            trnsales::where("KDTRN", "05")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
 
-    // Assuming you have a model named Barang, you can retrieve the corresponding satuan
-        $barang = Barang::where('ID_BARANG',$barangId)
-        ->join('satuan','satuan.ID_SATUAN','barang.ID_SATUAN')
-        ->select('barang.NAMA','satuan.NAMA AS nama_satuan','barang.ID_SATUAN')
-        ->first();
+            // Delete records from trnjadi table
+            trnjadi::where("KDTRN", "05")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
 
-        // Check if barang exists
-        if ($barang) {
-            // If barang exists, return the satuan
-            return response()->json(['satuan' => $barang->nama_satuan,'nama'=> $barang->NAMA,'id_satuan'=>$barang->ID_SATUAN]);
-        } else {
-            // If barang does not exist, return an error response
-            return response()->json(['error' => 'Barang not found'], 404);
+            trnsales::where("KDTRN", "15")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
+
+            // Delete records from trnjadi table
+            trnjadi::where("KDTRN", "15")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
+
+
+            DB::commit();
+
+            // Send a success response after deletion
+            return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
+        } catch (\Exception $e) {
+            // If an error occurs, rollback the transaction and send an error response
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
         }
     }
 }

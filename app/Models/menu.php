@@ -11,7 +11,7 @@ class menu extends Model
 
 
     protected $table        = "menu";
-    protected $primaryKey   = "menu_id";
+    protected $primaryKey   = "MENU_ID";
     public $incrementing    = true;
     public $timestamps      = true;
 
@@ -22,4 +22,9 @@ class menu extends Model
         'MENU_URUTAN',
         'MENU_ICON',
     ];
+
+    public function Roles()
+    {
+        return $this->belongsToMany(role::class, 'role_menu', 'MENU_ID', 'ROLE_ID');
+    }
 }
