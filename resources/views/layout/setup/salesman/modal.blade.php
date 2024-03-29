@@ -37,6 +37,16 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="gudang"class="col-sm-3 col-form-label">Gudang</label>
+                        <div class="col-sm-9"> <!-- Use the same grid class 'col-sm-9' for consistency -->
+                            <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
+                                @foreach($gudang as $Gudang)
+                                    <option value="{{ $Gudang->ID_GUDANG }}">{{ $Gudang->NAMA }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="depo"class="col-sm-3 col-form-label">Depo</label>
                         <div class="col-sm-9"> <!-- Use the same grid class 'col-sm-9' for consistency -->
                             <select class="form-control" id="depo" name="ID_DEPO"> <!-- Remove 'col-sm-9' class here -->

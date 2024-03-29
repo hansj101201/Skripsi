@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\gudang;
 use App\Models\salesman;
 use App\Models\depo;
 use Illuminate\Http\Request;
@@ -12,8 +13,14 @@ class salesmanController extends Controller
 {
     public function index () {
 
+        $gudang = gudang::whereNotIn('id_gudang', function($query) {
+                $query->select('id_gudang')
+                    ->from('salesman');
+            })
+            ->select('gudang.*')
+            ->get();
         $depo = depo::all();
-        return view('layout.setup.salesman.index', compact('depo'));
+        return view('layout.setup.salesman.index', compact('depo','gudang'));
     }
 
     public function datatable(){

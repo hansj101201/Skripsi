@@ -1,4 +1,4 @@
-<div class="modal fade" id="addDataModal" tabindex="-1" role="dialog" aria-labelledby="addDataModalLabel" aria-hidden="true">
+<div class="modal fade" id="addDataModal" role="dialog" aria-labelledby="addDataModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -32,14 +32,20 @@
                         <label for="nomor_po" class="col-form-label"> No Permintaan</label>
                     </div>
                     <div class="col-sm-6"> <!-- Combine both input and button in the same column -->
-                        <div class="input-group"> <!-- Use input-group for better alignment -->
+                        {{-- <div class="input-group"> <!-- Use input-group for better alignment -->
                             <input type="text" id="nomorpermintaan" class="form-control" placeholder="Enter ID">
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary" id="fetchDataBtn">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
-                        </div>
+                        </div> --}}
+                        <select class="form-control" id="nomorpermintaan" name="NOMORPERMINTAAN"> <!-- Remove 'col-sm-9' class here -->
+                            @foreach($trnsales as $a)
+                                <option value="">Pilih</option>
+                                <option value="{{ $a->NOPERMINTAAN }}" readonly>{{ $a->NOPERMINTAAN }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -57,6 +63,7 @@
                     <div class="col-sm-6">
                         <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
                             @foreach($gudang as $Gudang)
+                                <option value="">Pilih</option>
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
                         </select>
@@ -259,11 +266,14 @@
             display: none;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
 @endpush
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
 
         let idEdit = '';
@@ -272,9 +282,9 @@
 
         function clearModal() {
             $('#tanggal').val("");
-            $('#nomorpermintaan').val("");
+            $('#nomorpermintaan').val(null).trigger('change');
             $('#bukti').val("");
-            $('#gudang_asal').val("");
+            $('#gudang').val(null).trigger('change');
             $('#gudang_tujuan').val("");
             $('#detailBarang').empty();
         }
@@ -312,11 +322,8 @@
                         tanggal : $('#tanggal').val(),
                         gudang_asal : $('#gudang').val(),
                         gudang_tujuan : $('#gudang_tujuan').val(),
-                        // nomorpo : $('#nomorpo').val(),
                         periode : getPeriode($('#tanggal').val()),
                         salesman : $('#salesman').val(),
-                        // supplier : $('#supplier').val().split('-')[0].trim(),
-                        // nomorpo : $('#nomorpo').val(),
                         nopermintaan : $('#nomorpermintaan').val(),
                         keterangan : $('#keterangan').val(),
                     },
@@ -360,14 +367,12 @@
                 <td>${satuan}</td>
                 <td>${qtyorder}</td>
                 <td>${qty}</td>
-                <td class="hide">${idsatuan}</td>
                 <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                     data-kode="${kode}"
                     data-nama="${nama}"
                     data-satuan="${satuan}"
                     data-qtyorder="${qtyorder}"
                     data-qtykirim="${qtykirim}"
-                    data-idsatuan="${idsatuan}"
                     ><i class="fas fa-pencil-alt"></i></button></td>
             `;
 
@@ -410,7 +415,7 @@
                 method: 'GET',
                 success: function (data) {
                     console.log(data[0]);
-                    $('#gudang').val(data[0].ID_GUDANG);
+                    $('#gudang').val(data[0].ID_GUDANG).trigger('change');;
                     $('#gudang_tujuan').val(data[0].gudang_sales);
                     // $('#kode_barang').val(data[0].NOMORPO);
                     // $('#supplier').val(data[0].ID_SUPPLIER+' - '+data[0].supplier.NAMA);
@@ -486,8 +491,7 @@
 
                         <tbody>`;
                             while(i < data.length){
-                                let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
-                                // console.log(data[i]);
+                                let qty = parseFloat(data[i].QTY).toFixed(0);
                                 createTable +=
                                     `<tr id="${data[i].ID_BARANG}">
                                         <td>${data[i].ID_BARANG}</td>
@@ -550,6 +554,16 @@
 
         $(document).ready(function () {
         // Function to fetch data based on user input
+            var bukti;
+            var periode;
+            $('#gudang,#nomorpermintaan').select2({
+                placeholder: "---Pilih---",
+                width: 'resolve',
+                containerCss: {
+                    height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
+                },
+                allowClear: true
+            });
 
             $('.datepicker').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format
@@ -559,8 +573,6 @@
             });
 
             $('#datepicker').on('click', function() {
-                // Function to execute when the calendar icon is clicked
-                // For example, you can open the datepicker
                 $('#tanggal').datepicker('show');
             });
 
@@ -580,9 +592,6 @@
                 var bukti = $(this).data('bukti');
                 var tanggal = dateFormat($(this).data('tanggal'));
                 var periode = $(this).data('periode');
-
-                console.log("Nomor Permintaan"+nomorpermintaan);
-
 
                 $('#detailbukti').val(bukti);
                 $('#detailnomorpermintaan').val(nomorpermintaan);
@@ -619,38 +628,36 @@
                 $('#detail_qty').val(qty);
                 idEdit = kode;
             });
-            $('#fetchDataBtn').click(function () {
-                var id = $('#nomorpermintaan').val();
+            $('#nomorpermintaan').change(function () {
+                var id = $(this).val();
                 console.log(id);
                 if (id) {
                     fetchDataById(id);
-                } else {
-                    toastr.error("Input id");
                 }
             });
             $(document).on('click', '.delete-button', function () {
-                var bukti = $(this).data('bukti');
-                var periode = $(this).data('periode');
+                bukti = $(this).data('bukti');
+                periode = $(this).data('periode');
                 console.log("kode " + bukti);
+            });
 
-                $('#confirmDeleteButton').on('click', function () {
-                    $.ajax({
-                        method: 'DELETE',
-                        url: "{{ url('transaksi/pengeluaran/delete') }}/" + bukti+"/"+periode,
-                        data: {
-                            '_token': '{{ csrf_token() }}',
-                        },
-                        success: function (response) {
-                            $('#deleteDataModal').modal('hide'); // Correct the selector here
-                            $('.modal-backdrop').remove();
-                            toastr.success(response.message);
-                            table.draw();
-                        },
-                        error: function (xhr, status, error) {
-                            // Handle errors, for example, display error messages
-                            console.error(response.message);
-                        }
-                    });
+            $('#confirmDeleteButton').on('click', function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: "{{ url('transaksi/pengeluaran/delete') }}/" + bukti+"/"+periode,
+                    data: {
+                        '_token': '{{ csrf_token() }}',
+                    },
+                    success: function (response) {
+                        $('#deleteDataModal').modal('hide'); // Correct the selector here
+                        $('.modal-backdrop').remove();
+                        toastr.success(response.message);
+                        table.draw();
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors, for example, display error messages
+                        console.error(response.message);
+                    }
                 });
             });
         });

@@ -30,10 +30,11 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group col">
+                    <div class="form-group col" id="colgudang">
                         <label for="gudang">GUDANG:</label>
                         <select class="form-control" id="gudang" name="ID_GUDANG">
                             @foreach($gudang as $Gudang)
+                                <option value="">Pilih</option>
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
                         </select>
@@ -42,6 +43,7 @@
                         <label for="gudang_tujuan">GUDANG TUJUAN:</label>
                         <select class="form-control" id="gudang_tujuan" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
                             @foreach($gudang as $Gudang)
+                                <option value="">Pilih</option>
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
                         </select>
@@ -82,7 +84,7 @@
     </div>
 </div>
 
-<div class="modal" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
+<div class="modal" id="dataModal" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -100,6 +102,7 @@
                         <div class="col-sm-9">
                             <select class="form-control" id="barang_id_barang" name="ID_BARANG"> <!-- Remove 'col-sm-9' class here -->
                                 @foreach($barang as $Barang)
+                                    <option value="">Pilih</option>
                                     <option value="{{ $Barang->ID_BARANG }}" readonly>{{ $Barang->ID_BARANG }}</option>
                                 @endforeach
                             </select>
@@ -177,8 +180,8 @@
         function clearModal() {
             $('#tanggal').val("");
             $('#bukti').val("");
-            $('#gudang').val("");
-            $('#gudang_tujuan').val("");
+            $('#gudang').val(null).trigger('change');
+            $('#gudang_tujuan').val(null).trigger('change');
             $('#gudang').prop('disabled', false);
             $('#gudang_tujuan').prop('disabled', false);
             $('#listBarang').empty();
@@ -186,7 +189,7 @@
         }
 
         function clearModalBarang() {
-            $('#barang_id_barang').val('');
+            $('#barang_id_barang').val(null).trigger('change');
             $('#barang_nama').val('');
             $('#barang_satuan').val('');
             $('#barang_qty').val('');
@@ -282,8 +285,8 @@
                     console.log(data);
                     $('#tanggal').val(dateFormat(data.TANGGAL));
                     $('#bukti').val(data.BUKTI);
-                    $('#gudang').val(data.ID_GUDANG);
-                    $('#gudang_tujuan').val(data.ID_GUDANG_TUJUAN);
+                    $('#gudang').val(data.ID_GUDANG).trigger('change');
+                    $('#gudang_tujuan').val(data.ID_GUDANG_TUJUAN).trigger('change');
                     $('#keterangan').val(data.KETERANGAN);
                 }
             });
@@ -422,12 +425,16 @@
         $(document).ready(function () {
         // Function to fetch data based on user input
 
-        $('#gudang').select2({
-                            // theme: "classic",
-                            placeholder: "---Pilih---",
-                            width: 'resolve',
-                            allowClear: true
-        });
+            $('#gudang, #gudang_tujuan, #barang_id_barang').select2({
+                placeholder: "---Pilih---",
+                width: 'resolve',
+                containerCss: {
+                    height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
+                },
+                allowClear: true
+            });
+            var bukti;
+            var periode;
             var editModeValue;
             $('#addDataModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
@@ -512,7 +519,7 @@
                         console.log(gudang);
                         console.log(kode);
                         var qty = button.data('qty');
-                        $('#barang_id_barang').val(kode);
+                        $('#barang_id_barang').val(kode).trigger('change');
                         $('#barang_id_barang').prop('disabled', true);
                         getData(kode, tanggal, gudang);
 
@@ -545,7 +552,7 @@
                             toastr.error('Barang tidak boleh melebihi stok');
                             return; // Hentikan eksekusi
                         } else {
-                            if (editModeValue === 'editAdd' || editModeValue === "add") {
+                            if (editModeValue === "add") {
                                 $('#saveButton').attr('onclick', 'addTableBarang()');
                             } else {
                                 $('#saveButton').attr('onclick', 'editTableBarang()');
@@ -569,11 +576,12 @@
             });
 
             $(document).on('click', '.delete-button', function () {
-                var bukti = $(this).data('bukti');
-                var periode = $(this).data('periode');
+                bukti = $(this).data('bukti');
+                periode = $(this).data('periode');
                 console.log("kode " + bukti);
+            });
 
-                $('#confirmDeleteButton').on('click', function () {
+            $('#confirmDeleteButton').on('click', function () {
                     $.ajax({
                         method: 'DELETE',
                         url: "{{ url('transaksi/transfergudang/delete') }}/" + bukti+"/"+periode,
@@ -592,7 +600,6 @@
                         }
                     });
                 });
-            });
         });
     </script>
 @endpush

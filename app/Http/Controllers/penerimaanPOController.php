@@ -15,13 +15,15 @@ use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Psy\Readline\Hoa\Console;
 use Yajra\DataTables\DataTables;
 
 class penerimaanPOController extends Controller
 {
     public function index(){
+        $trnorder = trninvorder::where('STATUS',0)->get();
         $gudang = gudang::where('ID_DEPO', getIdDepo())->get();
-        return view('layout.transaksi.penerimaanpo.index', compact('gudang'));
+        return view('layout.transaksi.penerimaanpo.index', compact('gudang','trnorder'));
     }
 
     public function fetchDataById($id)
@@ -42,7 +44,9 @@ class penerimaanPOController extends Controller
         ->where('BUKTI',$id)
         ->join('barang','dtlinvorder.ID_BARANG','barang.ID_BARANG')
         ->join('satuan','dtlinvorder.ID_SATUAN','satuan.ID_SATUAN')
-        ->select('dtlinvorder.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')->get();
+        ->select('dtlinvorder.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
+        ->orderBy('NOMOR','asc')
+        ->get();
         return response()->json($dtlorder);
     }
 
@@ -82,7 +86,6 @@ class penerimaanPOController extends Controller
         ->select('trnjadi.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
         ->orderBy('NOMOR','asc')
         ->get();
-
         return response()->json($data);
     }
 
@@ -107,12 +110,25 @@ class penerimaanPOController extends Controller
         return $formattedBukti;
     }
 
-    public function getQtyKirim($nomorPO){
+    public function updateStatusPO($nomorpo){
+        $data = DB::table('abc.dtlinvorder')
+                ->whereIn('BUKTI', function ($query) use ($nomorpo) {
+                    $query->select('BUKTI')
+                        ->from('trninvorder')
+                        ->where('NOMORPO', $nomorpo);
+                })
+                ->whereRaw('QTYKIRIM < QTYORDER')
+                ->get();
 
-        $sql = "SELECT a.* FROM dtlinvorder a, trninvorder b WHERE a.BUKTI = b.BUKTI AND a.PERIODE = b.PERIODE AND b.NOMORPO = ?";
-
-        $data = DB::select($sql,[$nomorPO]);
-        return $data;
+        if($data->isEmpty()){
+            DB::table('trninvorder')
+            ->where('NOMORPO',$nomorpo)
+            ->update(['STATUS'=>1]);
+        } else {
+            DB::table('trninvorder')
+            ->where('NOMORPO',$nomorpo)
+            ->update(['STATUS'=>0]);
+        }
     }
 
     public function postTrnJadi(Request $request){
@@ -123,9 +139,6 @@ class penerimaanPOController extends Controller
         try {
             // Generate BUKTI
             $bukti = $this->generateBukti($request->tanggal);
-            // dd($request->nomorpo);
-            $order = $this->getQtyKirim($request->nomorpo);
-
 
             // Format tanggal
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
@@ -154,6 +167,19 @@ class penerimaanPOController extends Controller
 
             // Create trnjadi records
             foreach ($data as $item) {
+                $data = DB::table('dtlinvorder')
+                ->whereIn('BUKTI', function ($query) use ($request) {
+                    $query->select('BUKTI')
+                        ->from('trninvorder')
+                        ->where('NOMORPO', $request->nomorpo);
+                })
+                ->whereIn('PERIODE', function ($query) use ($request) {
+                    $query->select('PERIODE')
+                        ->from('trninvorder')
+                        ->where('NOMORPO', $request->nomorpo);
+                })
+                ->where('ID_BARANG', $item[0])
+                ->update(['QTYKIRIM' => DB::raw('QTYKIRIM + ' . $item[1])]);
                 // dd($item[2]);
                 trnjadi::create([
                     'KDTRN' => '01',
@@ -169,6 +195,8 @@ class penerimaanPOController extends Controller
                     'NOMOR' => $nomor++, // Increment nomor for each item
                 ]);
             }
+
+            $this->updateStatusPO($request->nomorpo);
 
             // Commit the transaction if all operations succeed
             DB::commit();
@@ -189,15 +217,35 @@ class penerimaanPOController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->data;
-            // dd($data);
             foreach ($data as $item) {
+                DB::table('dtlinvorder')
+                ->whereIn('BUKTI', function ($query) use ($request) {
+                    $query->select('BUKTI')
+                        ->from('trninvorder')
+                        ->where('NOMORPO', $request->nomorpo);
+                })
+                ->whereIn('PERIODE', function ($query) use ($request) {
+                    $query->select('PERIODE')
+                        ->from('trninvorder')
+                        ->where('NOMORPO', $request->nomorpo);
+                })
+                ->where('ID_BARANG', $item[0])
+                ->update(['QTYKIRIM' => DB::raw('QTYKIRIM - ' . $item[2] . ' + ' . $item[1]),
+                'USEREDIT' => getUserLoggedIn()->ID_USER,
+                'TGLEDIT' => $currentDateTime]);
+
+
                 trnjadi::where('KDTRN', '01')
                     ->where('BUKTI', $request->bukti)
                     ->where('PERIODE', $request->periode)
                     ->where('ID_BARANG', $item[0])
                     ->update([
                         'QTY' => $item[1],
+                        'USEREDIT' => getUserLoggedIn()->ID_USER,
+                        'TGLEDIT' => $currentDateTime,
                     ]);
+
+                $this->updateStatusPO($request->nomorpo);
             }
             DB::commit();
 
@@ -221,8 +269,43 @@ class penerimaanPOController extends Controller
     }
 
     public function destroy($bukti, $periode){
+        $currentDateTime = date('Y-m-d H:i:s');
         DB::beginTransaction();
         try {
+            $trnsales = trnsales::where("KDTRN","01")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->select("trnsales.NOMORPO")
+                ->get()
+                ->toArray();
+            $trnjadi = trnjadi::where("KDTRN", "01")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->select("trnjadi.ID_BARANG", "trnjadi.QTY")
+                ->get()
+                ->toArray();
+
+            foreach($trnjadi as $item){
+                // dd($item['QTY']);
+                $nomorpo = $trnsales[0]['NOMORPO'];
+                DB::table('dtlinvorder')
+                ->whereIn('BUKTI', function ($query) use ($nomorpo) {
+                    $query->select('BUKTI')
+                        ->from('trninvorder')
+                        ->where('NOMORPO', $nomorpo);
+                })
+                ->whereIn('PERIODE', function ($query) use ($nomorpo) {
+                    $query->select('PERIODE')
+                        ->from('trninvorder')
+                        ->where('NOMORPO', $nomorpo);
+                })
+                ->where('ID_BARANG', $item['ID_BARANG'])
+                ->update(['QTYKIRIM' => DB::raw('QTYKIRIM - ' . $item['QTY']),
+                'USEREDIT' => getUserLoggedIn()->ID_USER,
+                'TGLEDIT' => $currentDateTime]);
+            }
+
+
             // Delete records from trnsales table
             trnsales::where("KDTRN", "01")
                 ->where("BUKTI", $bukti)
@@ -241,6 +324,7 @@ class penerimaanPOController extends Controller
             return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
         } catch (\Exception $e) {
             // If an error occurs, rollback the transaction and send an error response
+            dd($e->getMessage());
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
         }

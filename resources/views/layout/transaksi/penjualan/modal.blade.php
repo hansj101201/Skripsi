@@ -33,6 +33,7 @@
                         <label for="gudang">GUDANG:</label>
                         <select class="form-control" id="gudang" name="ID_GUDANG">
                             @foreach($gudang as $Gudang)
+                                <option value="">Pilih</option>
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
                         </select>
@@ -41,6 +42,7 @@
                         <label for="customer">CUSTOMER:</label>
                         <select class="form-control" id="customer" name="ID_CUSTOMER">
                             @foreach($customer as $Customer)
+                                <option value="">Pilih</option>
                                 <option value="{{ $Customer->ID_CUSTOMER }}" readonly>{{ $Customer->NAMA }}</option>
                             @endforeach
                         </select>
@@ -121,6 +123,7 @@
                         <div class="col-sm-9">
                             <select class="form-control" id="barang_id_barang" name="ID_BARANG"> <!-- Remove 'col-sm-9' class here -->
                                 @foreach($barang as $Barang)
+                                    <option value="">Pilih</option>
                                     <option value="{{ $Barang->ID_BARANG }}" readonly>{{ $Barang->ID_BARANG }}</option>
                                 @endforeach
                             </select>
@@ -200,11 +203,14 @@
             display: none;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
 @endpush
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
 
         let idEdit = '';
@@ -213,8 +219,8 @@
         function clearModal() {
             $('#tanggal').val("");
             $('#bukti').val("");
-            $('#gudang').val("");
-            $('#customer').val("");
+            $('#gudang').val(null).trigger('change');
+            $('#customer').val(null).trigger('change');
             $('#subtotal').val("");
             $('#diskon').val("");
             $('#netto').val("");
@@ -244,8 +250,8 @@
                     console.log(data);
                     $('#tanggal').val(dateFormat(data.TANGGAL));
                     $('#bukti').val(data.BUKTI);
-                    $('#gudang').val(data.ID_GUDANG);
-                    $('#customer').val(data.ID_CUSTOMER);
+                    $('#gudang').val(data.ID_GUDANG).trigger('change');;
+                    $('#customer').val(data.ID_CUSTOMER).trigger('change');;
                     $('#keterangan').val(data.KETERANGAN);
                     $('#subtotal').val(formatHarga(parseFloat(data.JUMLAH)));
                     $('#diskon').val(formatHarga(parseFloat(data.DISCOUNT)));
@@ -296,7 +302,7 @@
         }
 
         function clearModalBarang() {
-            $('#barang_id_barang').val('');
+            $('#barang_id_barang').val(null).trigger('change');
             $('#barang_nama').val('');
             $('#barang_satuan').val('');
             $('#barang_qty').val('');
@@ -565,6 +571,14 @@
         }
 
         $(document).ready(function () {
+            $('#gudang, #customer, #barang_id_barang').select2({
+                placeholder: "---Pilih---",
+                width: 'resolve',
+                containerCss: {
+                    height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
+                },
+                allowClear: true
+            });
 
             var bukti;
             var periode;
@@ -644,7 +658,7 @@
                         var harga = button.data('harga');
                         var jumlah = button.data('jumlah');
                         var potongan = button.data('potongan');
-                        $('#barang_id_barang').val(kode);
+                        $('#barang_id_barang').val(kode).trigger('change');
                         $('#barang_id_barang').prop('disabled', true);
                         getData(kode, tanggal, gudang);
                         if(mode === 'editAdd'){
@@ -720,7 +734,7 @@
                             toastr.error('Barang tidak boleh melebihi stok');
                             return; // Hentikan eksekusi
                         } else {
-                            if (editModeValue === 'editAdd' || editModeValue === "add") {
+                            if (editModeValue === "add") {
                                 $('#saveButton').attr('onclick', 'addTableBarang()');
                             } else {
                                 $('#saveButton').attr('onclick', 'editTableBarang()');
@@ -752,24 +766,24 @@
                 console.log("kode " + bukti);
             });
             $('#confirmDeleteButton').on('click', function () {
-                    $.ajax({
-                        method: 'DELETE',
-                        url: "{{ url('transaksi/penjualan/delete') }}/" + bukti+"/"+periode,
-                        data: {
-                            '_token': '{{ csrf_token() }}',
-                        },
-                        success: function (response) {
-                            $('#deleteDataModal').modal('hide'); // Correct the selector here
-                            $('.modal-backdrop').remove();
-                            toastr.success(response.message);
-                            table.draw();
-                        },
-                        error: function (xhr, status, error) {
-                            // Handle errors, for example, display error messages
-                            console.error(response.message);
-                        }
-                    });
+                $.ajax({
+                    method: 'DELETE',
+                    url: "{{ url('transaksi/penjualan/delete') }}/" + bukti+"/"+periode,
+                    data: {
+                        '_token': '{{ csrf_token() }}',
+                    },
+                    success: function (response) {
+                        $('#deleteDataModal').modal('hide'); // Correct the selector here
+                        $('.modal-backdrop').remove();
+                        toastr.success(response.message);
+                        table.draw();
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors, for example, display error messages
+                        console.error(response.message);
+                    }
                 });
+            });
         });
     </script>
 @endpush

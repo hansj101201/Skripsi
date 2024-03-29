@@ -31,5 +31,5 @@ function getPeriode($tanggal) {
 
 function formatHarga(harga) {
     // Menggunakan metode toLocaleString untuk mengonversi angka menjadi format dengan pemisah ribuan
-    return 'Rp ' + harga.toLocaleString('id-ID');
+    return harga.toLocaleString('id-ID');
 }

@@ -16,8 +16,10 @@ class pengeluaranBarangKanvasController extends Controller
 {
     //
     public function index(){
+        $trnsales = trnsales::where('KDTRN','30')->where('STATUS',0)->where('ID_DEPO', getIdDepo())->get();
+        // dd($trnsales);
         $gudang = gudang::where('ID_DEPO', getIdDepo())->get();
-        return view("layout.transaksi.kanvas.index", compact("gudang"));
+        return view("layout.transaksi.kanvas.index", compact("gudang","trnsales"));
     }
 
     public function datatable(){
@@ -29,12 +31,6 @@ class pengeluaranBarangKanvasController extends Controller
 
         // dd($trnsales);
         return DataTables::of($trnsales)
-        ->editColumn('ID_GUDANG', function ($row) {
-            return $row->NAMA_GUDANG;
-        })
-        ->editColumn('ID_GUDANG_TUJUAN', function ($row) {
-            return $row->NAMA_GUDANG_TUJUAN;
-        })
         ->addColumn('action', function ($row) {
             // Initialize the action buttons HTML
             $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpermintaan="'.$row->NOPERMINTAAN.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button>';

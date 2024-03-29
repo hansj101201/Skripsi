@@ -16,7 +16,7 @@ class salesman extends Authenticatable
     public $incrementing = false;
     public $timestamps = false;
     protected $table = 'salesman';
-    protected $fillable = ['ID_SALES', 'NAMA', 'EMAIL','PASSWORD', 'NOMOR_HP', 'ID_DEPO', 'ACTIVE','TGLEDIT','TGLENTRY','USEREDIT','USERENTRY'];
+    protected $fillable = ['ID_SALES', 'NAMA', 'EMAIL','PASSWORD','ID_GUDANG', 'NOMOR_HP', 'ID_DEPO', 'ACTIVE','TGLEDIT','TGLENTRY','USEREDIT','USERENTRY'];
     protected $casts = [
         'TGLENTRY' => 'datetime',
         'TGLEDIT' => 'datetime',

@@ -28,9 +28,6 @@ class penyesuaianController extends Controller
         ->select('trnsales.*', 'gudang.NAMA AS nama_gudang');
 
         return DataTables::of($trnsales)
-        ->editColumn('ID_GUDANG', function ($row) {
-            return $row->nama_gudang;
-        })
         ->addColumn('action', function ($row) {
             $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp;
             <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';

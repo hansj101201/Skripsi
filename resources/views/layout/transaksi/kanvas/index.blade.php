@@ -58,6 +58,31 @@
                     // [3, "desc"],
                     // [2, "desc"]
                 ],
+                drawCallback: function(settings) {
+                    var api = this.api();
+                    // Loop through each column
+                    api.columns().every(function(index) {
+                        // Get the class of the first data cell of this column
+                        var className;
+                        if ($(api.column(index).nodes()).eq(0).hasClass('text-left')) {
+                            className = 'text-left';
+                        } else if ($(api.column(index).nodes()).eq(0).hasClass('text-center')) {
+                            className = 'text-center';
+                        } else {
+                            className = 'text-right';
+                        }
+                        // Add the class to the header cell
+                        $(api.column(index).header()).addClass(className);
+                    });
+                },
+                createdRow: function (row, data, dataIndex) {
+                    $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(3)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(4)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(5)', row).addClass('text-center');
+                },
                 pageLength:10,
                 lengthMenu : [10, 25, 50, 100, 500, {
                     label: "Lihat Semua",
@@ -83,12 +108,12 @@
                         name: "BUKTI"
                     },
                     {
-                        data: "ID_GUDANG",
-                        name: "ID_GUDANG"
+                        data: "NAMA_GUDANG",
+                        name: "G1.NAMA"
                     },
                     {
-                        data: "ID_GUDANG_TUJUAN",
-                        name: "ID_GUDANG_TUJUAN"
+                        data: "NAMA_GUDANG_TUJUAN",
+                        name: "salesman.NAMA"
                     },
                     {
                         data: "NOPERMINTAAN",

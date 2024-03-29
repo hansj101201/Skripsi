@@ -58,6 +58,30 @@
                     // [3, "desc"],
                     // [2, "desc"]
                 ],
+                drawCallback: function(settings) {
+                    var api = this.api();
+                    // Loop through each column
+                    api.columns().every(function(index) {
+                        // Get the class of the first data cell of this column
+                        var className;
+                        if ($(api.column(index).nodes()).eq(0).hasClass('text-left')) {
+                            className = 'text-left';
+                        } else if ($(api.column(index).nodes()).eq(0).hasClass('text-center')) {
+                            className = 'text-center';
+                        } else {
+                            className = 'text-right';
+                        }
+                        // Add the class to the header cell
+                        $(api.column(index).header()).addClass(className);
+                    });
+                },
+                createdRow: function (row, data, dataIndex) {
+                    $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(3)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(4)', row).addClass('text-center');
+                },
                 pageLength:10,
                 lengthMenu : [10, 25, 50, 100, 500, {
                     label: "Lihat Semua",
@@ -65,9 +89,9 @@
                 }],
                 responsive: true,
                 layout: {
-                    top2Start:{
-                        buttons:['copy', 'csv', 'excel', 'pdf', 'print']
-                    },
+                    // top2Start:{
+                    //     buttons:['copy', 'csv', 'excel', 'pdf', 'print']
+                    // },
                     topStart: "pageLength"
                 },
                 columns: [
@@ -83,8 +107,8 @@
                         name: "BUKTI"
                     },
                     {
-                        data: "ID_SUPPLIER",
-                        name: "ID_SUPPLIER"
+                        data: "nama_supplier",
+                        name: "supplier.NAMA"
                     },
                     {
                         data: "NOMORPO",

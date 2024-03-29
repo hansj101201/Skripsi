@@ -34,6 +34,7 @@
                         <label for="gudang">GUDANG:</label>
                         <select class="form-control" id="gudang" name="ID_GUDANG">
                             @foreach($gudang as $Gudang)
+                                <option value="">Pilih</option>
                                 <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
                             @endforeach
                         </select>
@@ -91,6 +92,7 @@
                         <div class="col-sm-9">
                             <select class="form-control" id="barang_id_barang" name="ID_BARANG"> <!-- Remove 'col-sm-9' class here -->
                                 @foreach($barang as $Barang)
+                                    <option value="">Pilih</option>
                                     <option value="{{ $Barang->ID_BARANG }}" readonly>{{ $Barang->ID_BARANG }}</option>
                                 @endforeach
                             </select>
@@ -152,11 +154,14 @@
             display: none;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
 @endpush
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
 
         let idEdit = '';
@@ -165,18 +170,17 @@
         function clearModal() {
             $('#tanggal').val("");
             $('#bukti').val("");
-            $('#gudang').val("");
+            $('#gudang').val(null).trigger('change');
             $('#gudang').prop('disabled', false);
             $('#listBarang').empty();
             $('#keterangan').val('');
         }
 
         function clearModalBarang() {
-            $('#barang_id_barang').val('');
+            $('#barang_id_barang').val(null).trigger('change');
             $('#barang_nama').val('');
             $('#barang_satuan').val('');
             $('#barang_qty').val('');
-            $('#barang_id_satuan').val('');
             $('#barang_id_barang').prop('disabled', false);
             $('#barang_saldo').val('');
         }
@@ -190,7 +194,6 @@
                 },
                 success: function(data) {
                     console.log(data);
-                    $('#barang_id_satuan').val(data.ID_SATUAN);
                     $('#barang_nama').val(data.NAMA);
                     $('#barang_satuan').val(data.nama_satuan);
 
@@ -268,7 +271,7 @@
                     console.log(data);
                     $('#tanggal').val(dateFormat(data.TANGGAL));
                     $('#bukti').val(data.BUKTI);
-                    $('#gudang').val(data.ID_GUDANG);
+                    $('#gudang').val(data.ID_GUDANG).trigger('change');;
                     $('#keterangan').val(data.KETERANGAN);
                 }
             });
@@ -406,6 +409,15 @@
         $(document).ready(function () {
         // Function to fetch data based on user input
 
+            $('#gudang, #barang_id_barang').select2({
+                placeholder: "---Pilih---",
+                width: 'resolve',
+                containerCss: {
+                    height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
+                },
+                allowClear: true
+            });
+
             var bukti;
             var periode;
             var editModeValue;
@@ -479,7 +491,7 @@
                         console.log(gudang);
                         console.log(kode);
                         var qty = button.data('qty');
-                        $('#barang_id_barang').val(kode);
+                        $('#barang_id_barang').val(kode).trigger('change');
                         $('#barang_id_barang').prop('disabled', true);
                         getData(kode, tanggal, gudang);
                         $('#saveButton').attr('onclick', 'editTableBarang()');

@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\driverController;
 use App\Http\Controllers\hargaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Layout;
