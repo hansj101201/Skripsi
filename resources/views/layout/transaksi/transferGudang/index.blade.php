@@ -82,12 +82,12 @@
                         name: "BUKTI"
                     },
                     {
-                        data: "ID_GUDANG",
-                        name: "ID_GUDANG"
+                        data: "NAMA_GUDANG",
+                        name: "G1.NAMA"
                     },
                     {
-                        data: "ID_GUDANG_TUJUAN",
-                        name: "ID_GUDANG_TUJUAN"
+                        data: "NAMA_GUDANG_TUJUAN",
+                        name: "G2.NAMA"
                     },
                     {
                         data: "action",

@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class salesman extends Model
+class salesman extends Authenticatable
 {
     use HasFactory;
     use HasUuids;
@@ -15,7 +16,7 @@ class salesman extends Model
     public $incrementing = false;
     public $timestamps = false;
     protected $table = 'salesman';
-    protected $fillable = ['ID_SALES', 'NAMA', 'EMAIL', 'NOMOR_HP', 'ID_DEPO', 'ACTIVE','TGLEDIT','TGLENTRY','USEREDIT','USERENTRY'];
+    protected $fillable = ['ID_SALES', 'NAMA', 'EMAIL','PASSWORD', 'NOMOR_HP', 'ID_DEPO', 'ACTIVE','TGLEDIT','TGLENTRY','USEREDIT','USERENTRY'];
     protected $casts = [
         'TGLENTRY' => 'datetime',
         'TGLEDIT' => 'datetime',

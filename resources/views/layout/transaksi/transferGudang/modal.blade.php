@@ -1,4 +1,4 @@
-<div class="modal fade" id="addDataModal" tabindex="-1" role="dialog" aria-labelledby="addDataModalLabel" aria-hidden="true">
+<div class="modal fade" id="addDataModal" role="dialog" aria-labelledby="addDataModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -161,11 +161,14 @@
             display: none;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
 @endpush
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
 
         let idEdit = '';
@@ -187,7 +190,6 @@
             $('#barang_nama').val('');
             $('#barang_satuan').val('');
             $('#barang_qty').val('');
-            $('#barang_id_satuan').val('');
             $('#barang_id_barang').prop('disabled', false);
             $('#barang_saldo').val('');
             $('#stok_lama').val('');
@@ -202,7 +204,6 @@
                 },
                 success: function(data) {
                     console.log(data);
-                    $('#barang_id_satuan').val(data.ID_SATUAN);
                     $('#barang_nama').val(data.NAMA);
                     $('#barang_satuan').val(data.nama_satuan);
 
@@ -233,9 +234,8 @@
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(3)').text();
-                var idSatuan = $(row).find('td:eq(4)').text(); // Index adjusted if needed
 
-                arrBarang.push([idBarang, qtyKirim, idSatuan]);
+                arrBarang.push([idBarang, qtyKirim]);
             });
             console.log(arrBarang);
             console.log($('#tanggal').val());
@@ -422,6 +422,12 @@
         $(document).ready(function () {
         // Function to fetch data based on user input
 
+        $('#gudang').select2({
+                            // theme: "classic",
+                            placeholder: "---Pilih---",
+                            width: 'resolve',
+                            allowClear: true
+        });
             var editModeValue;
             $('#addDataModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);

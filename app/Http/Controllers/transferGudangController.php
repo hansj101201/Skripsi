@@ -31,12 +31,7 @@ class transferGudangController extends Controller
 
         // dd($trnsales);
         return DataTables::of($trnsales)
-        ->editColumn('ID_GUDANG', function ($row) {
-            return $row->NAMA_GUDANG;
-        })
-        ->editColumn('ID_GUDANG_TUJUAN', function ($row) {
-            return $row->NAMA_GUDANG_TUJUAN;
-        })
+
         ->addColumn('action', function ($row) {
             // Initialize the action buttons HTML
             $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-eye"></span></button>';
@@ -124,10 +119,12 @@ class transferGudangController extends Controller
             // dd($data);
             $nomor = 1; // Initialize the nomor counter
 
+            // $id = DB::raw()
 
 
             // Create trnsales record
             trnsales::create([
+
                 'KDTRN' => '15',
                 'TANGGAL' => $tanggalFormatted,
                 'BUKTI' => $bukti,
@@ -211,6 +208,8 @@ class transferGudangController extends Controller
                 ->where('ID_BARANG', $item[0])
                 ->update([
                     'QTY' => $item[1],
+                    'USEREDIT' => getUserLoggedIn()->ID_USER,
+                    'TGLEDIT' => $currentDateTime,
                 ]);
 
                 trnjadi::where('KDTRN', '05')
@@ -219,6 +218,8 @@ class transferGudangController extends Controller
                 ->where('ID_BARANG', $item[0])
                 ->update([
                     'QTY' => $item[1],
+                    'USEREDIT' => getUserLoggedIn()->ID_USER,
+                    'TGLEDIT' => $currentDateTime,
                 ]);
             }
             DB::commit();

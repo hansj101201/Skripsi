@@ -49,6 +49,7 @@ class salesmanController extends Controller
                 'ID_SALES' => 'required',
                 'NAMA' => 'required',
                 'EMAIL' => 'nullable|email',
+                'PASSWORD' => 'required',
                 'NOMOR_HP'=> 'sometimes',
                 'ID_DEPO'=> 'required',
                 'ACTIVE' => 'sometimes'

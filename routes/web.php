@@ -197,12 +197,19 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('getData/{bukti}/{periode}','getData');
             Route::get('getDetail/{bukti}/{periode}','getDetail');
             Route::put('postDetailPenjualan', 'postDetailPenjualan')->name('postDetailPenjualan');
+            Route::delete('delete/{bukti}/{periode}','destroy');
         });
     });
 
     Route::prefix('penyesuaian')->middleware(['Login'])->group(function(){
         Route::controller(penyesuaianController::class)->group(function () {
             Route::get('index', 'index');
+            Route::get('datatable', 'datatable')->name('penyesuaian.datatable');
+            Route::post('postPenyesuaian', 'postPenyesuaian')->name('postPenyesuaian');
+            Route::get('getData/{bukti}/{periode}','getData');
+            Route::get('getDetail/{bukti}/{periode}','getDetail');
+            Route::put('postDetailPenyesuaian', 'postDetailPenyesuaian')->name('postDetailPenyesuaian');
+            Route::delete('delete/{bukti}/{periode}','destroy');
         });
     });
 });

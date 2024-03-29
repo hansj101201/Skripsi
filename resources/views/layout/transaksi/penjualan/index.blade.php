@@ -1,0 +1,121 @@
+@extends("adminlte::page")
+
+@section('title','Penjualan')
+
+@section('plugins.Datatables',true)
+
+@push('css')
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('/vendor/toastr/toastr.min.css') }}">
+@endpush
+
+@section('content')
+
+    <div class="card mb-4">
+        <div class="card-header" style="display: flex; flex-direction: column;">
+            <div>
+                <h1 class="card-title">Penjualan</h1>
+            </div>
+            <div class="mt-4 mb-4">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDataModal">
+                    + Penjualan
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table responsive table-stripped table-bordered myTable" id="tableHasil">
+                <thead class="">
+                    <tr>
+                        <th> Tanggal </th>
+                        <th> Bukti </th>
+                        <th> Customer </th>
+                        <th> Jumlah </th>
+                        <th> Diskon </th>
+                        <th> Netto </th>
+                        <th> Aksi </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @include('layout.transaksi.penjualan.modal')
+@endsection
+
+@push('js')
+    <script src="{{ asset('/vendor/toastr/toastr.min.js') }}"></script>
+    <script src="{{ asset('/js/format.js') }}"></script>
+    <script>
+        var table;
+        $(function () {
+            table = $("#tableHasil").DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: '{{ url('transaksi/penjualan/datatable') }}',
+                order: [
+                    [0, "desc"]
+                    // [3, "desc"],
+                    // [2, "desc"]
+                ],
+                pageLength:10,
+                lengthMenu : [10, 25, 50, 100, 500, {
+                    label: "Lihat Semua",
+                    value: -1
+                }],
+                responsive: true,
+                layout: {
+                    // top2Start:{
+                    //     buttons:['copy', 'csv', 'excel', 'pdf', 'print']
+                    // },
+                    topStart: "pageLength"
+                },
+                columns: [
+                    {
+                        data: "TANGGAL",
+                        name: "TANGGAL",
+                        render: function (data, type, full, meta) {
+                            return dateFormat(data); // Return empty string if data is not provided
+                        }
+                    },
+                    {
+                        data: "BUKTI",
+                        name: "BUKTI"
+                    },
+                    {
+                        data: "ID_CUSTOMER",
+                        name: "ID_CUSTOMER"
+                    },
+                    {
+                        data: "JUMLAH",
+                        name: "JUMLAH",
+                        render: function(data, type, full, meta) {
+                            return formatHarga(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: "DISCOUNT",
+                        name: "DISCOUNT",
+                        render: function(data, type, full, meta) {
+                            return formatHarga(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: "NETTO",
+                        name: "NETTO",
+                        render: function(data, type, full, meta) {
+                            return formatHarga(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: "action",
+                        name: "action",
+                        searchable: false,
+                        orderable: false
+                    }
+                ]
+            });
+        });
+    </script>
+@endpush
