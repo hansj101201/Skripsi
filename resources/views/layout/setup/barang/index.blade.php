@@ -81,12 +81,12 @@
                         name: "NAMA"
                     },
                     {
-                        data: "ID_SATUAN",
-                        name: "ID_SATUAN"
+                        data: "nama_satuan",
+                        name: "satuan.NAMA"
                     },
                     {
                         data: "ACTIVE",
-                        name: "ACTIVE"
+                        name: "ACTIVE",
                     },
                     {
                         data: "action",

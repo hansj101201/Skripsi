@@ -18,6 +18,7 @@
 @push('js')
     <script>
         $(document).ready(function() {
+            var url;
             $(document).on('click', '.delete-button', function () {
                 var ID = $(this).data('kode');
                 var master = $(this).data('master');
@@ -26,9 +27,9 @@
                 console.log("master" + master);
                 console.log("jenis" + jenis);
 
-                var url = '/'+master+'/'+jenis+'/' + ID;
-
-                $('#confirmDeleteButton').on('click', function () {
+                url = '/'+master+'/'+jenis+'/' + ID;
+            });
+            $('#confirmDeleteButton').on('click', function () {
                     $.ajax({
                         method: 'DELETE',
                         url: url,
@@ -50,7 +51,6 @@
                         }
                     });
                 });
-            });
         })
     </script>
 @endpush

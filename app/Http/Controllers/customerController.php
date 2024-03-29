@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\customer;
 use App\Models\salesman;
+use App\Models\trnjadi;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -118,8 +119,11 @@ class customerController extends Controller
 
     public function destroy($ID_CUSTOMER)
     {
+        $trnjadiCount = trnjadi::where('ID_CUSTOMER', $ID_CUSTOMER)->count();
         $customer = customer::where('ID_CUSTOMER', $ID_CUSTOMER)->first();
-        if (!$customer) {
+        if ($trnjadiCount > 0) {
+            return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus customer karena sudah digunakan dalam transaksi'], 422);
+        } else if (!$customer) {
             return response()->json(['success' => false,'message' => 'Data tidak ditemukan'], 404);
         } else {
             $customer->delete();

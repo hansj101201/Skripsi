@@ -170,7 +170,6 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('fetch-data/{id}', 'fetchData')->where('id', '.*');
             Route::get('fetch-detail/{id}/{periode}', 'fetchDetail');
             Route::post('postTrnCanvas', 'postTrnCanvas')->name('postTrnCanvas');
-            Route::get('getDetail/{bukti}/{periode}','getDetail');
             Route::put('postDetailTrnCanvas','postDetailTrnCanvas')->name('postDetailTrnCanvas');
             Route::delete('delete/{bukti}/{periode}','destroy');
         });

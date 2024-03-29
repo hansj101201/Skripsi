@@ -76,7 +76,7 @@
                         <label for="bukti" class="col-form-label">Keterangan</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="keterangan" name="KETERANGAN" maxlength="40" readonly>
+                        <input type="text" class="form-control" id="keterangan" name="KETERANGAN" maxlength="40">
                     </div>
                 </div>
             </div>
@@ -286,6 +286,7 @@
             $('#gudang').val(null).trigger('change');
             $('#supplier').val("");
             $('#detailBarang').empty();
+            $('#keterangan').empty();
         }
         function clearDetail() {
             $('#detailjumlah').val("");
@@ -296,16 +297,39 @@
             $('#detailtrnjadi').empty();
         }
 
+        function cekData(){
+            var tanggal = $('#tanggal').val();
+            var nomorpo = $('#nomorpo').val();
+            var gudang = $('#gudang').val();
+
+            if(!tanggal){
+                toastr.error('Tanggal harus diisi');
+                $('#tanggal').addClass('is-invalid');
+                return false;
+            }
+            if(!nomorpo){
+                toastr.error('Nomor PO harus diisi');
+                $('#nomorpo').addClass('is-invalid');
+                return false;
+            }
+            if(!gudang){
+                toastr.error('Gudang harus diisi');
+                $('#gudang').addClass('is-invalid');
+                return false;
+            }
+
+            return true;
+        }
+
+
         function simpanData(){
 
-            arrBarang = [];
+            if(cekData()){
+                arrBarang = [];
 
-            var _token = $('meta[name="csrf-token"]').attr('content');
+                var _token = $('meta[name="csrf-token"]').attr('content');
 
-            var tanggal = $('#tanggal').val();
-
-            if (tanggal != ''){
-
+                var tanggal = $('#tanggal').val();
                 $('#tableData tbody tr').each(function(index, row) {
                     var idBarang = $(row).find('td:eq(0)').text();
                     var qtyKirim = $(row).find('td:eq(4)').text();
@@ -341,8 +365,7 @@
                         }
                     }
                 })
-            } else {
-                toastr.error('Tanggal harus diisi');
+
             }
         }
         function editTableBarang(){
@@ -586,6 +609,16 @@
                 },
                 allowClear: true
             });
+
+            $(document).on('click', '#tanggal', function(){
+                $('#tanggal').removeClass('is-invalid');
+            })
+            $(document).on('click', '#gudang', function(){
+                $('#gudang').removeClass('is-invalid');
+            })
+            $(document).on('click', '#nomorpo', function(){
+                $('#nomorpo').removeClass('is-invalid');
+            })
             $('.datepicker').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format
                 minDate: 0,

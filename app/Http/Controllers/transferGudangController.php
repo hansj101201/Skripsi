@@ -202,7 +202,7 @@ class transferGudangController extends Controller
             $data = $request->data;
             // dd($data);
             foreach ($data as $item) {
-                $trnjadi = trnjadi::where('KDTRN', '15')
+                trnjadi::where('KDTRN', '15')
                 ->where('BUKTI', $request->bukti)
                 ->where('PERIODE', $request->periode)
                 ->where('ID_BARANG', $item[0])

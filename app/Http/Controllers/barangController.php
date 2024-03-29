@@ -22,11 +22,8 @@ class barangController extends Controller
         ->select("barang.*", "satuan.NAMA AS nama_satuan");
 
         return DataTables::of($barang)
-        ->editColumn("ID_SATUAN", function ($row) {
-            return $row->nama_satuan;
-        })
-        ->editColumn("ACTIVE", function ($row) {
-            return $row->ACTIVE == 1 ? "Ya" : "Tidak";
+        ->editColumn('ACTIVE', function ($row) {
+            return $row->ACTIVE == 1 ? 'Ya' : 'Tidak'; // Kolom untuk nilai asli
         })
         ->addColumn('action', function ($row) {
             return '<button class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#DataModal" data-kode="'.$row->ID_BARANG.'" data-mode="edit"><i class="fas fa-pencil-alt"></i></button> &nbsp;
@@ -99,12 +96,10 @@ class barangController extends Controller
     public function destroy($ID_BARANG)
     {
         $trnjadiCount = trnjadi::where('ID_BARANG', $ID_BARANG)->count();
+        $brgjadi = barang::where('ID_BARANG', $ID_BARANG)->first();
         if ($trnjadiCount > 0) {
             return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus barang karena sudah digunakan dalam transaksi'], 422);
-        }
-
-        $brgjadi = barang::where('ID_BARANG', $ID_BARANG)->first();
-        if (!$brgjadi) {
+        } else if (!$brgjadi) {
             return response()->json(['success' => false,'message' => 'Data tidak ditemukan'], 404);
         } else {
             $hargaCount = harga::where('ID_BARANG', $ID_BARANG)->count();

@@ -98,18 +98,14 @@ class depoController extends Controller
         // Check if there are any associated records in the gudang table
         $gudangCount = gudang::where('ID_DEPO', $ID_DEPO)->count();
 
-        $driverCount = driver::where('ID_DEPO', $ID_DEPO)->count();
-
         $trnSalesCount = trnsales::where('ID_DEPO', $ID_DEPO)->count();
+        $depo = depo::where('ID_DEPO', $ID_DEPO)->first();
 
         // If there are associated records in either table, prevent deletion
-        if ($salesmanCount > 0 || $gudangCount > 0 || $driverCount > 0 || $trnSalesCount > 0) {
+        if ($salesmanCount > 0 || $gudangCount > 0 || $trnSalesCount > 0) {
             // If there are associated records, return an error response
             return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus depo karena terdapat salesman atau gudang yang terkait'], 422);
-        }
-
-        $depo = depo::where('ID_DEPO', $ID_DEPO)->first();
-        if (!$depo) {
+        } else if (!$depo) {
             return response()->json(['success' => false,'message' => 'Data tidak ditemukan'], 404);
         } else {
             $depo->delete();

@@ -97,12 +97,10 @@ class gudangController extends Controller
     public function destroy($ID_GUDANG)
     {
         $trnjadiCount = trnjadi::where('ID_GUDANG', $ID_GUDANG)->count();
+        $gudang = gudang::where('ID_GUDANG', $ID_GUDANG)->first();
         if ($trnjadiCount > 0) {
             return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus gudang karena sudah digunakan dalam transaksi'], 422);
-        }
-
-        $gudang = gudang::where('ID_GUDANG', $ID_GUDANG)->first();
-        if (!$gudang) {
+        } else if (!$gudang) {
             return response()->json(['success' => false,'message' => 'Data tidak ditemukan'], 404);
         } else {
             $gudang->delete();

@@ -436,11 +436,12 @@
             var bukti;
             var periode;
             var editModeValue;
+            var isSaveButtonActive = false;
             $('#addDataModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
                 var mode = button.data('mode');
                 var modal = $(this);
-
+                console.log(mode);
                 if (mode === 'viewDetail') {
                     modal.find('.modal-title').text('View Detail');
                     $("#tanggal").datepicker('destroy');
@@ -511,6 +512,7 @@
                             editModeValue = "add";
                             getData(kode, tanggal, gudang);
                         });
+                        $('#saveButton').attr('onclick', 'addTableBarang()');
                         $('#editMode').val('add');
                     } else {
                         modal.find('.modal-title').text('Edit Data');
@@ -530,6 +532,7 @@
                             $('#stok_lama').val(qty);
                             editModeValue = 'edit';
                         }
+                        $('#saveButton').attr('onclick', 'editTableBarang()');
                         $('#editMode').val(editModeValue);
                         $('#barang_qty').val(qty);
                     }
@@ -544,21 +547,22 @@
                 // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(qty)) {
                     if (qty > stok) {
-                        console.log("qty" + qty);
-                        console.log("stok" + stok);
-                        console.log("saldo" + saldo);
                         if (qty - stok > saldo) {
-                            // Munculkan Toast
+                // Munculkan Toast
                             toastr.error('Barang tidak boleh melebihi stok');
-                            return; // Hentikan eksekusi
+                            isSaveButtonActive = false; // Set tombol "Simpan" menjadi nonaktif
                         } else {
-                            if (editModeValue === "add") {
-                                $('#saveButton').attr('onclick', 'addTableBarang()');
-                            } else {
-                                $('#saveButton').attr('onclick', 'editTableBarang()');
-                            }
+                            isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
                         }
+                    } else {
+                        isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
                     }
+                }
+
+                if (isSaveButtonActive) {
+                    $('#saveButton').prop('disabled', false);
+                } else {
+                    $('#saveButton').prop('disabled', true);
                 }
             });
 

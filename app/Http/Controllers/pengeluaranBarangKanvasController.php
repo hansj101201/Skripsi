@@ -33,7 +33,7 @@ class pengeluaranBarangKanvasController extends Controller
         return DataTables::of($trnsales)
         ->addColumn('action', function ($row) {
             // Initialize the action buttons HTML
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpermintaan="'.$row->NOPERMINTAAN.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button>';
+            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-eye"></span></button>';
             // Check if $row->jumlah is zero
             if ($row->JUMLAH == 0) {
                 // If $row->jumlah is zero, add the delete button
@@ -73,19 +73,6 @@ class pengeluaranBarangKanvasController extends Controller
         ->get();
 
         return response()->json($trnjadi);
-    }
-
-    public function getDetail($bukti,$periode){
-        $data = trnjadi::where('KDTRN','15')
-        ->where('PERIODE', $periode)
-        ->where('BUKTI',$bukti)
-        ->join('barang','trnjadi.ID_BARANG','barang.ID_BARANG')
-        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
-        ->select('trnjadi.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
-        ->orderBy('NOMOR','asc')
-        ->get();
-
-        return response()->json($data);
     }
 
     public function generateBukti($tanggal){
@@ -229,15 +216,18 @@ class pengeluaranBarangKanvasController extends Controller
         $currentDateTime = date('Y-m-d H:i:s');
         DB::beginTransaction();
         try {
+            // dd($request->bukti);
             $data = $request->data;
             // dd($data);
             foreach ($data as $item) {
-                trnjadi::where('KDTRN', '15')
+                $trnjadi = trnjadi::where('KDTRN', '15')
                 ->where('BUKTI', $request->bukti)
                 ->where('PERIODE', $request->periode)
                 ->where('ID_BARANG', $item[0])
                 ->update([
                     'QTY' => $item[1],
+                    'USEREDIT' => getUserLoggedIn()->ID_USER,
+                    'TGLEDIT' => $currentDateTime,
                 ]);
 
                 trnjadi::where('KDTRN', '05')
@@ -246,6 +236,8 @@ class pengeluaranBarangKanvasController extends Controller
                 ->where('ID_BARANG', $item[0])
                 ->update([
                     'QTY' => $item[1],
+                    'USEREDIT' => getUserLoggedIn()->ID_USER,
+                    'TGLEDIT' => $currentDateTime,
                 ]);
             }
             DB::commit();
