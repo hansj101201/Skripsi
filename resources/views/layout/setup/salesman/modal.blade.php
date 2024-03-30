@@ -1,4 +1,4 @@
-<div class="modal" id="DataModal" tabindex="-1" role="dialog" aria-labelledby="addEditDataModalLabel" aria-hidden="true">
+<div class="modal" id="DataModal" role="dialog" aria-labelledby="addEditDataModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -41,6 +41,7 @@
                         <div class="col-sm-9"> <!-- Use the same grid class 'col-sm-9' for consistency -->
                             <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
                                 @foreach($gudang as $Gudang)
+                                    <option value="">Pilih</option>
                                     <option value="{{ $Gudang->ID_GUDANG }}">{{ $Gudang->NAMA }}</option>
                                 @endforeach
                             </select>
@@ -51,6 +52,7 @@
                         <div class="col-sm-9"> <!-- Use the same grid class 'col-sm-9' for consistency -->
                             <select class="form-control" id="depo" name="ID_DEPO"> <!-- Remove 'col-sm-9' class here -->
                                 @foreach($depo as $Depo)
+                                    <option value="">Pilih</option>
                                     <option value="{{ $Depo->ID_DEPO }}">{{ $Depo->NAMA }}</option>
                                 @endforeach
                             </select>
@@ -76,26 +78,16 @@
     </div>
 </div>
 
-<div class="modal fade" id="deleteDataModal" tabindex="-1" role="dialog" aria-labelledby="deleteDataModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteDataModalLabel">Hapus Data</h5>
-            </div>
-            <div class="modal-body">
-                Data mau dihapus?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Ya</button>
-            </div>
-        </div>
-    </div>
-</div>
+@push('css')
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+@endpush
 
 @push('js')
+
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
-                function cekData(formData) {
+        function cekData(formData) {
             // Lakukan validasi di sini
             var kode_salesman = formData.get('ID_SALES');
             var nama_salesman = formData.get('NAMA');
@@ -132,6 +124,16 @@
         }
 
         $(document).ready(function() {
+
+            $('#gudang, #depo').select2({
+                placeholder: "---Pilih---",
+                width: 'resolve',
+                containerCss: {
+                    height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
+                },
+                allowClear: true
+            });
+
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode'); // Mengambil mode dari tombol

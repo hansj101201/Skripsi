@@ -420,11 +420,7 @@
             })
         }
 
-
-
         $(document).ready(function () {
-        // Function to fetch data based on user input
-
             $('#gudang, #gudang_tujuan, #barang_id_barang').select2({
                 placeholder: "---Pilih---",
                 width: 'resolve',

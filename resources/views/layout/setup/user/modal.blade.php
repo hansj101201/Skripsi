@@ -1,4 +1,4 @@
-<div class="modal" id="DataModal" tabindex="-1" role="dialog" aria-labelledby="addEditDataModalLabel" aria-hidden="true">
+<div class="modal" id="DataModal" role="dialog" aria-labelledby="addEditDataModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -48,6 +48,7 @@
                             <select class="form-control" id="depo" name="ID_DEPO"> <!-- Remove 'col-sm-9' class here -->
                                 <option value="">Pilih Depo</option>
                                 @foreach($depo as $Depo)
+                                    <option value="">Pilih</option>
                                     <option value="{{ $Depo->ID_DEPO }}">{{ $Depo->NAMA }}</option>
                                 @endforeach
                             </select>
@@ -73,7 +74,13 @@
     </div>
 </div>
 
+@push('css')
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+@endpush
+
 @push('js')
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
         function cekData(formData,mode) {
             // Lakukan validasi di sini
@@ -120,6 +127,14 @@
         }
 
         $(document).ready(function() {
+            $('#depo').select2({
+                placeholder: "---Pilih---",
+                width: 'resolve',
+                containerCss: {
+                    height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
+                },
+                allowClear: true
+            });
             $('#DataModal').on('hidden.bs.modal', function(event) {
                 $('#password-group').hide(); // Sembunyikan kolom password saat modal ditutup
             });

@@ -17,6 +17,17 @@ class users extends Authenticatable
     public $incrementing = false;
     public $timestamps = false;
 
+    protected $appends = ['rolenya', 'name'];
+
+    public function getRolenyaAttribute()
+    {
+        return $this->Role->ROLE_NAMA;
+    }
+    public function getNameAttribute()
+    {
+        return $this->NAMA;
+    }
+
     protected $fillable = [
         'ID_USER',
         'NAMA',

@@ -22,7 +22,15 @@ class penerimaanPOController extends Controller
 {
     public function index(){
         $trnorder = trninvorder::where('STATUS',0)->get();
-        $gudang = gudang::where('ID_DEPO', getIdDepo())->get();
+        $idDepo = trim(getIdDepo());
+        // dd($idDepo);
+        if ($idDepo != null && $idDepo != '') {
+            $gudang = gudang::where('ID_DEPO', $idDepo)->get();
+        } else if($idDepo == 000){
+            dd("Masuk ke dalam else if");
+            $gudang = gudang::all();
+        }
+        dd($gudang);
         return view('layout.transaksi.penerimaanpo.index', compact('gudang','trnorder'));
     }
 

@@ -23,9 +23,10 @@
                     <!-- You can include user avatar here if available -->
                 </div>
                 <div class="info">
-                    <span class="d-block">USERNAME : {{ auth()->user()->NAMA }}</span>
+                    <span class="d-block">USER : {{ auth()->user()->name }}</span>
                     <!-- You can include additional user details here -->
-                    <span class="d-block">ROLE : {{ auth()->user()->role->ROLE_NAMA }}</span>
+                    <span class="d-block">ROLE : {{ auth()->user()->rolenya }}</span>
+                    <span class="d-block">DEPO : {{ getNamaDepo() }}</span>
                 </div>
             </div>
 
@@ -38,7 +39,6 @@
                     data-accordion="false"
                 @endif>
                 {{-- Configured sidebar links --}}
-                <span>{{ Auth::user()->name }}</span>
                 @each('adminlte::partials.sidebar.menu-item', $adminlte->menu('sidebar'), 'item')
             </ul>
         </nav>
