@@ -16,17 +16,14 @@
 
     {{-- Sidebar menu --}}
     <div class="sidebar">
-        <nav class="pt-2">
+        <nav class=>
 
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                <div class="image">
-                    <!-- You can include user avatar here if available -->
-                </div>
+            <div class="user-panel d-flex">
                 <div class="info">
-                    <span class="d-block">USER : {{ auth()->user()->name }}</span>
+                    <span class="d-block"style="font-size: 13px;">USER : {{ auth()->user()->name }}</span>
                     <!-- You can include additional user details here -->
-                    <span class="d-block">ROLE : {{ auth()->user()->rolenya }}</span>
-                    <span class="d-block">DEPO : {{ getNamaDepo() }}</span>
+                    <span class="d-block"style="font-size: 13px;">ROLE : {{ auth()->user()->rolenya }}</span>
+                    <span class="d-block"style="font-size: 13px;">DEPO : {{ getNamaDepo() }}</span>
                 </div>
             </div>
 

@@ -25,12 +25,6 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="alamat" class="col-sm-3 col-form-label">Alamat</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="alamat" name="ALAMAT">
-                        </div>
-                    </div>
-                    <div class="form-group row">
                         <label for="depo"class="col-sm-3 col-form-label">Depo</label>
                         <div class="col-sm-9"> <!-- Use the same grid class 'col-sm-9' for consistency -->
                             <select class="form-control" id="depo" name="ID_DEPO"> <!-- Remove 'col-sm-9' class here -->
@@ -73,11 +67,9 @@
             // Lakukan validasi di sini
             var kode_gudang = formData.get('ID_GUDANG');
             var nama_gudang = formData.get('NAMA');
-            var alamat = formData.get('ALAMAT');
 
             console.log(kode_gudang);
             console.log(nama_gudang);
-            console.log(alamat);
 
             if (kode_gudang.trim() === '') {
                 toastr.error('Kode Gudang harus diisi');
@@ -88,12 +80,6 @@
             if (nama_gudang.trim() === '') {
                 toastr.error('Nama Gudang harus diisi');
                 $('#nama_gudang').addClass('is-invalid');
-                return false; // Mengembalikan false jika validasi gagal
-            }
-
-            if (alamat.trim() === '') {
-                toastr.error('Alamat harus diisi');
-                $('#alamat').addClass('is-invalid');
                 return false; // Mengembalikan false jika validasi gagal
             }
 
@@ -130,13 +116,11 @@
                         url: "{{ url('setup/gudang/getDetail') }}/"+kode,
                         success: function (data) {
                             var nama = data[0].NAMA;
-                            var alamat = data[0].ALAMAT;
                             var depo = data[0].ID_DEPO;
                             var aktif = data[0].ACTIVE;
                             // Isi nilai input field sesuai dengan data yang akan diedit
                             $('#kode_gudang').val(kode).attr('readonly', true); // Tambahkan atribut readonly
                             $('#nama_gudang').val(nama); // Tambahkan atribut readonly
-                            $('#alamat').val(alamat);
                             $('#depo').val(depo);
                             if (aktif === 1) {
                                 $('#active').prop('checked', true);
@@ -190,10 +174,6 @@
 
             $(document).on('click', '#nama_gudang', function(){
                 $('#nama_gudang').removeClass('is-invalid');
-            })
-
-            $(document).on('click', '#alamat', function(){
-                $('#alamat').removeClass('is-invalid');
             })
         });
     </script>

@@ -11,7 +11,7 @@
             <form id="addForm" method="POST" action="{{ route('harga.store') }}">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 @csrf
-                <div class="form-group-row">
+                <div class="form-group-row mb-3">
                     <div class="col-sm-3">
                         <label for="tanggal_mulai">Mulai Berlaku</label>
                     </div>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <table id="myTable" class="table">
+                    <table id="tableData" class="table">
                         <thead>
                             <tr>
                                 <th>ID Barang</th>
@@ -67,7 +67,6 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="submitForm">Simpan</button>
                 </div>
             </form>
@@ -81,7 +80,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editDataModalLabel">Edit Data</h5>
+                <h5 class="modal-title" id="editDataModalLabel">Edit Harga</h5>
                 <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="btn-custom-close">&times;</span>
                 </button>
@@ -130,7 +129,6 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id="submitEditForm">Simpan</button>
                     </div>
                 </form>
@@ -164,8 +162,17 @@
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('js/format.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
         $(document).ready(function() {
+
+
+
+            $('#addDataModal').on('show.bs.modal', function (event) {
+                var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                $('#MULAI_BERLAKU').val(today);
+            });
             $('.datepicker').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format
                 minDate: 0,
@@ -248,6 +255,7 @@
                     url: "{{ url('/setup/harga/getDetail') }}/"+kode,
                     success: function (data) {
                         console.log(data);
+                        $("#edit_mulai").datepicker('destroy');
                         $('#id').val(kode);
                         $('#edit_mulai').val(dateFormat(data[0].MULAI_BERLAKU));
                         $('#edit_kode').val(data[0].ID_BARANG); // Tambahkan atribut readonly

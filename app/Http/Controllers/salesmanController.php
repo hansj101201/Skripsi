@@ -27,9 +27,6 @@ class salesmanController extends Controller
         $salesman = salesman::join("depo","salesman.ID_DEPO","depo.ID_DEPO")
         ->select("salesman.*", "depo.NAMA AS nama_depo");
         return DataTables::of($salesman)
-        ->editColumn("ID_DEPO", function ($row) {
-            return $row->nama_depo;
-        })
         ->editColumn("ACTIVE", function ($row) {
             return $row->ACTIVE == 1 ? "Ya" : "Tidak";
         })

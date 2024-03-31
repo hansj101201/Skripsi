@@ -44,12 +44,14 @@ class barangController extends Controller
     {
         // dd($request->all());
         // Periksa apakah ID yang akan ditambahkan sudah ada dalam database
+        // dd($request->all());
         $existingRecord = barang::where('ID_BARANG', $request['ID_BARANG'])->first();
         if (!$existingRecord) {
             $validatedData = $request->validate([
                 'ID_BARANG' => 'required',
                 'NAMA' => 'required',
-                'ID_SATUAN' => 'sometimes',
+                'ID_SATUAN' => 'required',
+                'MIN_STOK' => 'required',
                 'ACTIVE' => 'sometimes'
             ]);
             $data = $validatedData;
@@ -77,6 +79,7 @@ class barangController extends Controller
                 'ID_BARANG' => 'required',
                 'NAMA' => 'required',
                 'ID_SATUAN' => 'sometimes',
+                'MIN_STOK' => 'required',
                 'ACTIVE' => 'sometimes',
             ]);
 

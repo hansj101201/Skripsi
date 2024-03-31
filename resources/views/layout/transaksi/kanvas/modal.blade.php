@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addDataModalLabel">Add Data</h5>
-                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close" onclick="clearModal()">
+                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="btn-custom-close">&times;</span>
                 </button>
             </div>
@@ -177,6 +177,8 @@
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
 
         let idEdit = '';
@@ -194,14 +196,6 @@
             $('#gudang_tujuan').val("");
             $('#saldo').val('');
             $('#detailBarang').empty();
-        }
-        function clearDetail() {
-            $('#detailperiode').val("");
-            $('#detailbukti').val("");
-            $('#detailtanggal').val("");
-            $('#detailnomorpermintaan').val("");
-            $('#detailtrnjadi').empty();
-            $('#stok_lama').val('');
         }
 
         function fetchData(bukti,periode){
@@ -550,6 +544,8 @@
 
                 } else {
                     editMode = true;
+                    var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                    $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
 
                     modal.find('.modal-title').text('Add Data');
                     $('#tanggal').datepicker({
@@ -563,6 +559,9 @@
                     });
                     $('#saveBtn').attr('onclick', 'simpanData()');
                 }
+            });
+            $('#addDataModal').on('hide.bs.modal', function(event) {
+                clearModal();
             });
             $('#nomorpermintaan').on('change',function () {
                 if (mode === 'add'&& editMode) {

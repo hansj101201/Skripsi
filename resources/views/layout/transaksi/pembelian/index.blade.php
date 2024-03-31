@@ -1,6 +1,6 @@
 @extends("adminlte::page")
 
-@section('title','Master Harga')
+@section('title','Order Pembelian')
 
 @section('plugins.Datatables',true)
 
@@ -9,17 +9,16 @@
     <link rel="stylesheet" href="{{ asset('/vendor/toastr/toastr.min.css') }}">
 @endpush
 
-
 @section('content')
 
     <div class="card mb-4">
         <div class="card-header" style="display: flex; flex-direction: column;">
             <div>
-                <h1 class="card-title">Master Harga</h1>
+                <h1 class="card-title">Order Pembelian</h1>
             </div>
             <div class="mt-4 mb-4">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDataModal">
-                    + Harga
+                    + Order Pembelian
                 </button>
             </div>
         </div>
@@ -27,12 +26,14 @@
             <table class="table responsive table-stripped table-bordered myTable" id="tableHasil">
                 <thead class="">
                     <tr>
-                        <th>Mulai Berlaku</th>
-                        <th>ID Barang</th>
-                        <th>Nama Barang</th>
-                        <th>Satuan</th>
-                        <th>Harga</th>
-                        <th>Aksi</th>
+                        <th> Tanggal </th>
+                        <th> Bukti </th>
+                        <th> Kode Supplier </th>
+                        <th> Nama Supllier </th>
+                        <th> Jumlah </th>
+                        <th> Diskon </th>
+                        <th> Netto </th>
+                        <th> Aksi </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,34 +42,29 @@
         </div>
     </div>
 
-    @include('layout.setup.harga.modal')
-    @include('layout.setup.modalHapus')
+    @include('layout.transaksi.pembelian.modal')
 @endsection
 
 @push('js')
-
     <script src="{{ asset('/vendor/toastr/toastr.min.js') }}"></script>
-    <script src="{{ asset('/js/submitForm.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
     <script>
         var table;
         $(function () {
             table = $("#tableHasil").DataTable({
-                // serverSide: true,
+                serverSide: true,
                 processing: true,
-                ajax: '{{ url('setup/harga/datatable') }}',
+                ajax: '{{ url('transaksi/pembelian/datatable') }}',
                 drawCallback: function(settings) {
                     var api = this.api();
                     // Loop through each column
                     api.columns().every(function(index) {
                         // Get the class of the first data cell of this column
-                        var className = 'text-left'; // Default to left alignment
-                        // Set alignment based on column index or other criteria as needed
-                        if (index === 4) {
-                            className = 'text-right'; // For example, set alignment of column index 4 to right
-                        }
-                        if (index === 5){
-                            className = 'text-center';
+                        var className;
+                        if(index == 6 || index == 4 || index == 5){
+                            className = 'text-right';
+                        } else if(index == 7){
+                            className = 'text-center'
                         }
                         // Add the class to the header cell
                         $(api.column(index).header()).addClass(className);
@@ -80,10 +76,12 @@
                     $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(3)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(4)', row).addClass('text-right').css('padding-right', '10px');
-                    $('td:eq(5)', row).addClass('text-center');
+                    $('td:eq(5)', row).addClass('text-right').css('padding-right', '10px');
+                    $('td:eq(6)', row).addClass('text-right').css('padding-right', '10px');
+                    $('td:eq(7)', row).addClass('text-center');
                 },
                 order: [
-                    // [0, "desc"]
+                    [0, "desc"]
                     // [3, "desc"],
                     // [2, "desc"]
                 ],
@@ -101,27 +99,41 @@
                 },
                 columns: [
                     {
-                        data: "MULAI_BERLAKU",
-                        name: "MULAI_BERLAKU",
+                        data: "TANGGAL",
+                        name: "TANGGAL",
                         render: function (data, type, full, meta) {
-                            return dateFormat(data);
+                            return dateFormat(data); // Return empty string if data is not provided
                         }
                     },
                     {
-                        data: "ID_BARANG",
-                        name: "ID_BARANG"
+                        data: "BUKTI",
+                        name: "BUKTI"
                     },
                     {
-                        data: "nama_barang",
-                        name: "barang.NAMA"
+                        data: "ID_SUPPLIER",
+                        name: "ID_SUPPLIER"
                     },
                     {
-                        data: "nama_satuan",
-                        name: "satuan.NAMA"
+                        data: "nama_supplier",
+                        name: "supplier.NAMA"
                     },
                     {
-                        data: "HARGA",
-                        name: "HARGA",
+                        data: "PEMBELIAN",
+                        name: "PEMBELIAN",
+                        render: function(data, type, full, meta) {
+                            return formatHarga(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: "DISCOUNT",
+                        name: "DISCOUNT",
+                        render: function(data, type, full, meta) {
+                            return formatHarga(parseFloat(data));
+                        }
+                    },
+                    {
+                        data: "NETTO",
+                        name: "NETTO",
                         render: function(data, type, full, meta) {
                             return formatHarga(parseFloat(data));
                         }
@@ -137,4 +149,3 @@
         });
     </script>
 @endpush
-

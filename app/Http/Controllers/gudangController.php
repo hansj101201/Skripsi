@@ -22,9 +22,6 @@ class gudangController extends Controller
         $gudang = gudang::join("depo","gudang.ID_DEPO","depo.ID_DEPO")
         ->select("gudang.*", "depo.NAMA AS nama_depo");
         return DataTables::of($gudang)
-        ->editColumn("ID_DEPO", function ($row) {
-            return $row->nama_depo;
-        })
         ->editColumn("ACTIVE", function ($row) {
             return $row->ACTIVE == 1 ? "Ya" : "Tidak";
         })
@@ -50,7 +47,6 @@ class gudangController extends Controller
             $validatedData = $request->validate([
                 'ID_GUDANG' => 'required',
                 'NAMA' => 'required',
-                'ALAMAT' => 'sometimes',
                 'ID_DEPO' => 'required',
                 'ACTIVE' => 'sometimes'
             ]);
@@ -77,7 +73,6 @@ class gudangController extends Controller
             $validatedData = $request->validate([
                 'ID_GUDANG' => 'required',
                 'NAMA' => 'required',
-                'ALAMAT' => 'sometimes',
                 'ID_DEPO' => 'required',
                 'ACTIVE' => 'sometimes',
             ]);

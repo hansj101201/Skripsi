@@ -11,6 +11,7 @@ use App\Http\Controllers\depoController;
 use App\Http\Controllers\satuanController;
 use App\Http\Controllers\supplierController;
 use App\Http\Controllers\customerController;
+use App\Http\Controllers\pembelianController;
 use App\Http\Controllers\penerimaanPOController;
 use App\Http\Controllers\pengeluaranBarangKanvasController;
 use App\Http\Controllers\penjualanController;
@@ -195,6 +196,18 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('getData/{bukti}/{periode}','getData');
             Route::get('getDetail/{bukti}/{periode}','getDetail');
             Route::put('postDetailPenjualan', 'postDetailPenjualan')->name('postDetailPenjualan');
+            Route::delete('delete/{bukti}/{periode}','destroy');
+        });
+    });
+
+    Route::prefix('pembelian')->middleware(['Login'])->group(function(){
+        Route::controller(pembelianController::class)->group(function () {
+            Route::get('index', 'index');
+            Route::get('datatable', 'datatable')->name('pembelian.datatable');
+            Route::post('postPembelian', 'postPembelian')->name('postPembelian');
+            Route::get('getData/{bukti}/{periode}','getData');
+            Route::get('getDetail/{bukti}/{periode}','getDetail');
+            Route::put('postDetailPembelian', 'postDetailPembelian')->name('postDetailPembelian');
             Route::delete('delete/{bukti}/{periode}','destroy');
         });
     });

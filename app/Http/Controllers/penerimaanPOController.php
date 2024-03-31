@@ -21,16 +21,17 @@ use Yajra\DataTables\DataTables;
 class penerimaanPOController extends Controller
 {
     public function index(){
-        $trnorder = trninvorder::where('STATUS',0)->get();
+
         $idDepo = trim(getIdDepo());
         // dd($idDepo);
-        if ($idDepo != null && $idDepo != '') {
+        if ($idDepo != '000') {
             $gudang = gudang::where('ID_DEPO', $idDepo)->get();
-        } else if($idDepo == 000){
-            dd("Masuk ke dalam else if");
+            $trnorder = trninvorder::where('STATUS',0)->where('ID_DEPO',getIdDepo())->get();
+        } else {
             $gudang = gudang::all();
+            $trnorder = trninvorder::where('STATUS',0)->get();
         }
-        dd($gudang);
+        // dd($gudang);
         return view('layout.transaksi.penerimaanpo.index', compact('gudang','trnorder'));
     }
 

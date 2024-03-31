@@ -24,9 +24,6 @@ class AuthController extends Controller
         $user = users::leftjoin("depo","user.ID_DEPO","depo.ID_DEPO")
         ->select("user.*",DB::raw("IFNULL(depo.NAMA, null) AS nama_depo"));
         return DataTables::of($user)
-        ->editColumn("ID_DEPO", function ($row) {
-            return $row->nama_depo;
-        })
         ->editColumn("ACTIVE", function ($row) {
             return $row->ACTIVE == 1 ? "Ya" : "Tidak";
         })

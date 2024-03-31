@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addDataModalLabel">Add Data</h5>
-                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close" onclick="clearModal()">
+                <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="btn-custom-close">&times;</span>
                 </button>
             </div>
@@ -82,7 +82,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onClick="simpanData()">Simpan</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="clearModal()">Close</button>
             </div>
         </div>
     </div>
@@ -274,6 +273,8 @@
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
 
         let idEdit = '';
@@ -597,8 +598,14 @@
         }
 
         $(document).ready(function () {
-        // Function to fetch data based on user input
 
+            $('#addDataModal').on('show.bs.modal', function (event) {
+                var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                $('#MULAI_BERLAKU').val(today);
+            });
+            $('#addDataModal').on('hide.bs.modal', function (event) {
+                clearModal();
+            });
             var bukti;
             var periode;
             $('#gudang, #nomorpo').select2({

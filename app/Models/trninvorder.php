@@ -15,7 +15,7 @@ class trninvorder extends Model
     public $incrementing = false;
     public $timestamps = false;
     protected $table = 'trninvorder';
-    protected $fillable = ['BUKTI', 'PERIODE', 'TANGGAL','JTHTEMPO', 'TGLKIRIM','SUPPLIER', 'NOMORPO', 'MATAUANG', 'KURS', 'PEMBELIAN', 'DISCOUNT', 'NETTO', 'KETERANGAN', 'TGLEDIT', 'TGLENTRY', 'USEREDIT', 'USERENTRY'];
+    protected $fillable = ['BUKTI', 'PERIODE', 'TANGGAL','ID_SUPPLIER','ID_DEPO','JTHTEMPO', 'TGLKIRIM', 'NOMORPO', 'PEMBELIAN', 'DISCOUNT', 'NETTO', 'KETERANGAN', 'TGLEDIT', 'TGLENTRY', 'USEREDIT', 'USERENTRY'];
     protected $casts = [
         'TGLENTRY' => 'datetime',
         'TGLEDIT' => 'datetime',

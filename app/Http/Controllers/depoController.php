@@ -20,7 +20,7 @@ class depoController extends Controller
     }
 
     public function datatable () {
-        $depo = depo::all();
+        $depo = depo::where('ID_DEPO', '!=', '000');
         return DataTables::of($depo)
         ->editColumn("ACTIVE", function ($row) {
             return $row->ACTIVE == 1 ? "Ya" : "Tidak";

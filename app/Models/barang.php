@@ -15,7 +15,7 @@ class barang extends Model
     public $incrementing = false;
     public $timestamps = false;
     protected $table = 'barang';
-    protected $fillable = ['ID_BARANG', 'NAMA', 'ID_SATUAN', 'ACTIVE','TGLEDIT','TGLENTRY','USEREDIT','USERENTRY'];
+    protected $fillable = ['ID_BARANG', 'NAMA', 'ID_SATUAN', 'MIN_STOK', 'ACTIVE','TGLEDIT','TGLENTRY','USEREDIT','USERENTRY'];
     protected $casts = [
         'TGLENTRY' => 'datetime',
         'TGLEDIT' => 'datetime',

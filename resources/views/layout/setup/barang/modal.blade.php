@@ -37,6 +37,12 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="min_stok" class="col-sm-3 col-form-label">Stok Minimum</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="min_stok" name="MIN_STOK" maxlength="40">
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="active" class="col-sm-3 col-form-label">Aktif</label>
                         <div class="col-sm-9">
                             <label class="switch">
@@ -63,10 +69,20 @@
 @push('js')
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
+        function clearModal(){
+            $('#kode_barang').val("");
+            $('#nama_barang').val("");
+            $('#satuan').val(null).trigger('change');
+            $('#min_stok').val("");
+        }
         function cekData(formData) {
             // Lakukan validasi di sini
             var kode_barang = formData.get('ID_BARANG');
             var nama_barang = formData.get('NAMA');
+            var satuan = formData.get('ID_SATUAN');
+            var min_stok = formData.get('MIN_STOK');
+
+            console.log(min_stok);
 
             if (kode_barang.trim() === '') {
                 toastr.error('Kode Barang harus diisi');
@@ -77,6 +93,18 @@
             if (nama_barang.trim() === '') {
                 toastr.error('Nama Barang harus diisi');
                 $('#nama_barang').addClass('is-invalid');
+                return false; // Mengembalikan false jika validasi gagal
+            }
+
+            if (satuan === '') {
+                toastr.error('Satuan harus diisi');
+                $('#satuan').addClass('is-invalid');
+                return false; // Mengembalikan false jika validasi gagal
+            }
+
+            if (min_stok.trim() === '' || isNaN(min_stok)) {
+                toastr.error('Minimum Stok harus diisi dengan angka');
+                $('#min_stok').addClass('is-invalid');
                 return false; // Mengembalikan false jika validasi gagal
             }
 
@@ -119,12 +147,14 @@
                             var nama = data.NAMA;
                             var satuan = data.ID_SATUAN;
                             var aktif = data.ACTIVE;
+                            var min = parseFloat(data.MIN_STOK).toFixed(0);
                             console.log(nama);
                             console.log(satuan);
                             // Isi nilai input field sesuai dengan data yang akan diedit
                             $('#kode_barang').val(kode).attr('readonly', true); // Tambahkan atribut readonly
                             $('#nama_barang').val(nama); // Tambahkan atribut readonly
-                            $('#satuan').val(satuan);
+                            $('#satuan').val(satuan).trigger('change');
+                            $('#min_stok').val(min);
                             if (aktif === 1) {
                                 $('#active').prop('checked', true);
                             } else {
@@ -176,6 +206,14 @@
 
             $(document).on('click', '#nama_barang', function(){
                 $('#nama_barang').removeClass('is-invalid');
+            })
+
+            $(document).on('click', '#satuan', function(){
+                $('#satuan').removeClass('is-invalid');
+            })
+
+            $(document).on('click', '#min_stok', function(){
+                $('#min_stok').removeClass('is-invalid');
             })
         });
     </script>

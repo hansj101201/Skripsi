@@ -23,23 +23,10 @@ class hargaController extends Controller
     public function datatable(Request $request){
         $harga = harga::join('barang','harga.ID_BARANG','barang.ID_BARANG')
         ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
-        ->distinct()
         ->orderBy('MULAI_BERLAKU','desc')
         ->select('harga.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan');
 
         return DataTables::of($harga)
-        ->addColumn('BARANG_NAMA', function ($row) {
-            return $row->nama_barang;
-        })
-        ->addColumn("SATUAN_NAMA", function ($row) {
-            return $row->nama_satuan;
-        })
-        ->orderColumn("SATUAN_NAMA",function($query, $order){
-            $query->orderBy('ID_BARANG', $order);
-        })
-        ->orderColumn("BARANG_NAMA",function($query, $order){
-            $query->orderBy('ID_BARANG', $order);
-        })
         ->addColumn('action', function ($row) {
             return '<button class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editDataModal" data-kode="'.$row->ID.'"><i class="fas fa-pencil-alt"></i></button> &nbsp;';
         })

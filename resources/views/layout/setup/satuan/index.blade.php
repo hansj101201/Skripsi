@@ -49,6 +49,25 @@
                 serverSide: true,
                 processing: true,
                 ajax: '{{ url('setup/satuan/datatable') }}',
+                drawCallback: function(settings) {
+                    var api = this.api();
+                    // Loop through each column
+                    api.columns().every(function(index) {
+                        // Get the class of the first data cell of this column
+                        var className;
+                        className = 'text-left';
+                        if(index == 2) {
+                            className = 'text-center';
+                        }
+                        // Add the class to the header cell
+                        $(api.column(index).header()).addClass(className);
+                    });
+                },
+                createdRow: function (row, data, dataIndex) {
+                    $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(2)', row).addClass('text-center');
+                },
                 order: [
                     // [0, "desc"]
                     // [3, "desc"],

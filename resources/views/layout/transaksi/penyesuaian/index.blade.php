@@ -62,12 +62,9 @@
                     api.columns().every(function(index) {
                         // Get the class of the first data cell of this column
                         var className;
-                        if ($(api.column(index).nodes()).eq(0).hasClass('text-left')) {
-                            className = 'text-left';
-                        } else if ($(api.column(index).nodes()).eq(0).hasClass('text-center')) {
-                            className = 'text-center';
-                        } else {
-                            className = 'text-right';
+                        className = 'text-left';
+                        if(index == 4){
+                            className = 'text-center'
                         }
                         // Add the class to the header cell
                         $(api.column(index).header()).addClass(className);
