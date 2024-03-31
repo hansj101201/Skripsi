@@ -100,9 +100,15 @@
             $('#active').prop('checked', true);
             $('#password-group').hide();
         }
-        function updateGudangOptions(selectedDepoId) {
+        function updateGudangOptions(mode, id, selectedGudangId) {
+            var url = "";
+            if (mode === 'add') {
+                url = "{{ url('setup/salesman/getGudang') }}/"+id;
+            } else if (mode === 'edit') {
+                url = "{{ url('setup/salesman/getGudangSales') }}/" + id;
+            }
             $.ajax({
-                url: "{{ url ('setup/salesman/getGudang') }}/"+selectedDepoId,
+                url: url,
                 method: 'GET',
                 success: function(data) {
                     console.log(data);
@@ -121,6 +127,10 @@
                             text: gudang.NAMA
                         }));
                     });
+                    if (mode === 'edit' && selectedGudangId) {
+                        $('#gudang').val(selectedGudangId);
+                        $('#gudang').prop('disabled', true);
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
@@ -185,6 +195,7 @@
 
         $(document).ready(function() {
 
+            var mode;
             $('#gudang, #depo').select2({
                 placeholder: "---Pilih---",
                 width: 'resolve',
@@ -199,7 +210,7 @@
             })
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
-                var mode = button.data('mode'); // Mengambil mode dari tombol
+                mode = button.data('mode'); // Mengambil mode dari tombol
 
                 var modal = $(this);
                 if (mode === 'add') {
@@ -211,15 +222,16 @@
                     $('#addEditForm').attr('action', "{{ route('salesman.store') }}"); // Set rute untuk operasi tambah
                     $('#addEditForm').attr('method', 'POST');
                     $('#depo').prop('disabled', false);
+                    $('#gudang').prop('disabled', false);
                     if ('{{ getIdDepo() }}' !== '000') {
                         $('#depo').val({{ getIdDepo() }}).trigger('change');
                         $('#depo').prop('disabled', true);
-                        updateGudangOptions('{{ getIdDepo() }}');
+                        updateGudangOptions('add','{{ getIdDepo() }}');
                     } else {
                         $('#depo').change(function() {
                             var selectedDepoId = $(this).val();
                             console.log(selectedDepoId);
-                            updateGudangOptions(selectedDepoId);
+                            updateGudangOptions('add',selectedDepoId);
                         });
                     }
                 } else if (mode === 'edit') {
@@ -244,16 +256,13 @@
                             $('#nomor_salesman').val(nomor);
                             $('#email_salesman').val(email);
                             $('#depo').val(depo).trigger('change');
-                            updateGudangOptions(depo);
-                            $('#gudang').val(gudang).trigger('change');
+                            updateGudangOptions('edit',depo,gudang);
                             $('#depo').prop('disabled', true);
-                            $('#gudang').prop('disabled', true);
                             if (aktif === 1) {
                                 $('#active').prop('checked', true);
                             } else {
                                 $('#active').prop('checked', false);
                             }
-                            $('#addEditForm').append('ID_DEPO', $('#depo').val());
                             $('#addEditForm').attr('action', "{{ route('salesman.update') }}"); // Set rute untuk operasi edit
                             $('#addEditForm').attr('method', 'POST');
                             $('#addEditForm').append('<input type="hidden" name="_method" value="PUT">'); // Tambahkan input tersembunyi untuk metode PUT
