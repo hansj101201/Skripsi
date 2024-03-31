@@ -73,7 +73,15 @@
 
 @push('js')
     <script>
-
+        function clearModal(){
+            $('#kode_supplier').val('');
+            $('#nama_supplier').val('');
+            $('#alamat').val('');
+            $('#kota').val('');
+            $('#telepon').val('');
+            $('#npwp').val('');
+            $('#active').prop('checked', true);
+        }
         function cekData(formData) {
             // Lakukan validasi di sini
             var kode_supplier = formData.get('ID_SUPPLIER');
@@ -117,7 +125,9 @@
         }
 
         $(document).ready(function() {
-
+            $('#DataModal').on('hide.bs.modal', function(event) {
+                clearModal();
+            })
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode'); // Mengambil mode dari tombol

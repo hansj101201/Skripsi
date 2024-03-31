@@ -52,7 +52,7 @@ class penerimaanPOController extends Controller
         $dtlorder = dtlinvorder::where('PERIODE',$periode)
         ->where('BUKTI',$id)
         ->join('barang','dtlinvorder.ID_BARANG','barang.ID_BARANG')
-        ->join('satuan','dtlinvorder.ID_SATUAN','satuan.ID_SATUAN')
+        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
         ->select('dtlinvorder.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
         ->orderBy('NOMOR','asc')
         ->get();

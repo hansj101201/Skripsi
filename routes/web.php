@@ -80,6 +80,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::delete('/{ID}','destroy');
             Route::get('datatable','datatable')->name('salesman.datatable');
             Route::get('getDetail/{ID}','getDetail');
+            Route::get('getGudang/{ID}', 'getGudang');
         });
     });
 

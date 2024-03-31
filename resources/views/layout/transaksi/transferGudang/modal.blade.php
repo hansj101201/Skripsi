@@ -66,11 +66,11 @@
                 <div id="detailBarang">
                     <table class="table table-stripped table-bordered myTable" id = "tableData">
                         <thead>
-                            <th> Kode Barang </th>
-                            <th> Nama Barang </th>
-                            <th> Satuan </th>
-                            <th> QTY </th>
-                            <th> Aksi </th>
+                            <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                            <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
+                            <th class="text-left" style="padding-left: 10px;"> Satuan </th>
+                            <th class="text-right" style="padding-right: 10px;"> QTY </th>
+                            <th class="text-center"> Aksi </th>
                         </thead>
                         <tbody id="listBarang">
                         </tbody>
@@ -307,11 +307,11 @@
                             // console.log(data[i]);
                             createTable +=
                                 `<tr id="${data[i].ID_BARANG}">
-                                    <td>${data[i].ID_BARANG}</td>
-                                    <td>${data[i].nama_barang}</td>
-                                    <td>${data[i].nama_satuan}</td>
-                                    <td>${qty}</td>
-                                    <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
+                                    <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
+                                    <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
+                                    <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
+                                    <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                                    <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
                                         data-kode="${data[i].ID_BARANG}"
                                         data-nama="${data[i].nama_barang}"
                                         data-satuan="${data[i].nama_satuan}"
@@ -340,11 +340,11 @@
 
             createTable +=
                 `<tr id="${kode}">
-                    <td>${kode}</td>
-                    <td>${nama}</td>
-                    <td>${satuan}</td>
-                    <td>${qty}</td>
-                    <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal" data-mode="editAdd"
+                    <td class="text-left" style="padding-left: 10px;">${kode}</td>
+                    <td class="text-left" style="padding-left: 10px;">${nama}</td>
+                    <td class="text-left" style="padding-left: 10px;">${satuan}</td>
+                    <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                    <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal" data-mode="editAdd"
                         data-kode="${kode}"
                         data-nama="${nama}"
                         data-satuan="${satuan}"

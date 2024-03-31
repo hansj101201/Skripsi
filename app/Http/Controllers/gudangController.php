@@ -14,7 +14,7 @@ class gudangController extends Controller
     public function index () {
 
         // $processedData = $this->processGudangData($gudang);
-        $depo = depo::all();
+        $depo = depo::where('ID_DEPO','!=','000')->get();
         return view('layout.setup.gudang.index', compact('depo'));
     }
 

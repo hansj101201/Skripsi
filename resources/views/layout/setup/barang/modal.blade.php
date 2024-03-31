@@ -14,7 +14,7 @@
                     @csrf
                     <input type="hidden" id="editMode" name="editMode" value="0">
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">ID Barang</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="kode_barang" name="ID_BARANG" maxlength="6">
                         </div>
@@ -39,7 +39,7 @@
                     <div class="form-group row">
                         <label for="min_stok" class="col-sm-3 col-form-label">Stok Minimum</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="min_stok" name="MIN_STOK" maxlength="40">
+                            <input type="text" class="form-control" id="min_stok" name="MIN_STOK">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -68,19 +68,21 @@
 
 @push('js')
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
+    <script src="{{ asset('/js/format.js') }}"></script>
     <script>
         function clearModal(){
             $('#kode_barang').val("");
             $('#nama_barang').val("");
             $('#satuan').val(null).trigger('change');
             $('#min_stok').val("");
+            $('#active').prop('checked', true);
         }
         function cekData(formData) {
             // Lakukan validasi di sini
             var kode_barang = formData.get('ID_BARANG');
             var nama_barang = formData.get('NAMA');
             var satuan = formData.get('ID_SATUAN');
-            var min_stok = formData.get('MIN_STOK');
+            var min_stok = parseFloat(formData.get('MIN_STOK').replace(/[^\d]/g, ''));
 
             console.log(min_stok);
 
@@ -102,8 +104,8 @@
                 return false; // Mengembalikan false jika validasi gagal
             }
 
-            if (min_stok.trim() === '' || isNaN(min_stok)) {
-                toastr.error('Minimum Stok harus diisi dengan angka');
+            if (min_stok == 0) {
+                toastr.error('Minimum Stok tidak boleh 0');
                 $('#min_stok').addClass('is-invalid');
                 return false; // Mengembalikan false jika validasi gagal
             }
@@ -112,6 +114,11 @@
         }
 
         $(document).ready(function() {
+            $('#min_stok').on('input', function(){
+                var stok = $(this).val().trim();
+                var stokFormat = stok !== '' ? parseFloat(stok.replace(/[^\d]/g, '')) : 0;
+                $(this).val(formatHarga(parseFloat(stokFormat)));
+            })
             $('#satuan').select2({
                 placeholder: "---Pilih---",
                 width: 'resolve',
@@ -120,6 +127,9 @@
                 },
                 allowClear: true
             });
+            $('#DataModal').on('hide.bs.modal', function(event) {
+                clearModal();
+            })
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode'); // Mengambil mode dari tombol
@@ -128,6 +138,7 @@
                 if (mode === 'add') {
                     modal.find('.modal-title').text('Tambah Barang Jadi');
                     $('#editMode').val(0); // Set editMode ke 0 untuk operasi add
+                    $('#min_stok').val(0);
                     $('#kode_barang').removeAttr('readonly');
                     $('#nama_barang').removeAttr('readonly');
                     $('#addEditForm').attr('action', "{{ route('barang.store') }}"); // Set rute untuk operasi tambah
@@ -147,7 +158,7 @@
                             var nama = data.NAMA;
                             var satuan = data.ID_SATUAN;
                             var aktif = data.ACTIVE;
-                            var min = parseFloat(data.MIN_STOK).toFixed(0);
+                            var min = formatHarga(parseFloat(data.MIN_STOK).toFixed(0));
                             console.log(nama);
                             console.log(satuan);
                             // Isi nilai input field sesuai dengan data yang akan diedit
@@ -196,6 +207,8 @@
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
 
+                    var min_stok = parseFloat(formData.get('MIN_STOK').replace(/[^\d]/g, ''));
+                    formData.set('MIN_STOK',min_stok);
                     submitForm(formData, url, type, successCallback, errorCallback);
                 }
             });

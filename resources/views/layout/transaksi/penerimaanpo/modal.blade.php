@@ -386,12 +386,12 @@
             let createRow ='';
             createRow +=
             `
-                <td>${kode}</td>
-                <td>${nama}</td>
-                <td>${satuan}</td>
-                <td>${qtyorder}</td>
-                <td>${qty}</td>
-                <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
+                <td class="text-left" style="padding-left: 10px;">${kode}</td>
+                <td class="text-left" style="padding-left: 10px;">${nama}</td>
+                <td class="text-left" style="padding-left: 10px;">${satuan}</td>
+                <td class="text-right" style="padding-right: 10px;">${qtyorder}</td>
+                <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                     data-kode="${kode}"
                     data-nama="${nama}"
                     data-satuan="${satuan}"
@@ -417,12 +417,12 @@
             let createRow ='';
             createRow +=
             `
-                <td>${kode}</td>
-                <td>${nama}</td>
-                <td>${satuan}</td>
-                <td>${qty}</td>
+                <td class="text-left" style="padding-left: 10px;">${kode}</td>
+                <td class="text-left" style="padding-left: 10px;">${nama}</td>
+                <td class="text-left" style="padding-left: 10px;">${satuan}</td>
+                <td class="text-right" style="padding-right: 10px;">${qty}</td>
                 <td class="hide">${stok}</td>
-                <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
+                <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
                     data-kode="${kode}"
                     data-nama="${nama}"
                     data-satuan="${satuan}"
@@ -457,12 +457,12 @@
                             let i = 0
                             createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
                                 <thead>
-                                    <th> Kode Barang </th>
-                                    <th> Nama Barang </th>
-                                    <th> Satuan </th>
-                                    <th> Qty Order </th>
-                                    <th> Qty Kirim </th>
-                                    <th> Aksi </th>
+                                    <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                                    <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
+                                    <th class="text-left" style="padding-left: 10px;"> Satuan </th>
+                                    <th class="text-right" style="padding-right: 10px;"> Qty Order </th>
+                                    <th class="text-right" style="padding-right: 10px;"> Qty Kirim </th>
+                                    <th class="text-center"> Aksi </th>
                                 </thead>
                                 <tbody>`;
                                     while(i < data.length){
@@ -471,13 +471,13 @@
                                         // console.log(data[i]);
                                         createTable +=
                                             `<tr id="${data[i].ID_BARANG}">
-                                                <td>${data[i].ID_BARANG}</td>
-                                                <td>${data[i].nama_barang}</td>
-                                                <td>${data[i].nama_satuan}</td>
-                                                <td>${qtyOrder}</td>
-                                                <td>0</td>
+                                                <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
+                                                <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
+                                                <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
+                                                <td class="text-right" style="padding-right: 10px;">${qtyOrder}</td>
+                                                <td class="text-right" style="padding-right: 10px;">0</td>
                                                 <td class="hide">${data[i].ID_SATUAN}</td>
-                                                <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
+                                                <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                                                     data-kode="${data[i].ID_BARANG}"
                                                     data-nama="${data[i].nama_barang}"
                                                     data-satuan="${data[i].nama_satuan}"
@@ -511,11 +511,11 @@
                     let i = 0
                     createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
                         <thead>
-                            <th> Kode Barang </th>
-                            <th> Nama Barang </th>
-                            <th> Satuan </th>
-                            <th> Qty </th>
-                            <th> Aksi </th>
+                            <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                            <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
+                            <th class="text-left" style="padding-left: 10px;"> Satuan </th>
+                            <th class="text-right" style="padding-right: 10px;"> Qty </th>
+                            <th class="text-center"> Aksi </th>
                             </thead>
 
                             <tbody>
@@ -526,13 +526,13 @@
                                     // console.log(data[i]);
                                     createTable +=
                                         `<tr id="${data[i].ID_BARANG}">
-                                            <td>${data[i].ID_BARANG}</td>
-                                            <td>${data[i].nama_barang}</td>
-                                            <td>${data[i].nama_satuan}</td>
-                                            <td>${qty}</td>
+                                            <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
+                                            <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
+                                            <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
+                                            <td class="text-right" style="padding-right: 10px;">${qty}</td>
                                             <td class="hide">${stok}</td>`
                                             if($('#detailjumlah').val()==0){
-                                                createTable+= ` <td><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
+                                                createTable+= ` <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
                                                 data-kode="${data[i].ID_BARANG}"
                                                 data-nama="${data[i].nama_barang}"
                                                 data-satuan="${data[i].nama_satuan}"
@@ -601,7 +601,7 @@
 
             $('#addDataModal').on('show.bs.modal', function (event) {
                 var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                $('#MULAI_BERLAKU').val(today);
+                $('#tanggal').val(today);
             });
             $('#addDataModal').on('hide.bs.modal', function (event) {
                 clearModal();

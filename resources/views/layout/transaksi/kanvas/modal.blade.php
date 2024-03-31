@@ -310,24 +310,24 @@
                             let i = 0;
                             createTable += `<table class="table table-stripped table-bordered myTable" id="tableData">
                                 <thead>
-                                    <th> Kode Barang </th>
-                                    <th> Nama Barang </th>
-                                    <th> Satuan </th>
-                                    <th> QTY Minta </th>
-                                    <th> QTY Kirim </th>
-                                    <th> Aksi </th>
+                                    <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                                    <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
+                                    <th class="text-left" style="padding-left: 10px;"> Satuan </th>
+                                    <th class="text-right" style="padding-right: 10px;"> QTY Minta </th>
+                                    <th class="text-right" style="padding-right: 10px;"> QTY Kirim </th>
+                                    <th class="text-center"> Aksi </th>
                                 </thead>
                                 <tbody>`;
                             while (i < detailData.length) {
                                 let qty = parseFloat(detailData[i].QTY).toFixed(0);
                                 createTable +=
                                     `<tr id="${detailData[i].ID_BARANG}">
-                                        <td>${detailData[i].ID_BARANG}</td>
-                                        <td>${detailData[i].nama_barang}</td>
-                                        <td>${detailData[i].nama_satuan}</td>
-                                        <td>${qty}</td>
-                                        <td>0</td>
-                                        <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
+                                        <td class="text-left" style="padding-left: 10px;">${detailData[i].ID_BARANG}</td>
+                                        <td class="text-left" style="padding-left: 10px;">${detailData[i].nama_barang}</td>
+                                        <td class="text-left" style="padding-left: 10px;">${detailData[i].nama_satuan}</td>
+                                        <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                                        <td class="text-right" style="padding-right: 10px;">0</td>
+                                        <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                                             data-kode="${detailData[i].ID_BARANG}"
                                             data-qtyminta="${qty}"
                                             data-qtykirim="${qty}"
@@ -379,12 +379,12 @@
                                     let i = 0
                                     createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
                                         <thead>
-                                            <th> Kode Barang </th>
-                                            <th> Nama Barang </th>
-                                            <th> Satuan </th>
-                                            <th> Qty Minta </th>
-                                            <th> Qty Kirim </th>
-                                            <th> Aksi </th>
+                                            <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                                            <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
+                                            <th class="text-left" style="padding-left: 10px;"> Satuan </th>
+                                            <th class="text-right" style="padding-right: 10px;"> Qty Minta </th>
+                                            <th class="text-right" style="padding-right: 10px;"> Qty Kirim </th>
+                                            <th class="text-center"> Aksi </th>
                                         </thead>
 
                                         <tbody>`;
@@ -393,12 +393,12 @@
                                                 console.log(dataArray[i].ID);
                                                 createTable +=
                                                     `<tr id="${data[i].ID_BARANG}">
-                                                        <td>${data[i].ID_BARANG}</td>
-                                                        <td>${data[i].nama_barang}</td>
-                                                        <td>${data[i].nama_satuan}</td>
-                                                        <td>${dataArray[i].QTYMINTA}</td>
-                                                        <td>${qty}</td>
-                                                        <td><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
+                                                        <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
+                                                        <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
+                                                        <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
+                                                        <td class="text-right" style="padding-right: 10px;">${dataArray[i].QTYMINTA}</td>
+                                                        <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                                                        <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                                                             data-kode="${data[i].ID_BARANG}"
                                                             data-nama="${data[i].nama_barang}"
                                                             data-satuan="${data[i].nama_satuan}"

@@ -117,7 +117,7 @@
                 return false; // Mengembalikan false jika validasi gagal
             }
 
-            if (password_user === '' && mode === 'add'){
+            if (password_user.trim() === '' && mode === 'add'){
                 toastr.error('Password harus diisi');
                 $('#password_user').addClass('is-invalid');
                 return false;

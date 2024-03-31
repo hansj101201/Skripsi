@@ -38,9 +38,9 @@
                         <tbody id="tabel-body">
                             @foreach($barang as $index => $barang)
                             <tr>
-                                <td><input type="hidden" name="ID_BARANG[]" value="{{ $barang->ID_BARANG }}">{{ $barang->ID_BARANG }}</td>
-                                <td><input type="hidden" name="NAMA[]" value="{{ $barang->NAMA }}">{{ $barang->NAMA }}</td>
-                                <td><input type="hidden" name="ID_SATUAN[]" value="{{ $barang->ID_SATUAN }}">{{ $barang->satuan->NAMA }}</td>
+                                <td class="text-left" style="padding-left: 10px;"><input type="hidden" name="ID_BARANG[]" value="{{ $barang->ID_BARANG }}">{{ $barang->ID_BARANG }}</td>
+                                <td class="text-left" style="padding-left: 10px;"><input type="hidden" name="NAMA[]" value="{{ $barang->NAMA }}">{{ $barang->NAMA }}</td>
+                                <td class="text-left" style="padding-left: 10px;"><input type="hidden" name="ID_SATUAN[]" value="{{ $barang->ID_SATUAN }}">{{ $barang->satuan->NAMA }}</td>
                                 <td>
                                     {{-- Check if there are existing records in the database --}}
                                     @if($harga->isNotEmpty())
@@ -48,17 +48,17 @@
                                         @foreach($harga as $data)
                                             @if($data->ID_BARANG == $barang->ID_BARANG)
                                                 {{-- Set the input value to the existing 'harga' value --}}
-                                                <input type="text" name="HARGA[]" value="{{ $data->HARGA }}">
+                                                <input type="text" class="text-right"name="HARGA[]" style="padding-right: 10px;" value="{{ $data->HARGA }}">
                                                 @php break; @endphp {{-- Break the loop once the 'harga' value is found --}}
                                             @endif
                                         @endforeach
                                         {{-- If no existing records found, set the default value to 0 --}}
                                         @if(!isset($data) || $data->ID_BARANG != $barang->ID_BARANG)
-                                            <input type="text" name="HARGA[]" value="0">
+                                            <input type="text"class="text-right" name="HARGA[]" style="padding-right: 10px;" value="0">
                                         @endif
                                     @else
                                         {{-- If there are no records in the database, set the default value to 0 --}}
-                                        <input type="text" name="HARGA[]" value="0">
+                                        <input type="text"class="text-right" name="HARGA[]" style="padding-right: 10px;" value="0">
                                     @endif
                                 </td>
                             </tr>

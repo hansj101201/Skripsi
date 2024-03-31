@@ -16,7 +16,7 @@
             <div>
                 <h1 class="card-title mb-0">Master Barang</h1>
             </div>
-            <div class="mt-4 mb-4">
+            <div class="mt-2 mb-2">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#DataModal" data-mode="add">
                     + Barang
                 </button>
@@ -26,9 +26,10 @@
             <table class="table responsive table-stripped table-bordered myTable" id="tableHasil">
                 <thead class="">
                     <tr>
-                        <th> Kode Barang </th>
+                        <th> ID Barang </th>
                         <th> Nama Barang </th>
                         <th> Satuan </th>
+                        <th> Minimum Stok</th>
                         <th> Aktif </th>
                         <th> Aksi </th>
                     </tr>
@@ -61,8 +62,10 @@
                         // Get the class of the first data cell of this column
                         var className;
                         className = 'text-left';
-                        if(index == 4) {
+                        if(index == 5) {
                             className = 'text-center';
+                        } else if(index == 3){
+                            className = 'text-right';
                         }
                         // Add the class to the header cell
                         $(api.column(index).header()).addClass(className);
@@ -72,8 +75,9 @@
                     $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
-                    $('td:eq(3)', row).addClass('text-left').css('padding-left', '10px');
-                    $('td:eq(4)', row).addClass('text-center');
+                    $('td:eq(3)', row).addClass('text-right').css('padding-right', '10px');
+                    $('td:eq(4)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(5)', row).addClass('text-center');
                 },
                 order: [
                     // [0, "desc"]
@@ -104,6 +108,13 @@
                     {
                         data: "nama_satuan",
                         name: "satuan.NAMA"
+                    },
+                    {
+                        data: "MIN_STOK",
+                        name: "MIN_STOK",
+                        render: function(data, type, full, meta) {
+                            return formatHarga(parseFloat(data));
+                        }
                     },
                     {
                         data: "ACTIVE",

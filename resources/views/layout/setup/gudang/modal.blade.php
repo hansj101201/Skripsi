@@ -27,7 +27,7 @@
                     <div class="form-group row">
                         <label for="depo"class="col-sm-3 col-form-label">Depo</label>
                         <div class="col-sm-9"> <!-- Use the same grid class 'col-sm-9' for consistency -->
-                            <select class="form-control" id="depo" name="ID_DEPO"> <!-- Remove 'col-sm-9' class here -->
+                            <select class="form-control" id="depo" name="ID_DEPO"  > <!-- Remove 'col-sm-9' class here -->
                                 @foreach($depo as $Depo)
                                     <option value="">Pilih</option>
                                     <option value="{{ $Depo->ID_DEPO }}">{{ $Depo->NAMA }}</option>
@@ -63,6 +63,14 @@
 @push('js')
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
+        function clearModal(){
+            $('#kode_gudang').val("");
+            $('#nama_gudang').val("");
+            $('#lokasi').val("");
+            $('#depo').val(null).trigger('change');
+            $('#active').prop('checked', true);
+        }
+
         function cekData(formData) {
             // Lakukan validasi di sini
             var kode_gudang = formData.get('ID_GUDANG');
@@ -95,6 +103,9 @@
                 },
                 allowClear: true
             });
+            $('#DataModal').on('hide.bs.modal', function(event) {
+                clearModal();
+            })
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode'); // Mengambil mode dari tombol
@@ -107,6 +118,12 @@
                     $('#nama_gudang').removeAttr('readonly');
                     $('#addEditForm').attr('action', "{{ route('gudang.store') }}"); // Set rute untuk operasi tambah
                     $('#addEditForm').attr('method', 'POST');
+                    $('#depo').prop('disabled', false);
+                    console.log({{ getIdDepo() }});
+                    if ('{{ getIdDepo() }}' !== '000') {
+                        $('#depo').val({{ getIdDepo() }}).trigger('change');
+                        $('#depo').prop('disabled', true);
+                    }
                 } else if (mode === 'edit') {
                     modal.find('.modal-title').text('Edit Gudang');
                     $('#editMode').val(1); // Set editMode ke 1 untuk operasi edit
@@ -121,7 +138,8 @@
                             // Isi nilai input field sesuai dengan data yang akan diedit
                             $('#kode_gudang').val(kode).attr('readonly', true); // Tambahkan atribut readonly
                             $('#nama_gudang').val(nama); // Tambahkan atribut readonly
-                            $('#depo').val(depo);
+                            $('#depo').val(depo).trigger('change');
+                            $('#depo').prop('disabled', true);
                             if (aktif === 1) {
                                 $('#active').prop('checked', true);
                             } else {

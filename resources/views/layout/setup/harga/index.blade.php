@@ -17,7 +17,7 @@
             <div>
                 <h1 class="card-title">Master Harga</h1>
             </div>
-            <div class="mt-4 mb-4">
+            <div class="mt-2 mb-2">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDataModal">
                     + Harga
                 </button>

@@ -1,6 +1,6 @@
 @extends("adminlte::page")
 
-@section('title','Master Barang')
+@section('title','Master Depo')
 
 @section('plugins.Datatables',true)
 
@@ -15,7 +15,7 @@
             <div>
                 <h1 class="card-title">Master Depo</h1>
             </div>
-            <div class="mt-4 mb-4">
+            <div class="mt-2 mb-2">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#DataModal" data-mode="add">
                     + Depo
                 </button>
