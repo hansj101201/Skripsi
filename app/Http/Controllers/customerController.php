@@ -117,6 +117,11 @@ class customerController extends Controller
         }
     }
 
+    public function getAllCustomer(){
+        $customer = customer::all();
+        dd($customer);
+        return response()->json($customer);
+    }
     public function destroy($ID_CUSTOMER)
     {
         $trnjadiCount = trnjadi::where('ID_CUSTOMER', $ID_CUSTOMER)->count();

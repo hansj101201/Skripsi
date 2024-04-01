@@ -129,6 +129,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::delete('/{ID}','destroy');
             Route::get('datatable','datatable')->name('customer.datatable');
             Route::get('getDetail/{ID}','getDetail');
+            Route::get('getAllCustomer', 'getAllCustomer');
         });
     });
 
