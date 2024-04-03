@@ -32,11 +32,7 @@
                         <label for="nomor_po" class="col-form-label"> No Permintaan</label>
                     </div>
                     <div class="col-sm-6">
-                        <select class="form-control" id="nomorpermintaan" name="NOMORPERMINTAAN"> <!-- Remove 'col-sm-9' class here -->
-                            @foreach($trnsales as $a)
-                                <option value="">Pilih</option>
-                                <option value="{{ $a->NOPERMINTAAN }}" readonly>{{ $a->NOPERMINTAAN }}</option>
-                            @endforeach
+                        <select class="form-control" id="nomorpermintaan" name="NOMORPERMINTAAN">
                         </select>
                     </div>
                 </div>
@@ -188,6 +184,8 @@
 
         function clearModal() {
             $('#tanggal').val("");
+            $('#nomorpermintaan').empty();
+            $('#nomorpermintaan').val('');
             $('#nomorpermintaan').val(null).trigger('change');
             $('#nomorpermintaan').prop('disabled', false);
             $('#bukti').val("");
@@ -208,7 +206,7 @@
                     $('#bukti').val(data.BUKTI);
                     $('#nomorpermintaan').val(data.NOPERMINTAAN).trigger('change');
                     $('#gudang').val(data.ID_GUDANG).trigger('change');
-                    $('#gudang_tujuan').val(data.ID_GUDANG_TUJUAN).trigger('change');
+                    $('#gudang_tujuan').val(data.ID_GUDANG_TUJUAN);
                     $('#keterangan').val(data.KETERANGAN);
 
                     fetchDetail(data.NOPERMINTAAN,bukti,periode);
@@ -295,9 +293,8 @@
                 url: "{{ url('transaksi/pengeluaran/fetch-data') }}/" + id,
                 method: 'GET',
                 success: function (data) {
-                    console.log(data[0]);
-                    $('#gudang').val(data[0].ID_GUDANG).trigger('change');
-                    $('#gudang_tujuan').val(data[0].gudang_sales);
+                    console.log(data);
+                    $('#gudang_tujuan').val(data[0].ID_GUDANG);
 
                     $.ajax({
                         url: "{{ url('transaksi/pengeluaran/fetch-detail') }}/" +data[0].BUKTI+'/'+data[0].PERIODE,
@@ -351,7 +348,7 @@
         function fetchDetail(id,bukti,periode){
             var dataArray = [];
             $.ajax({
-                url: "{{ url('transaksi/pengeluaran/fetch-data') }}/" + id,
+                url: "{{ url('transaksi/pengeluaran/fetch-data-selesai') }}/" + id,
                 method: 'GET',
                 success: function (data) {
                     $.ajax({
@@ -524,12 +521,17 @@
             var mode;
             var isSaveButtonActive = false;
             $('#addDataModal').on('show.bs.modal', function (event) {
+                $('#nomorpermintaan').val('');
                 var button = $(event.relatedTarget);
                 mode = button.data('mode');
                 var modal = $(this);
                 console.log(mode);
                 if (mode === 'viewDetail') {
 
+                    @foreach($trnsales as $a)
+                        var option = $('<option></option>').attr('value', '{{ $a->NOPERMINTAAN }}').text('{{ $a->NOPERMINTAAN }}');
+                        $('#nomorpermintaan').append(option);
+                    @endforeach
                     modal.find('.modal-title').text('View Detail');
                     $("#tanggal").datepicker('destroy');
                     $('#gudang').prop('disabled', true);
@@ -554,6 +556,13 @@
                         defaultDate: 'now', // Set default date to 'now'
                         autoclose: true // Close the datepicker when a date is selected
                     });
+                    $('#nomorpermintaan').append('<option value="">Pilih</option>');
+                    @foreach($trnsales as $a)
+                        @if($a->STATUS == 0)
+                            var option = $('<option></option>').attr('value', '{{ $a->NOPERMINTAAN }}').text('{{ $a->NOPERMINTAAN }}');
+                            $('#nomorpermintaan').append(option);
+                        @endif
+                    @endforeach
                     $('#datepicker').on('click', function() {
                         $('#tanggal').datepicker('show');
                     });

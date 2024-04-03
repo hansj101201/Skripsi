@@ -54,8 +54,17 @@ class AuthController extends Controller
             "password" => $request->PASSWORD,
         ];
         if (Auth::attempt($credential)) {
+            $user = Auth::user();
+
+            if ($user->ACTIVE == 1) {
+                // Jika user aktif, redirect ke dashboard
+                return redirect("dashboard");
+            } else {
+                // Jika user tidak aktif, kembalikan ke halaman login dengan pesan
+                Auth::logout();
+                return redirect('login')->with('pesan', 'Akun Anda dinonaktifkan.');
+            }
             // ini adalah function super kita untuk membaca data siapa yang lagi login sekarang
-            return redirect("dashboard");
         } else {
             return redirect('login')->with('pesan', 'Gagal Login');
         }

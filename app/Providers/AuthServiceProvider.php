@@ -39,5 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define("SuperAdmin", function ($user) {
             return Auth::user()->rolenya == "SuperAdmin";
         });
+
+        // Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
 }

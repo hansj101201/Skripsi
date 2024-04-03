@@ -172,6 +172,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('index', 'index');
             Route::get('datatable', 'datatable')->name('pengeluaran.datatable');
             Route::get('fetch-data/{id}', 'fetchData')->where('id', '.*');
+            Route::get('fetch-data-selesai/{id}', 'fetchDataSelesai')->where('id', '.*');
             Route::get('fetch-detail/{id}/{periode}', 'fetchDetail');
             Route::post('postTrnCanvas', 'postTrnCanvas')->name('postTrnCanvas');
             Route::put('postDetailTrnCanvas','postDetailTrnCanvas')->name('postDetailTrnCanvas');

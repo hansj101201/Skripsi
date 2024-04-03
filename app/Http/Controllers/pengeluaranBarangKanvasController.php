@@ -16,7 +16,7 @@ class pengeluaranBarangKanvasController extends Controller
 {
     //
     public function index(){
-        $trnsales = trnsales::where('KDTRN','30')->where('STATUS',0)->where('ID_DEPO', getIdDepo())->get();
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->get();
         // dd($trnsales);
         $gudang = gudang::where('ID_DEPO', getIdDepo())->get();
         return view("layout.transaksi.kanvas.index", compact("gudang","trnsales"));
@@ -53,6 +53,23 @@ class pengeluaranBarangKanvasController extends Controller
         ->where('trnsales.KDTRN', '30')
         ->where('trnsales.NOPERMINTAAN', $id)
         ->where('trnsales.STATUS', 0)
+        ->get();
+
+        // dd($trnsales);
+        // dd($trnsales);
+        if($trnsales->isNotEmpty()){
+            return response()->json($trnsales);
+        } else {
+            return response()->json(['error','message'=> 'Data tidak ditemukan'],404);
+        }
+    }
+
+    public function fetchDataSelesai($id){
+        // dd($id);
+        $trnsales = trnsales::join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
+        ->select('trnsales.*', 'salesman.ID_GUDANG AS gudang_sales')
+        ->where('trnsales.KDTRN', '30')
+        ->where('trnsales.NOPERMINTAAN', $id)
         ->get();
 
         // dd($trnsales);
