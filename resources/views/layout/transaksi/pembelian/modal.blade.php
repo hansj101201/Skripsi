@@ -11,10 +11,26 @@
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" id ="_token">
                 <div class="form-row">
-                    <div class="form-group col">
-                        <label for="tanggal">Tanggal:</label>
+                    <div class="form-group col" id="tanggal_add" style="display: none;">
+                        <div class="col-sm-3">
+                            <label for="tanggal_mulai">Tanggal</label>
+                        </div>
                         <div class="input-group">
-                            <input type="text" class="form-control datepicker" id="tanggal" name="TANGGAL" readonly>
+                            <input type="text" class="form-control datepicker" id="TANGGAL" name="TANGGAL" readonly>
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-calendar-alt" id="datepicker"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col" id="tanggal_edit" style="display: none;">
+                        <div class="col-sm-3">
+                            <label for="tanggal_mulai">Tanggal</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control datepicker" id="TANGGAL_EDIT" name="TANGGAL" readonly>
                             <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-calendar-alt" id="datepicker"></i>
@@ -64,10 +80,10 @@
                 <div id="detailBarang">
                     <table class="table table-stripped table-bordered myTable" id = "tableData">
                         <thead>
-                            <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                            <th class="text-left" style="padding-left: 10px;"> Id Barang </th>
                             <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
                             <th class="text-left" style="padding-left: 10px;"> Satuan </th>
-                            <th class="text-right" style="padding-right: 10px;"> QTY </th>
+                            <th class="text-right" style="padding-right: 10px;"> Qty </th>
                             <th class="text-right" style="padding-right: 10px;"> Harga </th>
                             <th class="text-right" style="padding-right: 10px;"> Potongan </th>
                             <th class="text-right" style="padding-right: 10px;"> Jumlah </th>
@@ -118,7 +134,7 @@
                 <div class="container">
                     <input type="hidden" id="editMode" name="editMode" value="add">
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Id Barang</label>
                         <div class="col-sm-9">
                             <select class="form-control" id="barang_id_barang" name="ID_BARANG"> <!-- Remove 'col-sm-9' class here -->
                                 @foreach($barang as $Barang)
@@ -144,25 +160,25 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_qty" name="QTY"  >
+                            <input type="text" class="form-control text-right" id="barang_qty" name="QTY" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">HARGA</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_harga" name="HARGA">
+                            <input type="text" class="form-control text-right" id="barang_harga" name="HARGA" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">POTONGAN</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_potongan" name="POTONGAN">
+                            <input type="text" class="form-control text-right" id="barang_potongan" name="POTONGAN" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">JUMLAH</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_jumlah" name="JUMLAH" readonly>
+                            <input type="text" class="form-control text-right" id="barang_jumlah" name="JUMLAH" readonly inputmode="numeric">
                         </div>
                     </div>
                 </div>
@@ -226,25 +242,13 @@
             $('#keterangan').val();
         }
 
-        function enableDatepicker() {
-            $('#tanggal').datepicker({
-                format: 'dd-mm-yyyy', // Set your desired date format
-                minDate: 0,
-                defaultDate: 'now', // Set default date to 'now'
-                autoclose: true // Close the datepicker when a date is selected
-            });
-            $('#datepicker').on('click', function() {
-                $('#tanggal').datepicker('show');
-            });
-        }
-
         function fetchData(bukti,periode){
             $.ajax({
                 type: "GET",
                 url: "{{ url('transaksi/pembelian/getData') }}/"+bukti+"/"+periode,
                 success: function (data) {
                     console.log(data);
-                    $('#tanggal').val(dateFormat(data.TANGGAL));
+                    $('#TANGGAL_EDIT').val(dateFormat(data.TANGGAL));
                     $('#bukti').val(data.BUKTI);
                     $('#supplier').val(data.ID_SUPPLIER).trigger('change');
                     $('#depo').val(data.ID_DEPO).trigger('change');
@@ -266,7 +270,7 @@
                     let createTable = "";
                     let i = 0
                     while(i < data.length){
-                        let qty = parseFloat(data[i].QTYORDER).toFixed(0); // Round to 0 decimal places
+                        let qty = formatHarga(parseFloat(data[i].QTYORDER)); // Round to 0 decimal places
                         let harga = formatHarga(parseFloat(data[i].HARGA));
                         let potongan = formatHarga(parseFloat(data[i].DISCOUNT));
                         let jumlah = formatHarga(parseFloat(data[i].JUMLAH));
@@ -283,7 +287,7 @@
                                 <td class="text-right" style="padding-right: 10px;">${jumlah}</td>
                                 <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
                                     data-kode="${data[i].ID_BARANG}"
-                                    data-qty="${qty}"
+                                    data-qty="${data[i].QTYORDER}"
                                     data-potongan="${data[i].DISCOUNT}"
                                     data-harga="${data[i].HARGA}"
                                     data-jumlah="${data[i].JUMLAH}"
@@ -337,7 +341,7 @@
 
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qty = $(row).find('td:eq(3)').text();
+                var qty = parseFloat($(row).find('td:eq(3)').text().replace(/[^\d]/g, ''));
                 var harga = parseFloat($(row).find('td:eq(4)').text().replace(/[^\d]/g, ''));
                 var potongan = parseFloat($(row).find('td:eq(5)').text().replace(/[^\d]/g, ''));
                 var jumlah = parseFloat($(row).find('td:eq(6)').text().replace(/[^\d]/g, ''));
@@ -357,9 +361,9 @@
                     data : {
                         _token: _token,
                         data : arrBarang,
-                        tanggal : $('#tanggal').val(),
+                        tanggal : $('#TANGGAL').val(),
                         supplier : $('#supplier').val(),
-                        periode : getPeriode($('#tanggal').val()),
+                        periode : getPeriode($('#TANGGAL').val()),
                         depo : $('#depo').val(),
                         keterangan : $('#keterangan').val(),
                         netto : parseFloat($('#netto').val().replace(/[^\d]/g, '')),
@@ -386,7 +390,8 @@
             var kode = $('#barang_id_barang').val();
             var nama = $('#barang_nama').val();
             var satuan = $('#barang_satuan').val();
-            var qty = $('#barang_qty').val();
+            var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
+            var qty = parseFloat(qtyString);
             var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
             var harga = parseFloat(hargaString);
             var potonganString = $('#barang_potongan').val().replace(/[^\d]/g, '');
@@ -404,7 +409,7 @@
                     <td class="text-left" style="padding-left: 10px;">${kode}</td>
                     <td class="text-left" style="padding-left: 10px;">${nama}</td>
                     <td class="text-left" style="padding-left: 10px;">${satuan}</td>
-                    <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                    <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                     <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
                     <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
                     <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>
@@ -432,7 +437,8 @@
             var kode = $('#barang_id_barang').val();
             var nama = $('#barang_nama').val();
             var satuan = $('#barang_satuan').val();
-            var qty = $('#barang_qty').val();
+            var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
+            var qty = parseFloat(qtyString);
             var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
             var harga = parseFloat(hargaString);
             var potonganString = $('#barang_potongan').val().replace(/[^\d]/g, '');
@@ -450,7 +456,7 @@
                 <td class="text-left" style="padding-left: 10px;">${kode}</td>
                 <td class="text-left" style="padding-left: 10px;">${nama}</td>
                 <td class="text-left" style="padding-left: 10px;">${satuan}</td>
-                <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>
@@ -476,7 +482,7 @@
             arrBarang = []
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qty = $(row).find('td:eq(3)').text();
+                var qty = parseFloat($(row).find('td:eq(3)').text().replace(/[^\d]/g, ''));
                 var harga = parseFloat($(row).find('td:eq(4)').text().replace(/[^\d]/g, ''));
                 var potongan = parseFloat($(row).find('td:eq(5)').text().replace(/[^\d]/g, ''));
                 var jumlah = parseFloat($(row).find('td:eq(6)').text().replace(/[^\d]/g, ''));
@@ -494,7 +500,7 @@
                     _token: _token,
                     data : arrBarang,
                     bukti : $('#bukti').val(),
-                    periode : getPeriode($('#tanggal').val()),
+                    periode : getPeriode($('#TANGGAL_EDIT').val()),
                     keterangan : $('#keterangan').val(),
                     netto : parseFloat($('#netto').val().replace(/[^\d]/g, '')),
                     jumlah : parseFloat($('#subtotal').val().replace(/[^\d]/g, '')),
@@ -533,6 +539,11 @@
             });
         }
 
+        function validateNumberInput(input) {
+            // Menghapus karakter selain angka menggunakan regular expression
+            input.value = input.value.replace(/\D/g, '');
+        }
+
         $(document).ready(function () {
 
             $('#supplier, #barang_id_barang, #depo').select2({
@@ -544,6 +555,15 @@
                 allowClear: true
             });
 
+            $('.datepicker').datepicker({
+                format: 'dd-mm-yyyy', // Set your desired date format
+                minDate: 0,
+                defaultDate: 'now', // Set default date to 'now'
+                autoclose: true // Close the datepicker when a date is selected
+            });
+            $('#datepicker').on('click', function() {
+                $('#TANGGAL').datepicker('show');
+            });
             var bukti;
             var periode;
             var editModeValue;
@@ -556,11 +576,14 @@
 
                 if (mode === 'viewDetail') {
                     modal.find('.modal-title').text('View Detail');
-                    $("#tanggal").datepicker('destroy');
+                    $('#tanggal_add').hide();
+                    $('#tanggal_edit').show();
+                    $('#TANGGAL_EDIT').datepicker('destroy');
+                    // $("#tanggal").datepicker('destroy');
                     $('#supplier').prop('disabled', true);
                     $('#depo').prop('disabled', true);
                     $('#tambahDataButton').hide();
-                    $('#datepicker').off('click');
+                    // $('#datepicker').off('click');
                     var bukti = button.data('bukti');
                     var periode = button.data('periode');
                     console.log(bukti);
@@ -568,26 +591,41 @@
                     fetchDetail(bukti,periode);
                     $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
                 } else {
+                    $('#tanggal_add').show();
+                    $('#tanggal_edit').hide();
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                    $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                    $('#TANGGAL').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
                     $('#tambahDataButton').show();
                     $('#diskon').val(0);
                     modal.find('.modal-title').text('Add Data');
-                    enableDatepicker();
+
                     $('#saveBtn').attr('onclick', 'simpanData()');
                 }
             });
 
+
+
             $('#dataModal').on('show.bs.modal', function(event) {
-                var tanggal = $('#tanggal').val();
+                if (mode === 'add'){
+                    var tanggal = $('#TANGGAL').val();
+                } else {
+                    var tanggal = $('#TANGGAL_EDIT').val();
+                }
+
                 var supplier = $('#supplier').val();
                 var kode;
 
                 if (!tanggal){
                     // e.preventDefault();
-                    $('#tanggal').addClass('is-invalid')
-                    toastr.error('Tanggal harus diisi');
-                    return false;
+                    if (mode === 'add'){
+                        $('#TANGGAL').addClass('is-invalid')
+                        toastr.error('Tanggal harus diisi');
+                        return false;
+                    } else {
+                        $('#TANGGAL_EDIT').addClass('is-invalid')
+                        toastr.error('Tanggal harus diisi');
+                        return false;
+                    }
                 } else if(!supplier){
                     $('#supplier').addClass('is-invalid')
                     toastr.error('Supplier harus diisi');
@@ -629,7 +667,7 @@
                         getData(kode, tanggal);
                         $('#saveButton').attr('onclick', 'editTableBarang()');
                         $('#editMode').val(editModeValue);
-                        $('#barang_qty').val(qty);
+                        $('#barang_qty').val(formatHarga(parseFloat(qty)));
                         $('#barang_harga').val(formatHarga(parseFloat(harga)));
                         $('#barang_potongan').val(formatHarga(parseFloat(potongan)));
                         $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
@@ -646,6 +684,7 @@
             });
 
             $('#diskon').on('input', function() {
+                validateNumberInput(this);
                 var subtotalString = $('#subtotal').val().replace(/[^\d]/g, '');
                 var subtotal = parseFloat(subtotalString);
                 var discountString = $(this).val().trim();
@@ -660,7 +699,9 @@
             });
 
             $('#barang_potongan').on('input', function() {
-                var qty = $('#barang_qty').val()
+                validateNumberInput(this);
+                var qtyString = $('#barang_qty').val();
+                var qty = qtyString !== '' ? parseFloat(qtyString.replace(/[^\d]/g, '')) : 0;
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
                 var harga = parseFloat(hargaString);
                 var potonganString = $(this).val().trim();
@@ -686,19 +727,21 @@
             });
 
             $('#barang_harga').on('input',function () {
-                var qty = $('#barang_qty').val()
-                var hargaString = $(this).val().replace(/[^\d]/g, '');
-                var harga = parseFloat(hargaString);
+                validateNumberInput(this);
+                var qtyString = $('#barang_qty').val();
+                var qty = qtyString !== '' ? parseFloat(qtyString.replace(/[^\d]/g, '')) : 0;
+                var hargaString = $(this).val();
+                var harga = hargaString !== '' ? parseFloat(hargaString.replace(/[^\d]/g, '')) : 0;
                 var potonganString = $('#barang_potongan').val().trim();
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
-
+                console.log(qty+" "+harga+" "+potongan);
+                $(this).val(formatHarga(harga));
                 // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(potongan) && !isNaN(harga) && !isNaN(qty)) {
                     // Hitung nilai jumlah
                     var hasil = qty * harga - potongan;
                     // Set nilai jumlah pada input jumlah
                     $('#barang_jumlah').val(formatHarga(parseFloat(hasil)));
-                    $(this).val(formatHarga(parseFloat(harga)));
                     isSaveButtonActive = true;
                 } else {
                     isSaveButtonActive = false;
@@ -712,12 +755,16 @@
             })
 
             $('#barang_qty').on('input', function() {
+                validateNumberInput(this);
                 // Ambil nilai qty dan harga
-                var qty = parseFloat($(this).val());
+                var qtyString = $(this).val();
+                var qty = qtyString !== '' ? parseFloat(qtyString.replace(/[^\d]/g, '')) : 0;
                 var potonganString = $('#barang_potongan').val().trim();
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
                 var harga = parseFloat(hargaString);
+
+                $(this).val(formatHarga(qty));
 
                 // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(qty) && !isNaN(harga)) {
@@ -727,6 +774,7 @@
                     var jumlah = qty * harga - potongan;
                     // Set nilai jumlah pada input jumlah
                     $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
+
                 } else {
                     isSaveButtonActive = false;
                 }

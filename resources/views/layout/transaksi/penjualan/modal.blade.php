@@ -150,25 +150,25 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_qty" name="QTY"  >
+                            <input type="text" class="form-control text-right" id="barang_qty" name="QTY" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">HARGA</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_harga" name="HARGA" readonly>
+                            <input type="text" class="form-control text-right" id="barang_harga" name="HARGA" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">POTONGAN</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_potongan" name="POTONGAN">
+                            <input type="text" class="form-control text-right" id="barang_potongan" name="POTONGAN" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">JUMLAH</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_jumlah" name="JUMLAH" readonly>
+                            <input type="text" class="form-control text-right" id="barang_jumlah" name="JUMLAH" readonly>
                         </div>
                     </div>
                 </div>
@@ -346,7 +346,7 @@
 
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qty = $(row).find('td:eq(3)').text();
+                var qty = parseFloat($(row).find('td:eq(3)').text().replace(/[^\d]/g, ''));
                 var harga = parseFloat($(row).find('td:eq(4)').text().replace(/[^\d]/g, ''));
                 var potongan = parseFloat($(row).find('td:eq(5)').text().replace(/[^\d]/g, ''));
                 var jumlah = parseFloat($(row).find('td:eq(6)').text().replace(/[^\d]/g, ''));
@@ -395,7 +395,8 @@
             var kode = $('#barang_id_barang').val();
             var nama = $('#barang_nama').val();
             var satuan = $('#barang_satuan').val();
-            var qty = $('#barang_qty').val();
+            var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
+            var qty = parseFloat(qtyString);
             var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
             var harga = parseFloat(hargaString);
             var potonganString = $('#barang_potongan').val().replace(/[^\d]/g, '');
@@ -413,7 +414,7 @@
                     <td class="text-left" style="padding-left: 10px;">${kode}</td>
                     <td class="text-left" style="padding-left: 10px;">${nama}</td>
                     <td class="text-left" style="padding-left: 10px;">${satuan}</td>
-                    <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                    <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                     <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
                     <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
                     <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>
@@ -442,7 +443,8 @@
             var kode = $('#barang_id_barang').val();
             var nama = $('#barang_nama').val();
             var satuan = $('#barang_satuan').val();
-            var qty = $('#barang_qty').val();
+            var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
+            var qty = parseFloat(qtyString);
             var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
             var harga = parseFloat(hargaString);
             var potonganString = $('#barang_potongan').val().replace(/[^\d]/g, '');
@@ -456,7 +458,7 @@
             var $existingRow = $('#' + kode);
             $existingRow.find('td:eq(1)').text(nama);
             $existingRow.find('td:eq(2)').text(satuan);
-            $existingRow.find('td:eq(3)').text(qty);
+            $existingRow.find('td:eq(3)').text(formatHarga(qty));
             $existingRow.find('td:eq(4)').text(formatHarga(harga));
             $existingRow.find('td:eq(5)').text(formatHarga(potongan));
             $existingRow.find('td:eq(6)').text(formatHarga(jumlah));
@@ -486,7 +488,7 @@
             arrBarang = []
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qty = $(row).find('td:eq(3)').text();
+                var qty = parseFloat($(row).find('td:eq(3)').text().replace(/[^\d]/g, ''));
                 var harga = parseFloat($(row).find('td:eq(4)').text().replace(/[^\d]/g, ''));
                 var potongan = parseFloat($(row).find('td:eq(5)').text().replace(/[^\d]/g, ''));
                 var jumlah = parseFloat($(row).find('td:eq(6)').text().replace(/[^\d]/g, ''));
@@ -708,7 +710,8 @@
             });
 
             $('#barang_potongan').on('input', function() {
-                var qty = $('#barang_qty').val()
+                var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
+                var qty = parseFloat(qtyString);
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
                 var harga = parseFloat(hargaString);
                 var potonganString = $(this).val().trim();
@@ -726,7 +729,8 @@
 
             $('#barang_qty').on('input', function() {
                 // Ambil nilai qty dan harga
-                var qty = parseFloat($(this).val());
+                var qtyString = $('#this').val().replace(/[^\d]/g, '');
+                var qty = parseFloat(qtyString);
                 var saldo = parseFloat($('#barang_saldo').val());
                 var stok = parseFloat($('#stok_lama').val());
                 var potonganString = $('#barang_potongan').val().trim();
@@ -748,6 +752,7 @@
                     var jumlah = qty * harga - potongan;
                     // Set nilai jumlah pada input jumlah
                     $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
+                    $(this).val(formatHarga(qty));
                 }
             });
 

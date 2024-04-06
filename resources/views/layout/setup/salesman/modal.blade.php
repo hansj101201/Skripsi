@@ -15,7 +15,7 @@
                     <div class="form-group row">
                         <label for="kode_salesman" class="col-sm-3 col-form-label">ID Salesman</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_salesman" name="ID_SALES" maxlength="6">
+                            <input type="text" class="form-control" id="kode_salesman" name="ID_SALES" maxlength="3">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -33,7 +33,7 @@
                     <div class="form-group row">
                         <label for="nomor_salesman" class="col-sm-3 col-form-label">No HP</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nomor_salesman" name="NOMOR_HP" maxlength="15">
+                            <input type="number" class="form-control" id="nomor_salesman" name="NOMOR_HP" maxlength="15">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -89,6 +89,7 @@
 
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
+        let mode;
         function clearModal(){
             $('#kode_salesman').val('');
             $('#nama_salesman').val('');
@@ -99,6 +100,11 @@
             $('#gudang').val(null).trigger('change');
             $('#active').prop('checked', true);
             $('#password-group').hide();
+            $('#password').val('');
+
+            if ($('#addEditForm input[name="_method"]').length > 0) {
+                $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+            }
         }
         function updateGudangOptions(mode, id, selectedGudangId) {
             var url = "";
@@ -149,6 +155,7 @@
             var gudang = formData.get('ID_GUDANG');
 
             console.log(depo);
+            console.log(mode)
             if (kode_salesman.trim() === '') {
                 toastr.error('Kode salesman harus diisi');
                 $('#kode_salesman').addClass('is-invalid');
@@ -170,7 +177,7 @@
 
             var numericRegex = /^\d{10,}$/;
             if (!numericRegex.test(nomor)) {
-                toastr.error('Nomor HP harus berupa angka dan minim 10 angka');
+                toastr.error('Nomor HP minim 10 angka');
                 $('#nomor_salesman').addClass('is-invalid');
                 return false; // Mengembalikan false jika validasi gagal
             }
@@ -195,7 +202,6 @@
 
         $(document).ready(function() {
 
-            var mode;
             $('#gudang, #depo').select2({
                 placeholder: "---Pilih---",
                 width: 'resolve',
@@ -211,7 +217,7 @@
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 mode = button.data('mode'); // Mengambil mode dari tombol
-
+                // console.log(mode);
                 var modal = $(this);
                 if (mode === 'add') {
                     modal.find('.modal-title').text('Tambah Salesman');
@@ -299,6 +305,7 @@
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
                     formData.set('ID_DEPO', $('#depo').val());
+                    formData.set('ID_GUDANG' ,$('#gudang').val());
                     submitForm(formData, url, type, successCallback, errorCallback);
                 }
             });

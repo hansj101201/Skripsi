@@ -22,13 +22,13 @@
                     <div class="form-group row">
                         <label for="nama_depo" class="col-sm-3 col-form-label">Nama</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nama_depo" name="NAMA" maxlength="40">
+                            <input type="text" class="form-control" id="nama_depo" name="NAMA" maxlength="45">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="lokasi" class="col-sm-3 col-form-label">Lokasi</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="lokasi" name="LOKASI">
+                            <input type="text" class="form-control" id="lokasi" name="LOKASI" maxlength="45">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -58,6 +58,10 @@
             $('#nama_depo').val("");
             $('#lokasi').val("");
             $('#active').prop('checked', true);
+
+            if ($('#addEditForm input[name="_method"]').length > 0) {
+                $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+            }
         }
         function cekData(formData) {
             // Lakukan validasi di sini

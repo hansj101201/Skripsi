@@ -39,7 +39,7 @@
                     <div class="form-group row">
                         <label for="min_stok" class="col-sm-3 col-form-label">Stok Minimum</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="min_stok" name="MIN_STOK">
+                            <input type="text" class="form-control" id="min_stok" name="MIN_STOK" maxlength="10" style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -76,6 +76,10 @@
             $('#satuan').val(null).trigger('change');
             $('#min_stok').val("");
             $('#active').prop('checked', true);
+
+            if ($('#addEditForm input[name="_method"]').length > 0) {
+                $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+            }
         }
         function cekData(formData) {
             // Lakukan validasi di sini
@@ -130,54 +134,55 @@
             $('#DataModal').on('hide.bs.modal', function(event) {
                 clearModal();
             })
-            $('#DataModal').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget); // Tombol yang memicu modal
-                var mode = button.data('mode'); // Mengambil mode dari tombol
+                $('#DataModal').on('show.bs.modal', function(event) {
+                    var button = $(event.relatedTarget); // Tombol yang memicu modal
+                    var mode = button.data('mode'); // Mengambil mode dari tombol
 
-                var modal = $(this);
-                if (mode === 'add') {
-                    modal.find('.modal-title').text('Tambah Barang Jadi');
-                    $('#editMode').val(0); // Set editMode ke 0 untuk operasi add
-                    $('#min_stok').val(0);
-                    $('#kode_barang').removeAttr('readonly');
-                    $('#nama_barang').removeAttr('readonly');
-                    $('#addEditForm').attr('action', "{{ route('barang.store') }}"); // Set rute untuk operasi tambah
-                    $('#addEditForm').attr('method', 'POST');
-                } else if (mode === 'edit') {
-                    modal.find('.modal-title').text('Edit Barang Jadi');
-                    $('#editMode').val(1); // Set editMode ke 1 untuk operasi edit
-                    var kode = button.data('kode');
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('getDetailBarang') }}",
-                        data : {
-                            'id_barang' : kode,
-                        },
-                        success: function (data) {
-                            console.log(data);
-                            var nama = data.NAMA;
-                            var satuan = data.ID_SATUAN;
-                            var aktif = data.ACTIVE;
-                            var min = formatHarga(parseFloat(data.MIN_STOK).toFixed(0));
-                            console.log(nama);
-                            console.log(satuan);
-                            // Isi nilai input field sesuai dengan data yang akan diedit
-                            $('#kode_barang').val(kode).attr('readonly', true); // Tambahkan atribut readonly
-                            $('#nama_barang').val(nama); // Tambahkan atribut readonly
-                            $('#satuan').val(satuan).trigger('change');
-                            $('#min_stok').val(min);
-                            if (aktif === 1) {
-                                $('#active').prop('checked', true);
-                            } else {
-                                $('#active').prop('checked', false);
+                    console.log(mode);
+                    var modal = $(this);
+                    if (mode === 'add') {
+                        modal.find('.modal-title').text('Tambah Barang Jadi');
+                        $('#editMode').val(0); // Set editMode ke 0 untuk operasi add
+                        $('#min_stok').val(0);
+                        $('#kode_barang').removeAttr('readonly');
+                        $('#nama_barang').removeAttr('readonly');
+                        $('#addEditForm').attr('action', "{{ route('barang.store') }}"); // Set rute untuk operasi tambah
+                        $('#addEditForm').attr('method', 'POST');
+                    } else if (mode === 'edit') {
+                        modal.find('.modal-title').text('Edit Barang Jadi');
+                        $('#editMode').val(1); // Set editMode ke 1 untuk operasi edit
+                        var kode = button.data('kode');
+                        $.ajax({
+                            type: "GET",
+                            url: "{{ route('getDetailBarang') }}",
+                            data : {
+                                'id_barang' : kode,
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                var nama = data.NAMA;
+                                var satuan = data.ID_SATUAN;
+                                var aktif = data.ACTIVE;
+                                var min = formatHarga(parseFloat(data.MIN_STOK).toFixed(0));
+                                console.log(nama);
+                                console.log(satuan);
+                                // Isi nilai input field sesuai dengan data yang akan diedit
+                                $('#kode_barang').val(kode).attr('readonly', true); // Tambahkan atribut readonly
+                                $('#nama_barang').val(nama); // Tambahkan atribut readonly
+                                $('#satuan').val(satuan).trigger('change');
+                                $('#min_stok').val(min);
+                                if (aktif === 1) {
+                                    $('#active').prop('checked', true);
+                                } else {
+                                    $('#active').prop('checked', false);
+                                }
+                                $('#addEditForm').attr('action', "{{ route('barang.update') }}"); // Set rute untuk operasi edit
+                                $('#addEditForm').attr('method', 'POST');
+                                $('#addEditForm').append('<input type="hidden" name="_method" value="PUT">'); // Tambahkan input tersembunyi untuk metode PUT
                             }
-                            $('#addEditForm').attr('action', "{{ route('barang.update') }}"); // Set rute untuk operasi edit
-                            $('#addEditForm').attr('method', 'POST');
-                            $('#addEditForm').append('<input type="hidden" name="_method" value="PUT">'); // Tambahkan input tersembunyi untuk metode PUT
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
 
             $('#submitForm').click(function(e) {
                 e.preventDefault(); // Menghentikan perilaku default tombol submit

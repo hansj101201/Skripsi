@@ -19,8 +19,15 @@ class gudangController extends Controller
     }
 
     public function datatable(){
-        $gudang = gudang::join("depo","gudang.ID_DEPO","depo.ID_DEPO")
-        ->select("gudang.*", "depo.NAMA AS nama_depo");
+        if (getIdDepo() == '000'){
+            $gudang = gudang::join("depo","gudang.ID_DEPO","depo.ID_DEPO")
+            ->select("gudang.*", "depo.NAMA AS nama_depo");
+        } else {
+            $gudang = gudang::where('gudang.ID_DEPO',getIdDepo())
+            ->join("depo","gudang.ID_DEPO","depo.ID_DEPO")
+            ->select("gudang.*", "depo.NAMA AS nama_depo");
+        }
+
         return DataTables::of($gudang)
         ->editColumn("ACTIVE", function ($row) {
             return $row->ACTIVE == 1 ? "Ya" : "Tidak";
@@ -40,6 +47,7 @@ class gudangController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         // Periksa apakah ID yang akan ditambahkan sudah ada dalam database
         $existingRecord = gudang::where('ID_GUDANG', $request['ID_GUDANG'])->first();
 

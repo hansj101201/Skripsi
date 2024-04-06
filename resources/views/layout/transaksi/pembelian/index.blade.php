@@ -28,7 +28,7 @@
                     <tr>
                         <th> Tanggal </th>
                         <th> Bukti </th>
-                        <th> Kode Supplier </th>
+                        <th> Id Supplier </th>
                         <th> Nama Supllier </th>
                         <th> Jumlah </th>
                         <th> Diskon </th>
@@ -81,8 +81,8 @@
                     $('td:eq(7)', row).addClass('text-center');
                 },
                 order: [
-                    [0, "desc"]
-                    // [3, "desc"],
+                    [0, "desc"],
+                    [1, "desc"],
                     // [2, "desc"]
                 ],
                 pageLength:10,

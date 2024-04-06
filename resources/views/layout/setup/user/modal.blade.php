@@ -82,6 +82,21 @@
 @push('js')
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
+
+        function clearModal(){
+            $('#kode_user').val('');
+            $('#nama_user').val('');
+            $('#email_user').val('');
+            $('#nomor_user').val('');
+            $('#password_user').val('');
+            $('#depo').val(null).trigger('change');
+            $('#depo').prop('disabled',false);
+            $('#active').prop('checked', true);
+
+            if ($('#addEditForm input[name="_method"]').length > 0) {
+                $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+            }
+        }
         function cekData(formData,mode) {
             // Lakukan validasi di sini
             var kode_user = formData.get('ID_USER');
@@ -137,6 +152,7 @@
             });
             $('#DataModal').on('hidden.bs.modal', function(event) {
                 $('#password-group').hide(); // Sembunyikan kolom password saat modal ditutup
+                clearModal();
             });
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
@@ -172,7 +188,8 @@
                             $('#nama_user').val(nama); // Tambahkan atribut readonly
                             $('#email_user').val(email);
                             $('#nomor_user').val(nomor);
-                            $('#depo').val(depo);
+                            $('#depo').val(depo).trigger('change');
+                            $('#depo').prop('disabled',true);
                             if (aktif === 1) {
                                 $('#active').prop('checked', true);
                             } else {
@@ -216,7 +233,7 @@
                 console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData,mode)) {
-
+                    formData.set('ID_DEPO', $('#depo').val());
                     submitForm(formData, url, type, successCallback, errorCallback);
                 }
             });

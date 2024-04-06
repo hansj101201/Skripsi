@@ -54,7 +54,7 @@
         var table;
         $(function () {
             table = $("#tableHasil").DataTable({
-                // serverSide: true,
+                serverSide: true,
                 processing: true,
                 ajax: '{{ url('setup/harga/datatable') }}',
                 drawCallback: function(settings) {
@@ -83,8 +83,8 @@
                     $('td:eq(5)', row).addClass('text-center');
                 },
                 order: [
-                    // [0, "desc"]
-                    // [3, "desc"],
+                    [0, "desc"],
+                    [1, "asc"],
                     // [2, "desc"]
                 ],
                 pageLength:10,

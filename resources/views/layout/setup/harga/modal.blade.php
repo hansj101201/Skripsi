@@ -1,5 +1,5 @@
 <div class="modal fade" id="addDataModal"  role="dialog" aria-labelledby="addDataModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title" id="addDataModalLabel">Tambah Harga</h5>
@@ -39,8 +39,8 @@
                             @foreach($barang as $index => $barang)
                             <tr>
                                 <td class="text-left" style="padding-left: 10px;"><input type="hidden" name="ID_BARANG[]" value="{{ $barang->ID_BARANG }}">{{ $barang->ID_BARANG }}</td>
-                                <td class="text-left" style="padding-left: 10px;"><input type="hidden" name="NAMA[]" value="{{ $barang->NAMA }}">{{ $barang->NAMA }}</td>
-                                <td class="text-left" style="padding-left: 10px;"><input type="hidden" name="ID_SATUAN[]" value="{{ $barang->ID_SATUAN }}">{{ $barang->satuan->NAMA }}</td>
+                                <td class="text-left" style="padding-left: 10px;">{{ $barang->NAMA }}</td>
+                                <td class="text-left" style="padding-left: 10px;">{{ $barang->nama_satuan }}</td>
                                 <td>
                                     {{-- Check if there are existing records in the database --}}
                                     @if($harga->isNotEmpty())
@@ -48,17 +48,17 @@
                                         @foreach($harga as $data)
                                             @if($data->ID_BARANG == $barang->ID_BARANG)
                                                 {{-- Set the input value to the existing 'harga' value --}}
-                                                <input type="text" class="text-right"name="HARGA[]" style="padding-right: 10px;" value="{{ $data->HARGA }}">
+                                                <input type="text" class="text-right harga-input" name="HARGA[]" style="padding-right: 10px;" value="{{ $data->HARGA }}" maxlength="10">
                                                 @php break; @endphp {{-- Break the loop once the 'harga' value is found --}}
                                             @endif
                                         @endforeach
                                         {{-- If no existing records found, set the default value to 0 --}}
                                         @if(!isset($data) || $data->ID_BARANG != $barang->ID_BARANG)
-                                            <input type="text"class="text-right" name="HARGA[]" style="padding-right: 10px;" value="0">
+                                            <input type="text"class="text-right harga-input" name="HARGA[]" style="padding-right: 10px;" value="0" maxlength="10">
                                         @endif
                                     @else
                                         {{-- If there are no records in the database, set the default value to 0 --}}
-                                        <input type="text"class="text-right" name="HARGA[]" style="padding-right: 10px;" value="0">
+                                        <input type="text"class="text-right harga-input" name="HARGA[]" style="padding-right: 10px;" value="0" maxlength="10">
                                     @endif
                                 </td>
                             </tr>
@@ -125,7 +125,7 @@
                     <div class="form-group row">
                         <label for="nama_barang" class="col-sm-3 col-form-label">HARGA</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="edit_harga" name="HARGA" maxlength="40">
+                            <input type="text" class="form-control text-right" id="edit_harga" name="HARGA" maxlength="40">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -165,9 +165,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
+
         $(document).ready(function() {
+            $('.harga-input').each(function() {
+                // Ambil nilai harga dari input
+                var harga = $(this).val();
+                // Memanggil fungsi formatHarga() dan memperbarui nilai input dengan harga yang diformat
+                $(this).val(formatHarga(harga));
+            });
+            $('.harga-input').on('input', function() {
+                var inputVal = $(this).val().trim();
+                var input = inputVal !== '' ? parseFloat(inputVal.replace(/[^\d]/g, '')) : 0;
+                // Cek apakah input memiliki nilai
+                if (inputVal) {
+                    // Perbarui nilai input dengan nilai yang diformat
+                    $(this).val(formatHarga(parseFloat(input)));
+                }
+            });
 
-
+            $('#edit_harga').on('input', function() {
+                var inputVal = $(this).val().trim();
+                var input = inputVal !== '' ? parseFloat(inputVal.replace(/[^\d]/g, '')) : 0;
+                // Cek apakah input memiliki nilai
+                if (inputVal) {
+                    // Perbarui nilai input dengan nilai yang diformat
+                    $(this).val(formatHarga(parseFloat(input)));
+                }
+            });
 
             $('#addDataModal').on('show.bs.modal', function (event) {
                 var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
@@ -259,9 +283,9 @@
                         $('#id').val(kode);
                         $('#edit_mulai').val(dateFormat(data[0].MULAI_BERLAKU));
                         $('#edit_kode').val(data[0].ID_BARANG); // Tambahkan atribut readonly
-                        $('#edit_satuan').val(data[0].nama_barang); // Tambahkan atribut readonly
-                        $('#edit_nama').val(data[0].nama_satuan);
-                        $('#edit_harga').val(data[0].HARGA);
+                        $('#edit_nama').val(data[0].nama_barang); // Tambahkan atribut readonly
+                        $('#edit_satuan').val(data[0].nama_satuan);
+                        $('#edit_harga').val(formatHarga(parseFloat(data[0].HARGA)));
                     }
                 });
             });

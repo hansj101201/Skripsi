@@ -14,7 +14,11 @@ class customerController extends Controller
     //
 
     public function index(){
-        $sales = salesman::all();
+        if(getIdDepo()=='000'){
+            $sales = salesman::all();
+        } else {
+            $sales = salesman::where('ID_DEPO',getIdDepo())->get();
+        }
         return view('layout.setup.customer.index', compact('sales'));
     }
 
@@ -44,23 +48,21 @@ class customerController extends Controller
             $validatedData = $request->validate([
                 'ID_CUSTOMER' => 'required',
                 'NAMA' => 'required',
-                'NAMACUST' => 'sometimes',
-                'ALAMAT' => 'required',
-                'KOTA' => 'required',
+                'ALAMAT' => 'sometimes',
+                'KOTA' => 'sometimes',
                 'KODEPOS' => 'sometimes',
-                'NEGARA' => 'sometimes',
-                'NAMAUP' => 'sometimes',
-                'ACTIVE'=> 'sometimes',
-                'BAGIAN' => 'sometimes',
-                'CRDLIMIT' => 'sometimes',
-                'TERMKREDIT' => 'sometimes',
-                'TERMBULAN' => 'sometimes',
-                'TERMHARI' => 'sometimes',
-                'REKENING' => 'sometimes',
-                'PERWAKILAN' => 'sometimes',
-                'ID_SALES'=> 'required',
-                'NPWP' => 'sometimes',
+                'TELEPON' => 'sometimes',
+                'PIC' => 'sometimes',
+                'NOMOR_HP' => 'sometimes',
                 'ALAMAT_KIRIM' => 'sometimes',
+                'KOTA_KIRIM' => 'sometimes',
+                'KODEPOS_KIRIM' => 'sometimes',
+                'TELEPON_KIRIM' => 'sometimes',
+                'PIC_KIRIM' => 'sometimes',
+                'NOMOR_HP_KIRIM' => 'sometimes',
+                'ACTIVE'=> 'sometimes',
+                'ID_SALES'=> 'required',
+                'TITIK_GPS'=> 'sometimes',
             ]);
 
             $data = $validatedData;
@@ -86,23 +88,21 @@ class customerController extends Controller
             $validatedData = $request->validate([
                 'ID_CUSTOMER' => 'required',
                 'NAMA' => 'required',
-                'NAMACUST' => 'sometimes',
-                'ALAMAT' => 'required',
-                'KOTA' => 'required',
+                'ALAMAT' => 'sometimes',
+                'KOTA' => 'sometimes',
                 'KODEPOS' => 'sometimes',
-                'NEGARA' => 'sometimes',
-                'NAMAUP' => 'sometimes',
-                'ACTIVE'=> 'required',
-                'BAGIAN' => 'sometimes',
-                'CRDLIMIT' => 'sometimes',
-                'TERMKREDIT' => 'sometimes',
-                'TERMBULAN' => 'sometimes',
-                'TERMHARI' => 'sometimes',
-                'REKENING' => 'sometimes',
-                'PERWAKILAN' => 'sometimes',
-                'ID_SALES'=> 'required',
-                'NPWP' => 'sometimes',
+                'TELEPON' => 'sometimes',
+                'PIC' => 'sometimes',
+                'NOMOR_HP' => 'sometimes',
                 'ALAMAT_KIRIM' => 'sometimes',
+                'KOTA_KIRIM' => 'sometimes',
+                'KODEPOS_KIRIM' => 'sometimes',
+                'TELEPON_KIRIM' => 'sometimes',
+                'PIC_KIRIM' => 'sometimes',
+                'NOMOR_HP_KIRIM' => 'sometimes',
+                'ACTIVE'=> 'sometimes',
+                'ID_SALES'=> 'required',
+                'TITIK_GPS'=> 'sometimes',
             ]);
 
             // dd($validatedData);

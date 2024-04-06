@@ -69,6 +69,10 @@
             $('#lokasi').val("");
             $('#depo').val(null).trigger('change');
             $('#active').prop('checked', true);
+
+            if ($('#addEditForm input[name="_method"]').length > 0) {
+                $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+            }
         }
 
         function cekData(formData) {
@@ -124,6 +128,7 @@
                         $('#depo').val({{ getIdDepo() }}).trigger('change');
                         $('#depo').prop('disabled', true);
                     }
+                    console.log($('#depo').val());
                 } else if (mode === 'edit') {
                     modal.find('.modal-title').text('Edit Gudang');
                     $('#editMode').val(1); // Set editMode ke 1 untuk operasi edit
@@ -151,6 +156,8 @@
                         }
                     });
 
+
+
                 }
             });
 
@@ -160,6 +167,11 @@
                 var formData = new FormData($('#addEditForm')[0]);
                 var url = $('#addEditForm').attr('action');
                 var type = $('#addEditForm').attr('method');
+
+                var selectedDepo = $('#depo').val();
+
+                // Menetapkan nilai ID_DEPO di dalam formData
+                formData.set('ID_DEPO', selectedDepo);
                 var successCallback = function(response) {
                     if (response.success) {
                         $('.modal-backdrop').remove();

@@ -15,8 +15,11 @@ use Yajra\DataTables\DataTables;
 class hargaController extends Controller
 {
     public function index () {
-        $harga = harga::orderBy('MULAI_BERLAKU', 'desc')->with('barang')->with('satuan')->get();
-        $barang = barang::all()->where('ACTIVE',1);
+        $harga = harga::orderBy('MULAI_BERLAKU', 'desc')->get();
+        $barang = barang::where('ACTIVE',1)->orderBy('ID_BARANG')
+        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
+        ->select('barang.*','satuan.NAMA AS nama_satuan')
+        ->get();
         return view('layout.setup.harga.index', compact('harga','barang'));
     }
 
@@ -55,16 +58,11 @@ class hargaController extends Controller
     }
     public function store(Request $request)
     {
-        // dd($request->all());
-        // Validate the incoming request data
         $validatedData = $request->validate([
             'MULAI_BERLAKU' => 'required', // Add your validation rules here
             'ID_BARANG.*' => 'required', // Validate each ID_BARANG field in the array
             'HARGA.*' => 'required', // Validate each HARGA field in the array
         ]);
-
-        // dd($validatedData);
-
         $mulai_berlaku = DateTime::createFromFormat('d-m-Y', $validatedData['MULAI_BERLAKU']);
 
         // Mengatur zona waktu ke Asia/Jakarta
@@ -73,22 +71,40 @@ class hargaController extends Controller
         // Format tanggal ke dalam format yang diinginkan
         $mulai_berlaku_formatted = $mulai_berlaku->format('Y-m-d');
         $currentDateTime = date('Y-m-d H:i:s');
+        $latestHarga = harga::orderBy('MULAI_BERLAKU', 'desc')->select('MULAI_BERLAKU')->first();
 
-        // Once validated, you can process the data and store it in your database
-        // Loop through each entry in the arrays
-        foreach ($request->ID_BARANG as $key => $value) {
-            // Here you can save each entry to your database or perform other actions
-            // For example, you can create a new Harga model instance and save it
-            $harga = new harga();
-            $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
-            $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
-            $harga->HARGA = $validatedData['HARGA'][$key];
-            $harga->TGLENTRY = $currentDateTime;
-            $harga->save();
+    // Jika tidak ada tanggal terbaru, langsung simpan data
+        if (!$latestHarga) {
+            foreach ($request->ID_BARANG as $key => $value) {
+                // Here you can save each entry to your database or perform other actions
+                // For example, you can create a new Harga model instance and save it
+                $harga = new harga();
+                $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
+                $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
+                $harga->HARGA = str_replace(',', '', $validatedData['HARGA'][$key]);
+                $harga->TGLENTRY = $currentDateTime;
+                $harga->save();
+            }
+            return response()->json(['success' => true,'message' => 'Data harga berhasil disimpan.']); // Redirect to a success page or any other route
+        } else {
+            $mulai_formatted = date('d-m-Y', strtotime($latestHarga['MULAI_BERLAKU']));
+            if ($latestHarga['MULAI_BERLAKU'] < $mulai_berlaku_formatted) {
+                foreach ($request->ID_BARANG as $key => $value) {
+                    // Here you can save each entry to your database or perform other actions
+                    // For example, you can create a new Harga model instance and save it
+                    $harga = new harga();
+                    $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
+                    $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
+                    $harga->HARGA = str_replace(',', '', $validatedData['HARGA'][$key]);
+                    $harga->TGLENTRY = $currentDateTime;
+                    $harga->save();
+                }
+                return response()->json(['success' => true,'message' => 'Data harga berhasil disimpan.']); // Redirect to a success page or any other route
+            } else {
+                return response()->json(['success' => false, 'message' => 'Tanggal harus lebih besar dari tanggal '.$mulai_formatted]);
+            }
         }
 
-        // After storing the data, you can redirect the user or perform other actions
-        return response()->json(['success' => true,'message' => 'Data harga berhasil disimpan.']); // Redirect to a success page or any other route
     }
 
     public function update(Request $request)
@@ -99,10 +115,10 @@ class hargaController extends Controller
         // dd($barang);
         if ($harga) {
             $validatedData = $request->validate([
-                'ID_BARANG' => 'required',
                 'HARGA' => 'required',
-                'MULAI_BERLAKU' => 'required',
             ]);
+
+            $validatedData['HARGA'] = str_replace(',', '', $validatedData['HARGA']);
 
             $currentDateTime = date('Y-m-d H:i:s');
             $validatedData['TGLEDIT'] = $currentDateTime;

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\gudang;
 use App\Models\salesman;
 use App\Models\depo;
+use App\Models\trnsales;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
@@ -127,12 +128,17 @@ class salesmanController extends Controller
 
     public function destroy($ID_SALES)
     {
+        $trnsales = trnsales::where('ID_SALES', $ID_SALES)->count();
         $salesman = salesman::where('ID_SALES', $ID_SALES)->first();
-        if (!$salesman) {
+
+        if ($trnsales > 0) {
+            return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus sales karena sudah digunakan dalam transaksi'], 422);
+        } else if (!$salesman) {
             return response()->json(['success' => false,'message' => 'Data tidak ditemukan'], 404);
         } else {
             $salesman->delete();
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
         }
+
     }
 }

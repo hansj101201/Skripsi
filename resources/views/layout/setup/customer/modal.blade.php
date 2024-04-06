@@ -1,5 +1,5 @@
 <div class="modal fade" id="DataModal" role="dialog" aria-labelledby="addDataModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addDataModalLabel">Tambah Customer</h5>
@@ -35,13 +35,13 @@
                     <!-- Add your form elements here -->
                     <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="data-tab" data-toggle="tab" href="#data" role="tab" aria-controls="data" aria-selected="true">Data Customer</a>
+                            <a class="nav-link active" id="data-tab" data-toggle="tab" href="#data" role="tab" aria-controls="data" aria-selected="true">Alamat</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="address-tab" data-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="false">Alamat</a>
+                            <a class="nav-link" id="address-tab" data-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="false">Alamat Kirim</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="false">Detail Lainnya</a>
+                            <a class="nav-link" id="details-tab" data-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="false">Lainnya</a>
                         </li>
                     </ul>
 
@@ -49,87 +49,87 @@
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="data" role="tabpanel" aria-labelledby="data-tab">
                             <div class="form-group row">
-                                <label for="nama_cust" class="col-sm-3 col-form-label">Nama Cust</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="nama_cust" name="NAMACUST">
-                                </div>
-                            </div>
-                            <div class="form-group row">
                                 <label for="alamat" class="col-sm-3 col-form-label">Alamat</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="alamat" name="ALAMAT">
+                                    <input type="text" class="form-control" id="alamat" name="ALAMAT" maxlength="45">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="kota" class="col-sm-3 col-form-label">Kota</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="kota" name="KOTA">
+                                    <input type="text" class="form-control" id="kota" name="KOTA" maxlength="20">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="kode_pos" class="col-sm-3 col-form-label">Kode Pos</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="kode_pos" name="KODEPOS">
+                                    <input type="number" class="form-control" id="kode_pos" name="KODEPOS" maxlength="10">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="negara" class="col-sm-3 col-form-label">Negara</label>
+                                <label for="telepon" class="col-sm-3 col-form-label">No Telepon</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="negara" name="NEGARA">
+                                    <input type="number" class="form-control" id="telepon" name="TELEPON" maxlength="15">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="nama_up" class="col-sm-3 col-form-label">Nama UP</label>
+                                <label for="pic" class="col-sm-3 col-form-label">PIC</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="nama_up" name="NAMAUP">
+                                    <input type="text" class="form-control" id="pic" name="PIC" maxlength="45">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="bagian" class="col-sm-3 col-form-label">Bagian</label>
+                                <label for="nomor_hp" class="col-sm-3 col-form-label">NOMOR HP</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="bagian" name="BAGIAN">
+                                    <input type="number" class="form-control" id="nomor_hp" name="NOMOR_HP" maxlength="15">
                                 </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                             <!-- Form fields for address tab -->
                             <div class="form-group row">
-                                <label for="crdlimit" class="col-sm-3 col-form-label">Credit Limit</label>
+                                <label for="alamat_kirim" class="col-sm-3 col-form-label">Alamat Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="crdlimit" name="CRDLIMIT">
+                                    <input type="text" class="form-control" id="alamat_kirim" name="ALAMAT_KIRIM" maxlength="45">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="term_kredit" class="col-sm-3 col-form-label">Term Kredit</label>
+                                <label for="kota_kirim" class="col-sm-3 col-form-label">Kota Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="term_kredit" name="TERMKREDIT">
+                                    <input type="text" class="form-control" id="kota_kirim" name="KOTA_KIRIM" maxlength="20">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="term_bulan" class="col-sm-3 col-form-label">Term Bulan</label>
+                                <label for="kode_pos_kirim" class="col-sm-3 col-form-label">Kode Pos Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="term_bulan" name="TERMBULAN">
+                                    <input type="number" class="form-control" id="kode_pos_kirim" name="KODEPOS_KIRIM" maxlength="10">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="term_hari" class="col-sm-3 col-form-label">Term Hari</label>
+                                <label for="telepon_kirim" class="col-sm-3 col-form-label">No Telepon Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="term_hari" name="TERMHARI">
+                                    <input type="number" class="form-control" id="telepon_kirim" name="TELEPON_KIRIM" maxlength="15">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="rekening" class="col-sm-3 col-form-label">Rekening</label>
+                                <label for="pic_kirim" class="col-sm-3 col-form-label">PIC Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="rekening" name="REKENING">
+                                    <input type="text" class="form-control" id="pic_kirim" name="PIC_KIRIM" maxlength="45">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="nomor_hp_kirim" class="col-sm-3 col-form-label">NOMOR HP Kirim</label>
+                                <div class="col-sm-9">
+                                    <input type="number" class="form-control" id="nomor_hp_kirim" name="NOMOR_HP_KIRIM" maxlength="15" inputmode="numeric">
                                 </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
                             <!-- Form fields for details tab -->
                             <div class="form-group row">
-                                <label for="perwakilan" class="col-sm-3 col-form-label">Perwakilan</label>
+                                <label for="titik_gps" class="col-sm-3 col-form-label">Titik GPS</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="perwakilan" name="PERWAKILAN">
+                                    <input type="text" class="form-control" id="titik_gps" name="TITIK_GPS" maxlength="100">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -141,18 +141,6 @@
                                             <option value="{{ $Sales->ID_SALES }}">{{ $Sales->NAMA }}</option>
                                         @endforeach
                                     </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="NPWP" class="col-sm-3 col-form-label">NPWP</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="NPWP" name="NPWP">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="alamat_kirim" class="col-sm-3 col-form-label">Alamat Kirim</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="alamat_kirim" name="ALAMAT_KIRIM">
                                 </div>
                             </div>
                         </div>
@@ -173,15 +161,39 @@
 
 @push('js')
 <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
+    window.addEventListener('DOMContentLoaded', function() {
+        // Dapatkan elemen input
+        var numberInput = document.getElementById('myNumberInput');
+
+        // Sisipkan elemen yang menutupi tombol naik turun
+        var hideButtonsDiv = document.createElement('div');
+        hideButtonsDiv.style.position = 'relative';
+        hideButtonsDiv.style.width = '100%';
+        hideButtonsDiv.style.height = '100%';
+        hideButtonsDiv.style.overflow = 'hidden';
+        hideButtonsDiv.style.pointerEvents = 'none'; // Akan mencegah input dari klik
+
+        // Buat input baru yang akan menerima input dari pengguna
+        var inputWrapper = document.createElement('div');
+        inputWrapper.style.position = 'absolute';
+        inputWrapper.style.top = '0';
+        inputWrapper.style.left = '0';
+        inputWrapper.style.width = '100%';
+        inputWrapper.style.height = '100%';
+        inputWrapper.style.pointerEvents = 'auto'; // Memungkinkan input dari klik
+        inputWrapper.appendChild(numberInput);
+
+        // Sisipkan elemen ke dalam input
+        numberInput.parentElement.insertBefore(hideButtonsDiv, numberInput);
+        hideButtonsDiv.appendChild(inputWrapper);
+    });
+    </script>
 <script>
     function cekData(formData) {
         // Lakukan validasi di sini
         var kode_customer = formData.get('ID_CUSTOMER');
         var nama = formData.get('NAMA');
-        var alamat = formData.get("ALAMAT");
-        var kota = formData.get('KOTA');
-        var negara = formData.get('NEGARA');
-
+        var idSales = $('#sales').val();
         if (kode_customer.trim() === '') {
             toastr.error('Kode Barang harus diisi');
             $('#kode_customer').addClass('is-invalid');
@@ -194,36 +206,45 @@
             return false; // Mengembalikan false jika validasi gagal
         }
 
-        if (alamat.trim() === '') {
-            toastr.error('Alamat harus diisi');
-            $('#alamat').addClass('is-invalid');
-            return false; // Mengembalikan false jika validasi gagal
-        }
-
-        if (kota.trim() === '') {
-            toastr.error('Kota harus diisi');
-            $('#kota').addClass('is-invalid');
-            return false; // Mengembalikan false jika validasi gagal
-        }
-
-        if (negara.trim() === '') {
-            toastr.error('Negara harus diisi');
-            $('#negara').addClass('is-invalid');
-            return false; // Mengembalikan false jika validasi gagal
+        if (idSales == ''){
+            toastr.error('Id Sales harus diisi');
+            return false;
         }
         return true; // Mengembalikan true jika semua validasi berhasil
     }
 
+    function clearModal(){
+        $('#kode_customer').val('');
+        $('#nama').val('');
+        $('#alamat').val('');
+        $('#kota').val('');
+        $('#kode_pos').val('');
+        $('#telepon').val('');
+        $('#pic').val('');
+        $('#nomor_hp').val('');
+        $('#alamat_kirim').val('');
+        $('#kota_kirim').val('');
+        $('#kode_pos_kirim').val('');
+        $('#telepon_kirim').val('');
+        $('#pic_kirim').val('');
+        $('#nomor_hp_kirim').val('');
+        $('#titik_gps').val('');
+        $('#sales').val(null).trigger('change');
+
+        if ($('#addEditForm input[name="_method"]').length > 0) {
+            $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+        }
+    }
 
     $(document).ready(function() {
         $('#sales').select2({
-                placeholder: "---Pilih---",
-                width: 'resolve',
-                containerCss: {
-                    height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
-                },
-                allowClear: true
-            });
+            placeholder: "---Pilih---",
+            width: 'resolve',
+            containerCss: {
+                height: '40px' // Sesuaikan tinggi dengan kebutuhan Anda
+            },
+            allowClear: true
+        });
         $('#DataModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Tombol yang memicu modal
             var mode = button.data('mode'); // Mengambil mode dari tombol
@@ -248,27 +269,26 @@
                         // Isi nilai input field sesuai dengan data yang akan diedit
                         $('#kode_customer').val(data[0].ID_CUSTOMER);
                         $('#nama').val(data[0].NAMA);
-                        $('#nama_cust').val(data[0].NAMACUST);
                         $('#alamat').val(data[0].ALAMAT);
                         $('#kota').val(data[0].KOTA);
                         $('#kode_pos').val(data[0].KODEPOS);
-                        $('#negara').val(data[0].NEGARA);
-                        $('#nama_up').val(data[0].NAMAUP);
+                        $('#telepon').val(data[0].TELEPON);
+                        $('#pic').val(data[0].PIC);
+                        $('#nomor_hp').val(data[0].NOMOR_HP);
+                        $('#alamat_kirim').val(data[0].ALAMAT_KIRIM);
+                        $('#kota_kirim').val(data[0].KOTA_KIRIM);
+                        $('#kode_pos_kirim').val(data[0].KODEPOS_KIRIM);
+                        $('#telepon_kirim').val(data[0].TELEPON_KIRIM);
+                        $('#pic_kirim').val(data[0].PIC_KIRIM);
+                        $('#nomor_hp_kirim').val(data[0].NOMOR_HP_KIRIM);
+                        $('#titik_gps').val(data[0].TITIK_GPS);
                         if (data[0].ACTIVE === 1) {
                             $('#active').prop('checked', true);
                         } else {
                             $('#active').prop('checked', false);
                         }
-                        $('#bagian').val(data[0].BAGIAN);
-                        $('#crdlimit').val(data[0].CRDLIMIT);
-                        $('#term_kredit').val(data[0].TERMKREDIT);
-                        $('#term_bulan').val(data[0].TERMBULAN);
-                        $('#term_hari').val(data[0].TERMHARI);
-                        $('#rekening').val(data[0].REKENING);
-                        $('#perwakilan').val(data[0].PERWAKILAN),
-                        $('#sales').val(data[0].ID_SALES);
-                        $('#NPWP').val(data[0].NPWP);
-                        $('#alamat_kirim').val(data[0].ALAMAT_KIRIM);
+                        $('#sales').val(data[0].ID_SALES).trigger('change');
+
                         $('#addEditForm').attr('action', "{{ route('customer.update') }}"); // Set rute untuk operasi edit
                         $('#addEditForm').attr('method', 'POST');
                         $('#addEditForm').append('<input type="hidden" name="_method" value="PUT">'); // Tambahkan input tersembunyi untuk metode PUT
@@ -276,6 +296,10 @@
                 });
             }
         });
+
+        $('#DataModal').on('hide.bs.modal',function(event){
+            clearModal();
+        })
 
         $('#submitForm').click(function(e) {
             e.preventDefault(); // Menghentikan perilaku default tombol submit
@@ -304,7 +328,7 @@
             console.log(formData);
             // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
             if (cekData(formData)) {
-
+                formData.set('ID_SALES',$('#sales').val());
                 submitForm(formData, url, type, successCallback, errorCallback);
             }
         });
@@ -317,17 +341,6 @@
             $('#nama').removeClass('is-invalid');
         })
 
-        $(document).on('click', '#alamat', function(){
-            $('#alamat').removeClass('is-invalid');
-        })
-
-        $(document).on('click', '#kota', function(){
-            $('#kota').removeClass('is-invalid');
-        })
-
-        $(document).on('click', '#negara', function(){
-            $('#negara').removeClass('is-invalid');
-        })
 });
 </script>
 @endpush

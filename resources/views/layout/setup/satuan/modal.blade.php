@@ -21,7 +21,7 @@
                     <div class="form-group row">
                         <label for="nama_satuan" class="col-sm-3 col-form-label">Nama Satuan</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nama_satuan" name="NAMA" maxlength="40">
+                            <input type="text" class="form-control" id="nama_satuan" name="NAMA" maxlength="10">
                         </div>
                     </div>
                     <!-- Add more fields as needed -->
@@ -36,6 +36,16 @@
 
 @push('js')
     <script>
+        function clearModal(){
+            $('#kode_satuan').val("");
+            $('#nama_satuan').val("");
+            $('#active').prop('checked', true);
+
+            if ($('#addEditForm input[name="_method"]').length > 0) {
+                $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+            }
+        }
+
         function cekData(formData) {
             // Lakukan validasi di sini
             var kode_satuan = formData.get('ID_SATUAN');

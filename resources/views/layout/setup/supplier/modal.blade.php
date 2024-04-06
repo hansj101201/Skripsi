@@ -21,31 +21,31 @@
                     <div class="form-group row">
                         <label for="nama_supplier" class="col-sm-3 col-form-label">Nama</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nama_supplier" name="NAMA" maxlength="40">
+                            <input type="text" class="form-control" id="nama_supplier" name="NAMA" maxlength="45">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="lokasi" class="col-sm-3 col-form-label">Alamat</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="alamat" name="ALAMAT">
+                            <input type="text" class="form-control" id="alamat" name="ALAMAT" maxlength="45">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="lokasi" class="col-sm-3 col-form-label">Kota</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kota" name="KOTA">
+                            <input type="text" class="form-control" id="kota" name="KOTA" maxlength="45">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="lokasi" class="col-sm-3 col-form-label">Telepon</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="telepon" name="TELEPON">
+                            <input type="text" class="form-control" id="telepon" name="TELEPON" maxlength="15">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="lokasi" class="col-sm-3 col-form-label">NPWP</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="npwp" name="NPWP">
+                            <input type="text" class="form-control" id="npwp" name="NPWP" maxlength="25">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -81,6 +81,10 @@
             $('#telepon').val('');
             $('#npwp').val('');
             $('#active').prop('checked', true);
+
+            if ($('#addEditForm input[name="_method"]').length > 0) {
+                $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
+            }
         }
         function cekData(formData) {
             // Lakukan validasi di sini

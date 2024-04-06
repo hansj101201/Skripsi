@@ -27,7 +27,7 @@ class depoController extends Controller
         })
         ->addColumn('action', function ($row) {
             return '<button class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#DataModal" data-kode="'.$row->ID_DEPO.'" data-mode="edit"><i class="fas fa-pencil-alt"></i></button> &nbsp;
-            <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-kode="'.$row->ID_DEPO.'" data-jenis="supplier" data-master="setup"><i class="fas fa-trash"></i></button>';
+            <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-kode="'.$row->ID_DEPO.'" data-jenis="depo" data-master="setup"><i class="fas fa-trash"></i></button>';
         })
         ->rawColumns(["action"])
 
