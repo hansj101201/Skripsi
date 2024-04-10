@@ -19,9 +19,9 @@ class pembelianController extends Controller
     //
 
     public function index(){
-        $barang = barang::all();
-        $supplier = supplier::all();
-        $depo = depo::all();
+        $barang = barang::where('ACTIVE',1)->get();
+        $supplier = supplier::orderBy('ID_SUPPLIER')->orderBy('NAMA')->get();
+        $depo = depo::where('ID_DEPO','!=','000')->get();
         return view('layout.transaksi.pembelian.index', compact('barang','supplier','depo'));
     }
 

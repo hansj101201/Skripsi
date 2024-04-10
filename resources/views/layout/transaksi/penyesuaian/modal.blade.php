@@ -170,7 +170,6 @@
         let arrBarang = [];
 
         function clearModal() {
-            $('#tanggal').val("");
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');
             $('#gudang').prop('disabled', false);

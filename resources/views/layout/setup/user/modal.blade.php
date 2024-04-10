@@ -15,7 +15,7 @@
                     <div class="form-group row">
                         <label for="kode_user" class="col-sm-3 col-form-label">ID User</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_user" name="ID_USER" maxlength="6">
+                            <input type="text" class="form-control" id="kode_user" name="ID_USER" maxlength="3">
                         </div>
                     </div>
                     <div class="form-group row">

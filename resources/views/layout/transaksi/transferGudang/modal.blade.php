@@ -180,7 +180,6 @@
         let arrBarang = [];
 
         function clearModal() {
-            $('#tanggal').val("");
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');
             $('#gudang_tujuan').val(null).trigger('change');

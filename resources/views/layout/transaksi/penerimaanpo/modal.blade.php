@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addDataModalLabel">Add Data</h5>
+                <h5 class="modal-title" id="addDataModalLabel">Penerimaan Barang</h5>
                 <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="btn-custom-close">&times;</span>
                 </button>
@@ -281,7 +281,6 @@
         let arrBarang = [];
 
         function clearModal() {
-            $('#tanggal').val("");
             $('#nomorpo').val(null).trigger('change');
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');

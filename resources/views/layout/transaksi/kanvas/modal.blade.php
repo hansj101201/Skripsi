@@ -183,7 +183,6 @@
         var id;
 
         function clearModal() {
-            $('#tanggal').val("");
             $('#nomorpermintaan').empty();
             $('#nomorpermintaan').val('');
             $('#nomorpermintaan').val(null).trigger('change');

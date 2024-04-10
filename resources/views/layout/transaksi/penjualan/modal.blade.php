@@ -219,7 +219,7 @@
         let arrBarang = [];
 
         function clearModal() {
-            $('#tanggal').val("");
+            // $('#tanggal').val("");
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');
             $('#customer').val(null).trigger('change');

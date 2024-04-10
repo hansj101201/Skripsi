@@ -63,13 +63,13 @@
                             <div class="form-group row">
                                 <label for="kode_pos" class="col-sm-3 col-form-label">Kode Pos</label>
                                 <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="kode_pos" name="KODEPOS" maxlength="10">
+                                    <input type="text" class="form-control" id="kode_pos" name="KODEPOS" maxlength="5" inputmode="numeric">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="telepon" class="col-sm-3 col-form-label">No Telepon</label>
                                 <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="telepon" name="TELEPON" maxlength="15">
+                                    <input type="text" class="form-control" id="telepon" name="TELEPON" maxlength="15" inputmode="numeric">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -79,9 +79,9 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="nomor_hp" class="col-sm-3 col-form-label">NOMOR HP</label>
+                                <label for="nomor_hp" class="col-sm-3 col-form-label">Nomor HP</label>
                                 <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="nomor_hp" name="NOMOR_HP" maxlength="15">
+                                    <input type="text" class="form-control" id="nomor_hp" name="NOMOR_HP" maxlength="15" inputmode="numeric">
                                 </div>
                             </div>
                         </div>
@@ -102,13 +102,13 @@
                             <div class="form-group row">
                                 <label for="kode_pos_kirim" class="col-sm-3 col-form-label">Kode Pos Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="kode_pos_kirim" name="KODEPOS_KIRIM" maxlength="10">
+                                    <input type="text" class="form-control" id="kode_pos_kirim" name="KODEPOS_KIRIM" maxlength="5" inputmode="numeric">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="telepon_kirim" class="col-sm-3 col-form-label">No Telepon Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="telepon_kirim" name="TELEPON_KIRIM" maxlength="15">
+                                    <input type="text" class="form-control" id="telepon_kirim" name="TELEPON_KIRIM" maxlength="15" inputmode="numeric">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -118,9 +118,9 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="nomor_hp_kirim" class="col-sm-3 col-form-label">NOMOR HP Kirim</label>
+                                <label for="nomor_hp_kirim" class="col-sm-3 col-form-label">Nomor HP Kirim</label>
                                 <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="nomor_hp_kirim" name="NOMOR_HP_KIRIM" maxlength="15" inputmode="numeric">
+                                    <input type="text" class="form-control" id="nomor_hp_kirim" name="NOMOR_HP_KIRIM" maxlength="15" inputmode="numeric">
                                 </div>
                             </div>
                         </div>
@@ -161,34 +161,11 @@
 
 @push('js')
 <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
-    window.addEventListener('DOMContentLoaded', function() {
-        // Dapatkan elemen input
-        var numberInput = document.getElementById('myNumberInput');
-
-        // Sisipkan elemen yang menutupi tombol naik turun
-        var hideButtonsDiv = document.createElement('div');
-        hideButtonsDiv.style.position = 'relative';
-        hideButtonsDiv.style.width = '100%';
-        hideButtonsDiv.style.height = '100%';
-        hideButtonsDiv.style.overflow = 'hidden';
-        hideButtonsDiv.style.pointerEvents = 'none'; // Akan mencegah input dari klik
-
-        // Buat input baru yang akan menerima input dari pengguna
-        var inputWrapper = document.createElement('div');
-        inputWrapper.style.position = 'absolute';
-        inputWrapper.style.top = '0';
-        inputWrapper.style.left = '0';
-        inputWrapper.style.width = '100%';
-        inputWrapper.style.height = '100%';
-        inputWrapper.style.pointerEvents = 'auto'; // Memungkinkan input dari klik
-        inputWrapper.appendChild(numberInput);
-
-        // Sisipkan elemen ke dalam input
-        numberInput.parentElement.insertBefore(hideButtonsDiv, numberInput);
-        hideButtonsDiv.appendChild(inputWrapper);
-    });
-    </script>
 <script>
+    function validateNumberInput(input) {
+        // Menghapus karakter selain angka menggunakan regular expression
+        input.value = input.value.replace(/\D/g, '');
+    }
     function cekData(formData) {
         // Lakukan validasi di sini
         var kode_customer = formData.get('ID_CUSTOMER');
@@ -341,6 +318,35 @@
             $('#nama').removeClass('is-invalid');
         })
 
-});
+        $('#kode_pos').on('input', function () {
+            validateNumberInput(this);
+            $(this).val($('#kode_pos').val());
+        })
+
+        $('#kode_pos_kirim').on('input', function () {
+            validateNumberInput(this);
+            $(this).val($('#kode_pos_kirim').val());
+        })
+
+        $('#telepon').on('input', function () {
+            validateNumberInput(this);
+            $(this).val($('#telepon').val());
+        })
+
+        $('#telepon_kirim').on('input', function () {
+            validateNumberInput(this);
+            $(this).val($('#telepon_kirim').val());
+        })
+
+        $('#nomor_hp').on('input', function () {
+            validateNumberInput(this);
+            $(this).val($('#nomor_hp').val());
+        })
+
+        $('#nomor_hp_kirim').on('input', function () {
+            validateNumberInput(this);
+            $(this).val($('#nomor_hp_kirim').val());
+        })
+    });
 </script>
 @endpush

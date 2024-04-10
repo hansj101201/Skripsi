@@ -16,7 +16,7 @@ class trnjadi extends Model
     public $timestamps = false;
     protected $table = 'trnjadi';
 
-    protected $fillable = ['KDTRN', 'BUKTI', 'PERIODE', 'TANGGAL','ID_BARANG','ID_GUDANG','ID_DEPO', 'ID_SATUAN', 'KURS', 'QTY', 'RETUR', 'BONUS','HARGA', 'POTONGAN', 'JUMLAH', 'NOMOR','KETERANGAN', 'TGLEDIT', 'TGLENTRY', 'USEREDIT', 'USERENTRY'];
+    protected $fillable = ['KDTRN', 'BUKTI', 'PERIODE', 'TANGGAL','ID_BARANG','ID_GUDANG','ID_DEPO', 'ID_SATUAN', 'QTY', 'HARGA', 'POTONGAN', 'JUMLAH', 'NOMOR','KETERANGAN','KET01', 'TGLEDIT', 'TGLENTRY', 'USEREDIT', 'USERENTRY'];
     protected $casts = [
         'TGLENTRY' => 'datetime',
         'TGLEDIT' => 'datetime',

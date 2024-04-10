@@ -29,7 +29,7 @@
                         <th> Tanggal </th>
                         <th> Bukti </th>
                         <th> Id Supplier </th>
-                        <th> Nama Supllier </th>
+                        <th> Nama Supplier </th>
                         <th> Jumlah </th>
                         <th> Diskon </th>
                         <th> Netto </th>

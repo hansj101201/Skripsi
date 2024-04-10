@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addDataModalLabel">Add Data</h5>
+                <h5 class="modal-title" id="addDataModalLabel">Tambah Order</h5>
                 <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="btn-custom-close">&times;</span>
                 </button>
@@ -11,26 +11,12 @@
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" id ="_token">
                 <div class="form-row">
-                    <div class="form-group col" id="tanggal_add" style="display: none;">
+                    <div class="form-group col">
                         <div class="col-sm-3">
                             <label for="tanggal_mulai">Tanggal</label>
                         </div>
                         <div class="input-group">
-                            <input type="text" class="form-control datepicker" id="TANGGAL" name="TANGGAL" readonly>
-                            <div class="input-group-append">
-                                <span class="input-group-text">
-                                    <i class="fas fa-calendar-alt" id="datepicker"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group col" id="tanggal_edit" style="display: none;">
-                        <div class="col-sm-3">
-                            <label for="tanggal_mulai">Tanggal</label>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" class="form-control datepicker" id="TANGGAL_EDIT" name="TANGGAL" readonly>
+                            <input type="text" class="form-control datepicker" id="tanggal" name="TANGGAL" readonly>
                             <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-calendar-alt" id="datepicker"></i>
@@ -50,7 +36,9 @@
                         <select class="form-control" id="supplier" name="ID_SUPPLIER">
                             @foreach($supplier as $Supplier)
                                 <option value="">Pilih</option>
-                                <option value="{{ $Supplier->ID_SUPPLIER }}" readonly>{{ $Supplier->NAMA }}</option>
+                                @if($Supplier->ACTIVE == 1)
+                                    <option value="{{ $Supplier->ID_SUPPLIER }}" readonly> {{ $Supplier->ID_SUPPLIER }} - {{ $Supplier->NAMA }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -59,7 +47,9 @@
                         <select class="form-control" id="depo" name="ID_DEPO">
                             @foreach($depo as $Depo)
                                 <option value="">Pilih</option>
-                                <option value="{{ $Depo->ID_DEPO }}" readonly>{{ $Depo->NAMA }}</option>
+                                @if($Depo->ACTIVE == 1)
+                                    <option value="{{ $Depo->ID_DEPO }}" readonly>{{ $Depo->NAMA }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -151,32 +141,32 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Satuan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="barang_satuan" name="SATUAN" maxlength="6" readonly>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Qty</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_qty" name="QTY" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">HARGA</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Harga</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_harga" name="HARGA" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">POTONGAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Potongan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_potongan" name="POTONGAN" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">JUMLAH</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Jumlah</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_jumlah" name="JUMLAH" readonly inputmode="numeric">
                         </div>
@@ -227,9 +217,11 @@
 
         let idEdit = '';
         let arrBarang = [];
+        let mode;
+        let editData;
 
         function clearModal() {
-            $('#tanggal').val("");
+            // $('#tanggal').val("");
             $('#bukti').val("");
             $('#supplier').val(null).trigger('change');
             $('#depo').val(null).trigger('change');
@@ -248,7 +240,12 @@
                 url: "{{ url('transaksi/pembelian/getData') }}/"+bukti+"/"+periode,
                 success: function (data) {
                     console.log(data);
-                    $('#TANGGAL_EDIT').val(dateFormat(data.TANGGAL));
+                    if(data.STATUS == 0){
+                        editData = true;
+                    } else {
+                        editData = false;
+                    }
+                    $('#tanggal').val(dateFormat(data.TANGGAL));
                     $('#bukti').val(data.BUKTI);
                     $('#supplier').val(data.ID_SUPPLIER).trigger('change');
                     $('#depo').val(data.ID_DEPO).trigger('change');
@@ -284,15 +281,18 @@
                                 <td class="text-right" style="padding-right: 10px;">${qty}</td>
                                 <td class="text-right" style="padding-right: 10px;">${harga}</td>
                                 <td class="text-right" style="padding-right: 10px;">${potongan}</td>
-                                <td class="text-right" style="padding-right: 10px;">${jumlah}</td>
-                                <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
+                                <td class="text-right" style="padding-right: 10px;">${jumlah}</td>`
+
+                                if(editData){
+                                createTable += `<td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
                                     data-kode="${data[i].ID_BARANG}"
                                     data-qty="${data[i].QTYORDER}"
                                     data-potongan="${data[i].DISCOUNT}"
                                     data-harga="${data[i].HARGA}"
                                     data-jumlah="${data[i].JUMLAH}"
-                                    ><i class="fas fa-pencil-alt"></i></button></td>
-                            </tr>`;
+                                    ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>'</td>
+                            </tr>`
+                        };
                         i++;
                     }
                     $('#listBarang').append(createTable);
@@ -361,9 +361,9 @@
                     data : {
                         _token: _token,
                         data : arrBarang,
-                        tanggal : $('#TANGGAL').val(),
+                        tanggal : $('#tanggal').val(),
                         supplier : $('#supplier').val(),
-                        periode : getPeriode($('#TANGGAL').val()),
+                        periode : getPeriode($('#tanggal').val()),
                         depo : $('#depo').val(),
                         keterangan : $('#keterangan').val(),
                         netto : parseFloat($('#netto').val().replace(/[^\d]/g, '')),
@@ -386,54 +386,91 @@
             }
         }
 
-        function addTableBarang(){
+        function cekBarang() {
             var kode = $('#barang_id_barang').val();
-            var nama = $('#barang_nama').val();
-            var satuan = $('#barang_satuan').val();
-            var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
-            var qty = parseFloat(qtyString);
-            var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
-            var harga = parseFloat(hargaString);
-            var potonganString = $('#barang_potongan').val().replace(/[^\d]/g, '');
-            var potongan = potonganString !== '' ? parseFloat(potonganString) : 0;
-            var jumlahString = $('#barang_jumlah').val().replace(/[^\d]/g, '');
-            var jumlah = parseFloat(jumlahString);
+            var qty = $('#barang_qty').val();
+            var harga = $('#barang_harga').val();
 
-            var discountString = $('#diskon').val().trim();
-            var discount = discountString !== '' ? parseFloat(discountString.replace(/[^\d]/g, '')) : 0;
+            if(kode == ''){
+                toastr.error('Barang harus diisi');
+                return false;
+            }
 
-            let createTable = "";
+            if(qty == ''){
+                toastr.error('Qty harus diisi');
+                $('#barang_qty').addClass('is-invalid');
+                return false;
+            }
 
-            createTable +=
-                `<tr id="${kode}">
-                    <td class="text-left" style="padding-left: 10px;">${kode}</td>
-                    <td class="text-left" style="padding-left: 10px;">${nama}</td>
-                    <td class="text-left" style="padding-left: 10px;">${satuan}</td>
-                    <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
-                    <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
-                    <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
-                    <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>
-                    <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal" data-mode="editAdd"
-                        data-kode="${kode}"
-                        data-qty="${qty}"
-                        data-potongan="${potongan}"
-                        data-harga="${harga}"
-                        data-jumlah="${jumlah}"
-                        ><i class="fas fa-pencil-alt"></i></button></td>
-                </tr>`
-            $('#listBarang').append(createTable);
-            $('#dataModal').hide();
+            if(harga == ''){
+                toastr.error('Harga harus diisi');
+                $('#barang_harga').addClass('is-invalid');
+                return false;
+            }
 
-            $('.modal-backdrop').remove();
-            clearModalBarang();
+            return true;
+         }
 
-            $("#tanggal").datepicker('destroy');
-            $('#supplier').prop('disabled', true);
-            $('#depo').prop('disabled', true);
-            sumSubtotal();
-            sumNetto();
+        function addTableBarang(){
+            if(cekBarang()){
+                var kode = $('#barang_id_barang').val();
+                var nama = $('#barang_nama').val();
+                var satuan = $('#barang_satuan').val();
+                var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
+                var qty = parseFloat(qtyString);
+                var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
+                var harga = parseFloat(hargaString);
+                var potonganString = $('#barang_potongan').val().replace(/[^\d]/g, '');
+                var potongan = potonganString !== '' ? parseFloat(potonganString) : 0;
+                var jumlahString = $('#barang_jumlah').val().replace(/[^\d]/g, '');
+                var jumlah = parseFloat(jumlahString);
+
+                var discountString = $('#diskon').val().trim();
+                var discount = discountString !== '' ? parseFloat(discountString.replace(/[^\d]/g, '')) : 0;
+
+                let createTable = "";
+
+                createTable +=
+                    `<tr id="${kode}">
+                        <td class="text-left" style="padding-left: 10px;">${kode}</td>
+                        <td class="text-left" style="padding-left: 10px;">${nama}</td>
+                        <td class="text-left" style="padding-left: 10px;">${satuan}</td>
+                        <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
+                        <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
+                        <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
+                        <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>
+                        <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal" data-mode="editAdd"
+                            data-kode="${kode}"
+                            data-qty="${qty}"
+                            data-potongan="${potongan}"
+                            data-harga="${harga}"
+                            data-jumlah="${jumlah}"
+                            ><i class="fas fa-pencil-alt"></i></button>  &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>
+                    </tr>`
+                $('#listBarang').append(createTable);
+                $('#dataModal').hide();
+
+                $('.modal-backdrop').remove();
+                clearModalBarang();
+
+                $("#tanggal").datepicker('destroy');
+                $('#supplier').prop('disabled', true);
+                $('#depo').prop('disabled', true);
+                sumSubtotal();
+                sumNetto();
+            }
         }
-        function editTableBarang(){
+
+        function deleteRow(rowId) {
+            // Mencari elemen baris berdasarkan ID
+            var row = document.getElementById(rowId);
+            // Menghapus baris dari tabel
+            row.parentNode.removeChild(row);
+            sumSubtotal();
+                sumNetto();
+        }
+
+        function editTableBarang(mode){
             var kode = $('#barang_id_barang').val();
             var nama = $('#barang_nama').val();
             var satuan = $('#barang_satuan').val();
@@ -459,16 +496,18 @@
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
-                <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>
-                <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal"
+                <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>`;
+
+            if (editData){
+                createRow += `<td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal"
                     data-kode="${kode}"
                     data-qty="${qty}"
                     data-potongan="${potongan}"
                     data-harga="${harga}"
                     data-jumlah="${jumlah}"
-                    ><i class="fas fa-pencil-alt"></i></button></td>
-            `;
-
+                    ><i class="fas fa-pencil-alt"></i></button>
+                &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>`
+            }
             $('#'+idEdit).append(createRow);
 
             $('#dataModal').hide();
@@ -500,7 +539,7 @@
                     _token: _token,
                     data : arrBarang,
                     bukti : $('#bukti').val(),
-                    periode : getPeriode($('#TANGGAL_EDIT').val()),
+                    periode : getPeriode($('#tanggal').val()),
                     keterangan : $('#keterangan').val(),
                     netto : parseFloat($('#netto').val().replace(/[^\d]/g, '')),
                     jumlah : parseFloat($('#subtotal').val().replace(/[^\d]/g, '')),
@@ -544,7 +583,24 @@
             input.value = input.value.replace(/\D/g, '');
         }
 
+        function enableDatepicker() {
+            $('#tanggal').datepicker({
+                format: 'dd-mm-yyyy', // Set your desired date format
+                minDate: 0,
+                defaultDate: 'now', // Set default date to 'now'
+                autoclose: true // Close the datepicker when a date is selected
+            });
+            $('#datepicker').on('click', function() {
+                $('#tanggal').datepicker('show');
+            });
+        }
+
         $(document).ready(function () {
+
+            var bukti;
+            var periode;
+            var editModeValue;
+            var isSaveButtonActive = false;
 
             $('#supplier, #barang_id_barang, #depo').select2({
                 placeholder: "---Pilih---",
@@ -555,30 +611,14 @@
                 allowClear: true
             });
 
-            $('.datepicker').datepicker({
-                format: 'dd-mm-yyyy', // Set your desired date format
-                minDate: 0,
-                defaultDate: 'now', // Set default date to 'now'
-                autoclose: true // Close the datepicker when a date is selected
-            });
-            $('#datepicker').on('click', function() {
-                $('#TANGGAL').datepicker('show');
-            });
-            var bukti;
-            var periode;
-            var editModeValue;
-            var isSaveButtonActive = false;
-
             $('#addDataModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
-                var mode = button.data('mode');
+                mode = button.data('mode');
                 var modal = $(this);
 
                 if (mode === 'viewDetail') {
                     modal.find('.modal-title').text('View Detail');
-                    $('#tanggal_add').hide();
-                    $('#tanggal_edit').show();
-                    $('#TANGGAL_EDIT').datepicker('destroy');
+                    $('#tanggal').datepicker('destroy');
                     // $("#tanggal").datepicker('destroy');
                     $('#supplier').prop('disabled', true);
                     $('#depo').prop('disabled', true);
@@ -586,18 +626,20 @@
                     // $('#datepicker').off('click');
                     var bukti = button.data('bukti');
                     var periode = button.data('periode');
+
                     console.log(bukti);
                     fetchData(bukti,periode);
                     fetchDetail(bukti,periode);
                     $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
                 } else {
-                    $('#tanggal_add').show();
-                    $('#tanggal_edit').hide();
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                    $('#TANGGAL').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                    $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+
+                    enableDatepicker();
+                    console.log($('#tanggal').val());
                     $('#tambahDataButton').show();
                     $('#diskon').val(0);
-                    modal.find('.modal-title').text('Add Data');
+                    modal.find('.modal-title').text('Tambah Order');
 
                     $('#saveBtn').attr('onclick', 'simpanData()');
                 }
@@ -606,29 +648,31 @@
 
 
             $('#dataModal').on('show.bs.modal', function(event) {
-                if (mode === 'add'){
-                    var tanggal = $('#TANGGAL').val();
-                } else {
-                    var tanggal = $('#TANGGAL_EDIT').val();
-                }
+                var tanggal =  $('#tanggal').val();
 
+                console.log(tanggal);
                 var supplier = $('#supplier').val();
+                var depo = $('#depo').val();
                 var kode;
 
                 if (!tanggal){
                     // e.preventDefault();
                     if (mode === 'add'){
-                        $('#TANGGAL').addClass('is-invalid')
+                        $('#tanggal').addClass('is-invalid')
                         toastr.error('Tanggal harus diisi');
                         return false;
                     } else {
-                        $('#TANGGAL_EDIT').addClass('is-invalid')
+                        $('#tanggal').addClass('is-invalid')
                         toastr.error('Tanggal harus diisi');
                         return false;
                     }
                 } else if(!supplier){
                     $('#supplier').addClass('is-invalid')
                     toastr.error('Supplier harus diisi');
+                    return false;
+                } else if(!depo){
+                    $('#depo').addClass('is-invalid')
+                    toastr.error('Depo harus diisi');
                     return false;
                 } else {
 
@@ -706,15 +750,17 @@
                 var harga = parseFloat(hargaString);
                 var potonganString = $(this).val().trim();
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
-
-                // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(potongan) && !isNaN(harga) && !isNaN(qty)) {
-                    // Hitung nilai jumlah
                     var hasil = qty * harga - potongan;
-                    // Set nilai jumlah pada input jumlah
-                    $('#barang_jumlah').val(formatHarga(parseFloat(hasil)));
-                    $(this).val(formatHarga(parseFloat(potongan)));
-                    isSaveButtonActive = true;
+                    if (hasil > 0){
+                        $('#barang_jumlah').val(formatHarga(parseFloat(hasil)));
+                        $(this).val(formatHarga(parseFloat(potongan)));
+                        isSaveButtonActive = true;
+                    } else {
+                        $('#barang_jumlah').val(formatHarga(0));
+                        $(this).val(formatHarga(parseFloat(potongan)));
+                        isSaveButtonActive = false;
+                    }
                 } else {
                     isSaveButtonActive = false;
                 }
@@ -756,7 +802,7 @@
 
             $('#barang_qty').on('input', function() {
                 validateNumberInput(this);
-                // Ambil nilai qty dan harga
+            // Ambil nilai qty dan harga
                 var qtyString = $(this).val();
                 var qty = qtyString !== '' ? parseFloat(qtyString.replace(/[^\d]/g, '')) : 0;
                 var potonganString = $('#barang_potongan').val().trim();
@@ -792,6 +838,14 @@
 
             $(document).on('click', '#supplier', function(){
                 $('#supplier').removeClass('is-invalid');
+            });
+
+            $(document).on('click', '#barang_qty', function(){
+                $('#barang_qty').removeClass('is-invalid');
+            });
+
+            $(document).on('click', '#barang_harga', function(){
+                $('#barang_harga').removeClass('is-invalid');
             });
 
             $(document).on('click', '.delete-button', function () {

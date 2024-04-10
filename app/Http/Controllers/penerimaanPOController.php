@@ -25,7 +25,13 @@ class penerimaanPOController extends Controller
         $idDepo = trim(getIdDepo());
         // dd($idDepo);
         if ($idDepo != '000') {
-            $gudang = gudang::where('ID_DEPO', $idDepo)->get();
+            $gudang = gudang::where('ID_DEPO',$idDepo)
+        ->whereNotIn('ID_GUDANG', function($query) {
+            $query->select('ID_GUDANG')
+                ->from('salesman');
+        })
+        ->select('gudang.*')
+        ->get();
             $trnorder = trninvorder::where('STATUS',0)->where('ID_DEPO',getIdDepo())->get();
         } else {
             $gudang = gudang::all();
