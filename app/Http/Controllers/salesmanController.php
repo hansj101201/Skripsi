@@ -45,22 +45,7 @@ class salesmanController extends Controller
         return response()->json($salesman);
     }
 
-    public function getGudang($depo){
-        $gudang = gudang::where('ID_DEPO',$depo)
-        ->whereNotIn('ID_GUDANG', function($query) {
-            $query->select('ID_GUDANG')
-                ->from('salesman');
-        })
-        ->select('gudang.*')
-        ->get();
-        // dd($gudang);
-        return response()->json($gudang);
-    }
 
-    public function getSalesGudang($depo){
-        $gudang = gudang::where('ID_DEPO',$depo)->get();
-        return response()->json($gudang);
-    }
     public function store(Request $request)
     {
         // Periksa apakah ID yang akan ditambahkan sudah ada dalam database

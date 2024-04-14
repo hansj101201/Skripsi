@@ -12,10 +12,7 @@ use Yajra\DataTables\DataTables;
 class gudangController extends Controller
 {
     public function index () {
-
-        // $processedData = $this->processGudangData($gudang);
-        $depo = depo::where('ID_DEPO','!=','000')->get();
-        return view('layout.setup.gudang.index', compact('depo'));
+        return view('layout.setup.gudang.index');
     }
 
     public function datatable(){
@@ -109,5 +106,50 @@ class gudangController extends Controller
             $gudang->delete();
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
         }
+    }
+
+    public function getGudang($depo){
+        $gudang = gudang::where('ID_DEPO',$depo)
+        ->where('ACTIVE',1)
+        ->whereNotIn('ID_GUDANG', function($query) {
+            $query->select('ID_GUDANG')
+                ->from('salesman');
+        })
+        ->select('gudang.*')
+        ->get();
+        return response()->json($gudang);
+    }
+
+    public function getSalesGudang($depo){
+        $gudang = gudang::where('ID_DEPO',$depo)->get();
+        return response()->json($gudang);
+    }
+
+    public function getSalesGudangAll(){
+        $gudang = gudang::where('ID_DEPO',getIdDepo())->get();
+        return response()->json($gudang);
+    }
+
+    public function getGudangActive(){
+        // dd(getIdDepo());
+        $gudang = gudang::where('ID_DEPO',getIdDepo())
+        ->where('ACTIVE',1)
+        ->whereNotIn('ID_GUDANG', function($query) {
+            $query->select('ID_GUDANG')
+                ->from('salesman');
+        })
+        ->select('gudang.*')->get();
+        return response()->json($gudang);
+    }
+
+    public function getGudangAll(){
+        $gudang = gudang::where('ID_DEPO',getIdDepo())
+        ->whereNotIn('ID_GUDANG', function($query) {
+            $query->select('ID_GUDANG')
+                ->from('salesman');
+        })
+        ->select('gudang.*')
+        ->get();
+        return response()->json($gudang);
     }
 }

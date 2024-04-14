@@ -50,10 +50,6 @@
                     </div>
                     <div class="col-sm-6">
                         <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
-                            @foreach($gudang as $Gudang)
-                                <option value="">Pilih</option>
-                                <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
-                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -62,7 +58,8 @@
                         <label for="gudang" class="col-form-label">GUDANG TUJUAN</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="gudang_tujuan" name="ID_GUDANG_TUJUAN" readonly>
+                        <select class="form-control" id="gudang_tujuan" name="ID_GUDANG_TUJUAN"> <!-- Remove 'col-sm-9' class here -->
+                        </select>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -193,6 +190,7 @@
             $('#gudang_tujuan').val("");
             $('#saldo').val('');
             $('#detailBarang').empty();
+            $('#saveBtn').show();
         }
 
         function fetchData(bukti,periode){
@@ -205,7 +203,7 @@
                     $('#bukti').val(data.BUKTI);
                     $('#nomorpermintaan').val(data.NOPERMINTAAN).trigger('change');
                     $('#gudang').val(data.ID_GUDANG).trigger('change');
-                    $('#gudang_tujuan').val(data.ID_GUDANG_TUJUAN);
+                    $('#gudang_tujuan').val(data.ID_GUDANG_TUJUAN).trigger('change');
                     $('#keterangan').val(data.KETERANGAN);
 
                     fetchDetail(data.NOPERMINTAAN,bukti,periode);
@@ -345,6 +343,7 @@
         }
 
         function fetchDetail(id,bukti,periode){
+            var tanggalPenutupanCompact = "{{ $tglClosing }}";
             var dataArray = [];
             $.ajax({
                 url: "{{ url('transaksi/pengeluaran/fetch-data-selesai') }}/" + id,
@@ -385,6 +384,10 @@
 
                                         <tbody>`;
                                             while(i < data.length){
+                                                var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+
+                                                // Convert data[i].TANGGAL menjadi objek Date
+                                                var tanggalTransaksi = new Date(data[i].TANGGAL);
                                                 let qty = parseFloat(data[i].QTY).toFixed(0);
                                                 console.log(dataArray[i].ID);
                                                 createTable +=
@@ -393,8 +396,9 @@
                                                         <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                                         <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
                                                         <td class="text-right" style="padding-right: 10px;">${dataArray[i].QTYMINTA}</td>
-                                                        <td class="text-right" style="padding-right: 10px;">${qty}</td>
-                                                        <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
+                                                        <td class="text-right" style="padding-right: 10px;">${qty}</td>`
+                                                        if(tanggalTransaksi > tanggalPenutupan){
+                                                        createTable += `<td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                                                             data-kode="${data[i].ID_BARANG}"
                                                             data-nama="${data[i].nama_barang}"
                                                             data-satuan="${data[i].nama_satuan}"
@@ -402,6 +406,9 @@
                                                             data-qtykirim="${qty}"
                                                             ><i class="fas fa-pencil-alt"></i></button></td>
                                                         </tr>`;
+                                                    } else {
+                                                        createTable += `<td></td></tr>`
+                                                    }
                                                 i++;
 
                                             }
@@ -510,6 +517,102 @@
             });
         }
 
+        function updateGudangOptions(mode) {
+            var url = "";
+            if (mode === 'add') {
+                url = "{{ url('setup/gudang/getGudangActive') }}";
+            } else if (mode === 'edit') {
+                url = "{{ url('setup/gudang/getGudangAll') }}";
+            }
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    // Kosongkan dulu opsi gudang yang ada
+                    $('#gudang').empty();
+
+                    // Tambahkan opsi pertama dengan nilai kosong
+                    $('#gudang').append($('<option>', {
+                        value: '',
+                        text: 'Pilih'
+                    }));
+                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
+                    data.forEach(function(gudang) {
+                        $('#gudang').append($('<option>', {
+                            value: gudang.ID_GUDANG,
+                            text: gudang.NAMA
+                        }));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+                }
+            });
+        }
+
+        function updateNomorPo(mode) {
+            var url = "";
+            if (mode === 'add') {
+                url = "{{ url('transaksi/pengeluaran/getPermintaanActive') }}";
+            } else if (mode === 'edit') {
+                url = "{{ url('transaksi/pengeluaran/getPermintaanAll') }}";
+            }
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    // Kosongkan dulu opsi gudang yang ada
+                    $('#nomorpermintaan').empty();
+
+                    // Tambahkan opsi pertama dengan nilai kosong
+                    $('#nomorpermintaan').append($('<option>', {
+                        value: '',
+                        text: 'Pilih'
+                    }));
+                    // Tambahkan opsi nomorpermintaan berdasarkan data yang diterima dari server
+                    data.forEach(function(nomorpermintaan) {
+                        $('#nomorpermintaan').append($('<option>', {
+                            value: nomorpermintaan.NOPERMINTAAN,
+                            text: nomorpermintaan.NOPERMINTAAN
+                        }));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+                }
+            });
+        }
+
+        function updateGudangTujuanOptions() {
+            var url = "{{ url('setup/gudang/getGudangSalesAll') }}";
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    // Kosongkan dulu opsi gudang yang ada
+                    $('#gudang_tujuan').empty();
+
+                    // Tambahkan opsi pertama dengan nilai kosong
+                    $('#gudang_tujuan').append($('<option>', {
+                        value: '',
+                        text: 'Pilih'
+                    }));
+                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
+                    data.forEach(function(gudang) {
+                        $('#gudang_tujuan').append($('<option>', {
+                            value: gudang.ID_GUDANG,
+                            text: gudang.NAMA
+                        }));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+                }
+            });
+        }
 
         $(document).ready(function () {
         // Function to fetch data based on user input
@@ -525,12 +628,20 @@
                 mode = button.data('mode');
                 var modal = $(this);
                 console.log(mode);
+                var kode = button.data('kode');
+
+
+                if(kode === "edit"){
+                    $('#saveBtn').show();
+                } else if(kode === "detail"){
+                    $('#saveBtn').hide();
+                }
                 if (mode === 'viewDetail') {
 
-                    @foreach($trnsales as $a)
-                        var option = $('<option></option>').attr('value', '{{ $a->NOPERMINTAAN }}').text('{{ $a->NOPERMINTAAN }}');
-                        $('#nomorpermintaan').append(option);
-                    @endforeach
+                    updateNomorPo("edit");
+                    updateGudangOptions("edit");
+                    updateGudangTujuanOptions();
+                    $('#gudang_tujuan').prop('disabled',true);
                     modal.find('.modal-title').text('View Detail');
                     $("#tanggal").datepicker('destroy');
                     $('#gudang').prop('disabled', true);
@@ -548,6 +659,10 @@
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                     $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
 
+                    updateNomorPo("add");
+                    updateGudangOptions("add");
+                    updateGudangTujuanOptions();
+                    $('#gudang_tujuan').prop('disabled',true);
                     modal.find('.modal-title').text('Add Data');
                     $('#tanggal').datepicker({
                         format: 'dd-mm-yyyy', // Set your desired date format
@@ -556,12 +671,6 @@
                         autoclose: true // Close the datepicker when a date is selected
                     });
                     $('#nomorpermintaan').append('<option value="">Pilih</option>');
-                    @foreach($trnsales as $a)
-                        @if($a->STATUS == 0)
-                            var option = $('<option></option>').attr('value', '{{ $a->NOPERMINTAAN }}').text('{{ $a->NOPERMINTAAN }}');
-                            $('#nomorpermintaan').append(option);
-                        @endif
-                    @endforeach
                     $('#datepicker').on('click', function() {
                         $('#tanggal').datepicker('show');
                     });
@@ -590,9 +699,19 @@
                 allowClear: true
             });
 
+            var tanggalPenutupanCompact = "{{ $tglClosing }}";
+
+            var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+
+            // Menambahkan satu hari ke tanggal penutupan
+            tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+
+            // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
+            var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+
             $('.datepicker').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format
-                minDate: 0,
+                startDate: tanggalMulai,
                 defaultDate: 'now', // Set default date to 'now'
                 autoclose: true // Close the datepicker when a date is selected
             });
@@ -633,7 +752,6 @@
                         modal.find('.modal-title').text('Tambah Data');
                         $('#stok_lama').val(0);
                         getData(kode, tanggal, gudang);
-                        $('#saveButton').attr('onclick', 'addTableBarang()');
                         $('#editMode').val('add');
                     } else {
                         modal.find('.modal-title').text('Edit Data');

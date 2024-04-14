@@ -17,7 +17,7 @@
                 <h1 class="card-title">Order Pembelian</h1>
             </div>
             <div class="mt-2 mb-2">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDataModal">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDataModal" data-mode="add">
                     + Order Pembelian
                 </button>
             </div>

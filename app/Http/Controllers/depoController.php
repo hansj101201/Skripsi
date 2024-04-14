@@ -112,4 +112,14 @@ class depoController extends Controller
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
         }
     }
+
+    public function getDepoAll(){
+        $depo = depo::where('ID_DEPO','!=','000')->get();
+        return response()->json($depo);
+    }
+
+    public function getDepoActive(){
+        $depo = depo::where('ID_DEPO','!=','000')->where('ACTIVE',1)->get();
+        return response()->json($depo);
+    }
 }

@@ -16,13 +16,18 @@ class pengeluaranBarangKanvasController extends Controller
 {
     //
     public function index(){
-        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->get();
-        // dd($trnsales);
-        $gudang = gudang::where('ID_DEPO', getIdDepo())->get();
-        return view("layout.transaksi.kanvas.index", compact("gudang","trnsales"));
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
+        return view("layout.transaksi.kanvas.index", compact("tglClosing"));
     }
 
     public function datatable(){
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
         $trnsales = trnsales::where('KDTRN','15')
         ->where('NOPERMINTAAN','!=','')
         ->join('gudang as G1', 'trnsales.ID_GUDANG', '=', 'G1.ID_GUDANG')
@@ -31,13 +36,12 @@ class pengeluaranBarangKanvasController extends Controller
 
         // dd($trnsales);
         return DataTables::of($trnsales)
-        ->addColumn('action', function ($row) {
-            // Initialize the action buttons HTML
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-eye"></span></button>';
-            // Check if $row->jumlah is zero
-            if ($row->JUMLAH == 0) {
-                // If $row->jumlah is zero, add the delete button
-                $actionButtons .= '&nbsp;<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+        ->addColumn('action', function ($row) use ($tglClosing) {
+
+            if($row->TANGGAL <= $tglClosing){
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-kode="detail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-eye"></span></button>';
+            } else {
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-kode="edit" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-pencil-alt"></span></button>; &nbsp;<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
             }
             // Return the action buttons HTML
             return $actionButtons;
@@ -152,8 +156,11 @@ class pengeluaranBarangKanvasController extends Controller
             // dd($data);
             $nomor = 1; // Initialize the nomor counter
 
+            $gudangTujuan = gudang::where('ID_GUDANG', $request->gudang_tujuan)
+            ->value('NAMA');
 
-
+            $gudangAsal = gudang::where('ID_GUDANG',$request->gudang_asal)
+            ->value('NAMA');
             // Create trnsales record
             trnsales::create([
                 'KDTRN' => '15',
@@ -168,6 +175,7 @@ class pengeluaranBarangKanvasController extends Controller
                 'USERENTRY' => getUserLoggedIn()->ID_USER,
                 'TGLENTRY' => $currentDateTime
             ]);
+
 
             trnsales::create([
                 'KDTRN' => '05',
@@ -196,6 +204,7 @@ class pengeluaranBarangKanvasController extends Controller
                     'QTY' => $item[1],
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
+                    'KET01' => 'Pengeluaran Kanvas ke '.$request->gudang_tujuan.' - '.$gudangTujuan,
                     'TGLENTRY' => $currentDateTime,
                     'NOMOR' => $nomor++, // Increment nomor for each item
                 ]);
@@ -208,6 +217,7 @@ class pengeluaranBarangKanvasController extends Controller
                     'PERIODE' => $request->periode,
                     'ID_BARANG' => $item[0],
                     'QTY' => $item[1],
+                    'KET01' => 'Penerimaan Kanvas dari '.$request->gudang_asal.' - '.$gudangAsal,
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
@@ -266,5 +276,15 @@ class pengeluaranBarangKanvasController extends Controller
             DB::rollBack();
             return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
         }
+    }
+
+    public function getPermintaanActive(){
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->where('STATUS',0)->get();
+        return response()->json($trnsales);
+    }
+
+    public function getPermintaanAll(){
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->get();
+        return response()->json($trnsales);
     }
 }

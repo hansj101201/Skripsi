@@ -47,6 +47,9 @@ class AuthController extends Controller
         $request->validate([
             'ID_USER' => 'required',
             'PASSWORD' => 'required',
+        ], [
+            'ID_USER.required' => 'ID Pengguna harus diisi.',
+            'PASSWORD.required' => 'Kata Sandi harus diisi.',
         ]);
 
         $credential = [
@@ -66,7 +69,7 @@ class AuthController extends Controller
             }
             // ini adalah function super kita untuk membaca data siapa yang lagi login sekarang
         } else {
-            return redirect('login')->with('pesan', 'Gagal Login');
+            return redirect('login')->with('pesan', 'Invalid User Id / Password');
         }
     }
 

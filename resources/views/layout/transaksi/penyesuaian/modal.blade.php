@@ -33,10 +33,6 @@
                     <div class="form-group col">
                         <label for="gudang">GUDANG:</label>
                         <select class="form-control" id="gudang" name="ID_GUDANG">
-                            @foreach($gudang as $Gudang)
-                                <option value="">Pilih</option>
-                                <option value="{{ $Gudang->ID_GUDANG }}" readonly>{{ $Gudang->NAMA }}</option>
-                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -175,6 +171,7 @@
             $('#gudang').prop('disabled', false);
             $('#listBarang').empty();
             $('#keterangan').val('');
+            $('#saveBtn').show();
         }
 
         function clearModalBarang() {
@@ -264,6 +261,39 @@
         }
 
 
+        function updateGudangOptions(mode) {
+            var url = "";
+            if (mode === 'add') {
+                url = "{{ url('setup/gudang/getGudangActive') }}";
+            } else if (mode === 'edit') {
+                url = "{{ url('setup/gudang/getGudangAll') }}";
+            }
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    // Kosongkan dulu opsi gudang yang ada
+                    $('#gudang').empty();
+
+                    // Tambahkan opsi pertama dengan nilai kosong
+                    $('#gudang').append($('<option>', {
+                        value: '',
+                        text: 'Pilih'
+                    }));
+                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
+                    data.forEach(function(gudang) {
+                        $('#gudang').append($('<option>', {
+                            value: gudang.ID_GUDANG,
+                            text: gudang.NAMA
+                        }));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+                }
+            });
+        }
         function fetchData(bukti,periode){
             $.ajax({
                 type: "GET",
@@ -279,6 +309,7 @@
         }
 
         function fetchDetail(bukti,periode){
+            var tanggalPenutupanCompact = "{{ $tglClosing }}";
             $.ajax({
                 url: "{{ url('transaksi/penyesuaian/getDetail') }}/"+bukti+"/"+periode,
                 method: "GET",
@@ -289,19 +320,27 @@
                         while(i < data.length){
                             let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
                             // console.log(data[i]);
+                            var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+
+                            // Convert data[i].TANGGAL menjadi objek Date
+                            var tanggalTransaksi = new Date(data[i].TANGGAL);
                             createTable +=
                                 `<tr id="${data[i].ID_BARANG}">
                                     <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
                                     <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                     <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
-                                    <td class="text-right" style="padding-right: 10px;">${qty}</td>
-                                    <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
+                                    <td class="text-right" style="padding-right: 10px;">${qty}</td>`
+                                    if(tanggalTransaksi > tanggalPenutupan){
+                                        createTable+=`<td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
                                         data-kode="${data[i].ID_BARANG}"
                                         data-nama="${data[i].nama_barang}"
                                         data-satuan="${data[i].nama_satuan}"
                                         data-qty="${qty}"
-                                        ><i class="fas fa-pencil-alt"></i></button></td>
-                                </tr>`;
+                                        ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>`
+                                    } else {
+                                        createTable += `<td></td>`
+                                    }
+                                createTable+=`</tr>`;
                             i++;
 
                         }
@@ -334,7 +373,7 @@
                         data-satuan="${satuan}"
                         data-qty="${qty}"
                         data-stok="${qty}"
-                        ><i class="fas fa-pencil-alt"></i></button></td>
+                        ><i class="fas fa-pencil-alt"></i></button>&nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>
                 </tr>`
             $('#listBarang').append(createTable);
             $('#dataModal').hide();
@@ -342,7 +381,12 @@
             clearModalBarang();
             $("#tanggal").datepicker('destroy');
             $('#gudang').prop('disabled', true);
-
+        }
+        function deleteRow(rowId) {
+            // Mencari elemen baris berdasarkan ID
+            var row = document.getElementById(rowId);
+            // Menghapus baris dari tabel
+            row.parentNode.removeChild(row);
         }
         function editTableBarang(){
             var kode = $('#barang_id_barang').val();
@@ -427,7 +471,16 @@
                 var mode = button.data('mode');
                 var modal = $(this);
 
+                var kode = button.data('kode');
+
+                if(kode === "detail"){
+                    $('#saveBtn').hide();
+                } else if(kode === "edit"){
+                    $('#saveBtn').show();
+                }
+
                 if (mode === 'viewDetail') {
+                    updateGudangOptions("edit");
                     modal.find('.modal-title').text('View Detail');
                     $("#tanggal").datepicker('destroy');
                     $('#gudang').prop('disabled', true);
@@ -440,13 +493,24 @@
                     fetchDetail(bukti,periode);
                     $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
                 } else {
+                    updateGudangOptions("add");
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                     $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
                     $('#tambahDataButton').show();
                     modal.find('.modal-title').text('Add Data');
+                    var tanggalPenutupanCompact = "{{ $tglClosing }}";
+
+                    var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+
+                    // Menambahkan satu hari ke tanggal penutupan
+                    tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+
+                    // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
+                    var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+
                     $('#tanggal').datepicker({
                         format: 'dd-mm-yyyy', // Set your desired date format
-                        minDate: 0,
+                        startDate: tanggalMulai,
                         defaultDate: 'now', // Set default date to 'now'
                         autoclose: true // Close the datepicker when a date is selected
                     });

@@ -56,8 +56,13 @@
                     </div>
                     <div class="form-group row" id="password-group" style="display: none;">
                         <label for="password_user" class="col-sm-3 col-form-label">Password</label>
-                        <div class="col-sm-9">
-                            <input type="password" class="form-control" id="password_user" name="PASSWORD" maxlength="40">
+                        <div class="col-sm-9 input-group">
+                            <input type="password" class="form-control password-toggle" id="password_user" name="PASSWORD" maxlength="40">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <span class="fas fa-eye"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -109,9 +114,9 @@
         function updateGudangOptions(mode, id, selectedGudangId) {
             var url = "";
             if (mode === 'add') {
-                url = "{{ url('setup/salesman/getGudang') }}/"+id;
+                url = "{{ url('setup/gudang/getGudang') }}/"+id;
             } else if (mode === 'edit') {
-                url = "{{ url('setup/salesman/getGudangSales') }}/" + id;
+                url = "{{ url('setup/gudang/getGudangSales') }}/" + id;
             }
             $.ajax({
                 url: url,
@@ -201,6 +206,15 @@
         }
 
         $(document).ready(function() {
+
+            $(".toggle-password").click(function () {
+                var input = $(this).closest('.input-group').find('.password-toggle');
+                if (input.attr("type") == "password") {
+                    input.attr("type", "text");
+                } else {
+                    input.attr("type", "password");
+                }
+            });
 
             $('#gudang, #depo').select2({
                 placeholder: "---Pilih---",

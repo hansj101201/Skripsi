@@ -10,7 +10,7 @@
                 value="{{ old('ID_USER') }}" placeholder="ID USER" autofocus>
             <div class="input-group-append">
                 <div class="input-group-text">
-                    <span class="fas fa-envelope {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                    <span class="fas fa-regular fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
                 </div>
             </div>
             @if ($errors->has('ID_USER'))
@@ -22,12 +22,12 @@
 
         <div class="input-group mb-3">
             <input type="password" name="PASSWORD"
-                class="form-control {{ $errors->has('PASSWORD') ? 'is-invalid' : '' }}"
+                class="form-control password-toggle {{ $errors->has('PASSWORD') ? 'is-invalid' : '' }}"
                 placeholder="{{ __('adminlte::adminlte.password') }}">
             <div class="input-group-append">
-                <div class="input-group-text">
-                    <span class="fas fa-lock {{ config('adminlte.classes_auth_icon', '') }}"></span>
-                </div>
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                    <span class="fas fa-eye"></span>
+                </button>
             </div>
             @if ($errors->has('PASSWORD'))
                 <div class="invalid-feedback">
@@ -54,3 +54,18 @@
         <div class="alert alert-danger">{{ Session::get('pesan') }}</div>
     @endif
 @endsection
+
+@push('js')
+<script>
+    $(document).ready(function () {
+        $(".toggle-password").click(function () {
+            var input = $(this).closest('.input-group').find('.password-toggle');
+            if (input.attr("type") == "password") {
+                input.attr("type", "text");
+            } else {
+                input.attr("type", "password");
+            }
+        });
+    });
+</script>
+@endpush

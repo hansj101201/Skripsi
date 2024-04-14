@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\barang;
 use App\Models\dtlinvorder;
 use App\Models\gudang;
-use App\Models\satuan;
+use App\Models\supplier;
 use App\Models\trninvorder;
 use App\Models\trnjadi;
 use App\Models\trnsales;
@@ -14,37 +13,37 @@ use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Psy\Readline\Hoa\Console;
 use Yajra\DataTables\DataTables;
 
 class penerimaanPOController extends Controller
 {
     public function index(){
 
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
+        // dd($gudang);
+        return view('layout.transaksi.penerimaanpo.index', compact('tglClosing'));
+    }
+
+    public function getNomorPo()
+    {
         $idDepo = trim(getIdDepo());
         // dd($idDepo);
         if ($idDepo != '000') {
-            $gudang = gudang::where('ID_DEPO',$idDepo)
-        ->whereNotIn('ID_GUDANG', function($query) {
-            $query->select('ID_GUDANG')
-                ->from('salesman');
-        })
-        ->select('gudang.*')
-        ->get();
-            $trnorder = trninvorder::where('STATUS',0)->where('ID_DEPO',getIdDepo())->get();
+            $trnorder = trninvorder::where('STATUS', '!=', 2)->where('ID_DEPO',getIdDepo())->get();
         } else {
-            $gudang = gudang::all();
-            $trnorder = trninvorder::where('STATUS',0)->get();
+            $trnorder = trninvorder::where('STATUS', '!=', 2)->get();
         }
-        // dd($gudang);
-        return view('layout.transaksi.penerimaanpo.index', compact('gudang','trnorder'));
+
+        return response()->json($trnorder);
     }
 
     public function fetchDataById($id)
     {
         $trnorder = trninvorder::where('NOMORPO',$id)
-        ->where('STATUS',0)
+        ->where('STATUS', '!=', 2)
         ->with('supplier')->get();
         if($trnorder->isNotEmpty()){
             return response()->json($trnorder);
@@ -73,17 +72,24 @@ class penerimaanPOController extends Controller
         ->select('trnsales.*','supplier.NAMA AS nama_supplier')
         ->limit(50);
 
+        $tglClosing = DB::table('closing')
+            ->where('ID_DEPO',getIdDepo())
+            ->orderBy('TGL_CLOSING', 'desc')
+            ->value('TGL_CLOSING');
+
         return DataTables::of($trnsales)
-        ->editColumn('ID_SUPPLIER', function ($row) {
-            return $row->nama_supplier;
-        })
-        ->addColumn('action', function ($row) {
+        ->addColumn('action', function ($row) use ($tglClosing) {
             // Initialize the action buttons HTML
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpo="'.$row->NOMORPO.'" data-periode="'.$row->PERIODE.'" data-jumlah="'.$row->JUMLAH.'"><span class="fas fa-eye"></span></button>';
             // Check if $row->jumlah is zero
-            if ($row->JUMLAH == 0) {
-                // If $row->jumlah is zero, add the delete button
-                $actionButtons .= '&nbsp;<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+            if($row->TANGGAL <= $tglClosing){
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-kode"detail" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpo="'.$row->NOMORPO.'" data-periode="'.$row->PERIODE.'" data-jumlah="'.$row->JUMLAH.'"><span class="fas fa-eye"></span></button>';
+            } else {
+                if ($row->JUMLAH == 0) {
+                    // If $row->jumlah is zero, add the delete button
+                    $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-kode"detail" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpo="'.$row->NOMORPO.'" data-periode="'.$row->PERIODE.'" data-jumlah="'.$row->JUMLAH.'"><span class="fas fa-pencil-alt"></span></button> &nbsp;<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+                } else {
+                    $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#detailModal" data-kode"edit" data-bukti="'.$row->BUKTI.'" data-tanggal="'.$row->TANGGAL.'" data-nomorpo="'.$row->NOMORPO.'" data-periode="'.$row->PERIODE.'" data-jumlah="'.$row->JUMLAH.'"><span class="fas fa-eye"></span></button>';
+                }
             }
             // Return the action buttons HTML
             return $actionButtons;
@@ -127,22 +133,22 @@ class penerimaanPOController extends Controller
 
     public function updateStatusPO($nomorpo){
         $data = DB::table('abc.dtlinvorder')
-                ->whereIn('BUKTI', function ($query) use ($nomorpo) {
-                    $query->select('BUKTI')
-                        ->from('trninvorder')
-                        ->where('NOMORPO', $nomorpo);
-                })
-                ->whereRaw('QTYKIRIM < QTYORDER')
-                ->get();
+            ->whereIn('BUKTI', function ($query) use ($nomorpo) {
+                $query->select('BUKTI')
+                    ->from('trninvorder')
+                    ->where('NOMORPO', $nomorpo);
+            })
+            ->whereRaw('QTYKIRIM < QTYORDER')
+            ->get();
 
         if($data->isEmpty()){
             DB::table('trninvorder')
             ->where('NOMORPO',$nomorpo)
-            ->update(['STATUS'=>1]);
+            ->update(['STATUS'=>2]);
         } else {
             DB::table('trninvorder')
             ->where('NOMORPO',$nomorpo)
-            ->update(['STATUS'=>0]);
+            ->update(['STATUS'=>1]);
         }
     }
 
@@ -151,14 +157,17 @@ class penerimaanPOController extends Controller
         // Start a transaction
         DB::beginTransaction();
 
+
         try {
             // Generate BUKTI
             $bukti = $this->generateBukti($request->tanggal);
 
             // Format tanggal
+
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
+
             $data = $request->data;
             // dd($data);
             // dd($data);
@@ -180,6 +189,8 @@ class penerimaanPOController extends Controller
                 'TGLENTRY' => $currentDateTime
             ]);
 
+            $namaSupplier = supplier::where('ID_SUPPLIER',$request->supplier)
+            ->value('NAMA');
             // Create trnjadi records
             foreach ($data as $item) {
                 $data = DB::table('dtlinvorder')
@@ -207,6 +218,7 @@ class penerimaanPOController extends Controller
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
+                    'KET01' => 'Terima dari Supplier '.$request->supplier.' - '.$namaSupplier,
                     'NOMOR' => $nomor++, // Increment nomor for each item
                 ]);
             }

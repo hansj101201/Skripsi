@@ -25,7 +25,12 @@ class penjualanController extends Controller
         $barang = barang::all();
         $gudang = gudang::where('ID_DEPO',getIdDepo())->get();
         $customer = customer::all();
-        return view('layout.transaksi.penjualan.index', compact('barang','gudang','customer'));
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
+        $gudang = gudang::where('ID_DEPO', getIdDepo())->get();
+        return view('layout.transaksi.penjualan.index', compact('barang','gudang','customer','tglClosing'));
     }
 
     public function datatable(){
@@ -34,13 +39,17 @@ class penjualanController extends Controller
         ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
         ->select('trnsales.*', 'customer.NAMA AS nama_customer');
 
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
+
         return DataTables::of($trnsales)
         ->editColumn('ID_CUSTOMER', function ($row) {
             return $row->nama_customer;
         })
         ->addColumn('action', function ($row) {
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp;
-            <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp;';
             return $actionButtons;
         })
         ->rawColumns(["action"])
@@ -89,6 +98,9 @@ class penjualanController extends Controller
         $bukti = $this->generateBukti($request->tanggal);
         $currentDateTime = date('Y-m-d H:i:s');
         DB::beginTransaction();
+        $customer = customer::where('ID_CUSTOMER', $request->customer)
+        ->value('NAMA');
+        // dd($customer);
         try {
             $bukti = $this->generateBukti($request->tanggal);
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
@@ -124,6 +136,7 @@ class penjualanController extends Controller
                     'POTONGAN' => $item[3],
                     'JUMLAH' => $item[4],
                     'ID_DEPO' => getIdDepo(),
+                    'KET01' => 'Penjualan ke Customer '.$request->customer.' - '.$customer,
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
                     'NOMOR' => $nomor++, // Increment nomor for each item
@@ -136,52 +149,6 @@ class penjualanController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-    public function postDetailPenjualan(Request $request){
-        $currentDateTime = date('Y-m-d H:i:s');
-        // dd($request->all());
-        DB::beginTransaction();
-        try {
-            $data = $request->data;
-            trnsales::where('KDTRN','12')
-            ->where('BUKTI', $request->bukti)
-            ->where('PERIODE',$request->periode)
-            ->update(
-                [
-                    'DISCOUNT' => $request->diskon,
-                    'JUMLAH' => $request->jumlah,
-                    'NETTO' => $request->netto,
-                    'KETERANGAN' => $request->keterangan,
-                    'USEREDIT' => getUserLoggedIn()->ID_USER,
-                    'TGLEDIT' => $currentDateTime
-                ]
-            );
-            foreach ($data as $item) {
-                trnjadi::where('KDTRN', '12')
-                ->where('BUKTI', $request->bukti)
-                ->where('PERIODE', $request->periode)
-                ->where('ID_BARANG', $item[0])
-                ->update([
-                    'QTY' => $item[1],
-                    'HARGA' => $item[2],
-                    'POTONGAN' => $item[3],
-                    'JUMLAH' => $item[4],
-                    'USEREDIT' => getUserLoggedIn()->ID_USER,
-                    'TGLEDIT' => $currentDateTime
-                ]);
-                // dd($trnjadi);
-            }
-            DB::commit();
-
-            // Mengembalikan respons JSON untuk memberi tahu klien bahwa pembaruan berhasil
-            return response()->json(['success'=>true,'message' => 'Update successful']);
-        } catch (\Exception $e) {
-            // Jika terjadi kesalahan, rollback transaksi dan kirim respons kesalahan
-            DB::rollBack();
-            return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
-        }
-    }
-
     public function destroy($bukti, $periode){
         DB::beginTransaction();
         try {

@@ -34,23 +34,11 @@
                     <div class="form-group col">
                         <label for="supplier">Supplier:</label>
                         <select class="form-control" id="supplier" name="ID_SUPPLIER">
-                            @foreach($supplier as $Supplier)
-                                <option value="">Pilih</option>
-                                @if($Supplier->ACTIVE == 1)
-                                    <option value="{{ $Supplier->ID_SUPPLIER }}" readonly> {{ $Supplier->ID_SUPPLIER }} - {{ $Supplier->NAMA }}</option>
-                                @endif
-                            @endforeach
                         </select>
                     </div>
                     <div class="form-group col">
                         <label for="depo">Depo:</label>
                         <select class="form-control" id="depo" name="ID_DEPO">
-                            @foreach($depo as $Depo)
-                                <option value="">Pilih</option>
-                                @if($Depo->ACTIVE == 1)
-                                    <option value="{{ $Depo->ID_DEPO }}" readonly>{{ $Depo->NAMA }}</option>
-                                @endif
-                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -220,6 +208,74 @@
         let mode;
         let editData;
 
+        function updateDepoOptions(mode) {
+            var url = "";
+            if (mode === 'add') {
+                url = "{{ url('setup/depo/getDepoActive') }}";
+            } else if (mode === 'edit') {
+                url = "{{ url('setup/depo/getDepoAll') }}";
+            }
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    // Kosongkan dulu opsi gudang yang ada
+                    $('#depo').empty();
+
+                    // Tambahkan opsi pertama dengan nilai kosong
+                    $('#depo').append($('<option>', {
+                        value: '',
+                        text: 'Pilih'
+                    }));
+                    // Tambahkan opsi depo berdasarkan data yang diterima dari server
+                    data.forEach(function(depo) {
+                        $('#depo').append($('<option>', {
+                            value: depo.ID_DEPO,
+                            text: depo.NAMA
+                        }));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+                }
+            });
+        }
+
+        function updateSupplierOptions(mode) {
+            var url = "";
+            if (mode === 'add') {
+                url = "{{ url('transaksi/pembelian/getSupplierActive') }}";
+            } else if (mode === 'edit') {
+                url = "{{ url('transaksi/pembelian/getSupplierAll') }}";
+            }
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    // Kosongkan dulu opsi gudang yang ada
+                    $('#supplier').empty();
+
+                    // Tambahkan opsi pertama dengan nilai kosong
+                    $('#supplier').append($('<option>', {
+                        value: '',
+                        text: 'Pilih'
+                    }));
+                    // Tambahkan opsi supplier berdasarkan data yang diterima dari server
+                    data.forEach(function(supplier) {
+                        $('#supplier').append($('<option>', {
+                            value: supplier.ID_SUPPLIER,
+                            text: supplier.NAMA
+                        }));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+                }
+            });
+        }
+
         function clearModal() {
             // $('#tanggal').val("");
             $('#bukti').val("");
@@ -232,6 +288,7 @@
             $('#supplier').prop('disabled', false);
             $('#depo').prop('disabled', false);
             $('#keterangan').val();
+            $('#saveBtn').prop('disabled',false);
         }
 
         function fetchData(bukti,periode){
@@ -258,6 +315,7 @@
         }
 
         function fetchDetail(bukti,periode){
+            var tanggalPenutupanCompact = "{{ $tglClosing }}";
             $.ajax({
                 url: "{{ url('transaksi/pembelian/getDetail') }}/"+bukti+"/"+periode,
                 method: "GET",
@@ -272,6 +330,10 @@
                         let potongan = formatHarga(parseFloat(data[i].DISCOUNT));
                         let jumlah = formatHarga(parseFloat(data[i].JUMLAH));
 
+                        var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+
+                        // Convert data[i].TANGGAL menjadi objek Date
+                        var tanggalTransaksi = new Date(data[i].TANGGAL);
                         // console.log(data[i]);
                         createTable +=
                             `<tr id="${data[i].ID_BARANG}">
@@ -282,16 +344,20 @@
                                 <td class="text-right" style="padding-right: 10px;">${harga}</td>
                                 <td class="text-right" style="padding-right: 10px;">${potongan}</td>
                                 <td class="text-right" style="padding-right: 10px;">${jumlah}</td>`
-
-                                if(editData){
-                                createTable += `<td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
-                                    data-kode="${data[i].ID_BARANG}"
-                                    data-qty="${data[i].QTYORDER}"
-                                    data-potongan="${data[i].DISCOUNT}"
-                                    data-harga="${data[i].HARGA}"
-                                    data-jumlah="${data[i].JUMLAH}"
-                                    ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>'</td>
-                            </tr>`
+                                if(tanggalTransaksi > tanggalPenutupan){
+                                    if(editData){
+                                        createTable += `<td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
+                                            data-kode="${data[i].ID_BARANG}"
+                                            data-qty="${data[i].QTYORDER}"
+                                            data-potongan="${data[i].DISCOUNT}"
+                                            data-harga="${data[i].HARGA}"
+                                            data-jumlah="${data[i].JUMLAH}"
+                                            ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>'</td>
+                                        </tr>`
+                                    }
+                                }
+                                else {
+                            createTable+= `<td></td></tr>`;
                         };
                         i++;
                     }
@@ -310,6 +376,7 @@
             $('#barang_harga').val('');
             $('#barang_potongan').val('');
             $('#barang_id_barang').prop('disabled', false);
+            $('#saveButton').prop('disabled',false);
         }
 
         function sumSubtotal(){
@@ -445,7 +512,7 @@
                             data-potongan="${potongan}"
                             data-harga="${harga}"
                             data-jumlah="${jumlah}"
-                            ><i class="fas fa-pencil-alt"></i></button>  &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>
+                            ><i class="fas fa-pencil-alt"></i></button>&nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>
                     </tr>`
                 $('#listBarang').append(createTable);
                 $('#dataModal').hide();
@@ -556,7 +623,7 @@
                     } else {
                         toastr.error(response.message);
                     }
-                }
+                },
             })
         }
         function getData(kode, tanggal) {
@@ -584,9 +651,19 @@
         }
 
         function enableDatepicker() {
+            var tanggalPenutupanCompact = "{{ $tglClosing }}";
+
+            var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+
+            // Menambahkan satu hari ke tanggal penutupan
+            tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+
+            // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
+            var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+
             $('#tanggal').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format
-                minDate: 0,
+                startDate: tanggalMulai,
                 defaultDate: 'now', // Set default date to 'now'
                 autoclose: true // Close the datepicker when a date is selected
             });
@@ -601,6 +678,7 @@
             var periode;
             var editModeValue;
             var isSaveButtonActive = false;
+            var isSaveBtnActive = false;
 
             $('#supplier, #barang_id_barang, #depo').select2({
                 placeholder: "---Pilih---",
@@ -616,10 +694,13 @@
                 mode = button.data('mode');
                 var modal = $(this);
 
+                var kode = button.data('kode');
                 if (mode === 'viewDetail') {
                     modal.find('.modal-title').text('View Detail');
                     $('#tanggal').datepicker('destroy');
                     // $("#tanggal").datepicker('destroy');
+                    updateSupplierOptions('edit');
+                    updateDepoOptions('edit');
                     $('#supplier').prop('disabled', true);
                     $('#depo').prop('disabled', true);
                     $('#tambahDataButton').hide();
@@ -630,7 +711,14 @@
                     console.log(bukti);
                     fetchData(bukti,periode);
                     fetchDetail(bukti,periode);
-                    $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
+
+                    if (kode === "edit"){
+                        $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
+                        $('#saveBtn').show();
+                    } else if(kode === "detail"){
+                        $('#saveBtn').hide();
+                    }
+
                 } else {
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                     $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
@@ -639,6 +727,8 @@
                     console.log($('#tanggal').val());
                     $('#tambahDataButton').show();
                     $('#diskon').val(0);
+                    updateSupplierOptions('add');
+                    updateDepoOptions('add');
                     modal.find('.modal-title').text('Tambah Order');
 
                     $('#saveBtn').attr('onclick', 'simpanData()');
@@ -737,8 +827,21 @@
                 // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(discount) && !isNaN(subtotal)) {
                     var hasil = subtotal - discount;
-                    $('#netto').val(formatHarga(parseFloat(hasil)));
-                    $(this).val(formatHarga(parseFloat(discount)));
+                    if (hasil > 0){
+                        $('#netto').val(formatHarga(parseFloat(hasil)));
+                        $(this).val(formatHarga(parseFloat(discount)));
+                        isSaveBtn = true;
+                    } else {
+                        $('#netto').val(formatHarga(parseFloat(0)));
+                        $(this).val(formatHarga(parseFloat(discount)));
+                        isSaveBtn = false;
+                    }
+                }
+
+                if(isSaveBtn){
+                    $('#saveBtn').prop('disabled',false);
+                } else {
+                    $('#saveBtn').prop('disabled',true);
                 }
             });
 
@@ -861,10 +964,14 @@
                         '_token': '{{ csrf_token() }}',
                     },
                     success: function (response) {
-                        $('#deleteDataModal').modal('hide'); // Correct the selector here
-                        $('.modal-backdrop').remove();
-                        toastr.success(response.message);
-                        table.draw();
+                        if (response.success) {
+                            $('#deleteDataModal').modal('hide'); // Correct the selector here
+                            $('.modal-backdrop').remove();
+                            toastr.success(response.message);
+                            table.draw();
+                        } else {
+                            toastr.error(response.message);
+                        }
                     },
                     error: function (xhr, status, error) {
                         // Handle errors, for example, display error messages

@@ -28,10 +28,6 @@
                         <label for="depo"class="col-sm-3 col-form-label">Depo</label>
                         <div class="col-sm-9"> <!-- Use the same grid class 'col-sm-9' for consistency -->
                             <select class="form-control" id="depo" name="ID_DEPO"  > <!-- Remove 'col-sm-9' class here -->
-                                @foreach($depo as $Depo)
-                                    <option value="">Pilih</option>
-                                    <option value="{{ $Depo->ID_DEPO }}">{{ $Depo->NAMA }}</option>
-                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -69,11 +65,60 @@
             $('#lokasi').val("");
             $('#depo').val(null).trigger('change');
             $('#active').prop('checked', true);
-
+            $('#depo').prop('disabled', false);
             if ($('#addEditForm input[name="_method"]').length > 0) {
                 $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
             }
         }
+
+        function updateDepoOptions(mode) {
+            var url = "";
+            if (mode === 'add') {
+                url = "{{ url('setup/depo/getDepoActive') }}";
+            } else if (mode === 'edit') {
+                url = "{{ url('setup/depo/getDepoAll') }}";
+            }
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    // Kosongkan dulu opsi gudang yang ada
+                    $('#depo').empty();
+
+                    // Tambahkan opsi pertama dengan nilai kosong
+                    $('#depo').append($('<option>', {
+                        value: '',
+                        text: 'Pilih'
+                    }));
+                    // Tambahkan opsi depo berdasarkan data yang diterima dari server
+                    data.forEach(function(depo) {
+                        $('#depo').append($('<option>', {
+                            value: depo.ID_DEPO,
+                            text: depo.NAMA
+                        }));
+                    });
+
+                    if(mode === "add"){
+                        setDepoValue();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+                }
+            });
+        }
+
+        function setDepoValue() {
+            // Di sini Anda bisa menetapkan nilai depo sesuai kebutuhan
+            console.log('{{ getIdDepo() }}');
+            var idDepo = '{{ getIdDepo() }}';
+            if (idDepo !== '000') {
+                $('#depo').val(idDepo).trigger('change');
+                $('#depo').prop('disabled', true);
+            }
+        }
+
 
         function cekData(formData) {
             // Lakukan validasi di sini
@@ -122,17 +167,19 @@
                     $('#nama_gudang').removeAttr('readonly');
                     $('#addEditForm').attr('action', "{{ route('gudang.store') }}"); // Set rute untuk operasi tambah
                     $('#addEditForm').attr('method', 'POST');
-                    $('#depo').prop('disabled', false);
-                    console.log({{ getIdDepo() }});
-                    if ('{{ getIdDepo() }}' !== '000') {
-                        $('#depo').val({{ getIdDepo() }}).trigger('change');
-                        $('#depo').prop('disabled', true);
-                    }
+                    updateDepoOptions("add");
+
+                    // console.log({{ getIdDepo() }});
+                    // if ('{{ getIdDepo() }}' !== '000') {
+                    //     $('#depo').val({{ getIdDepo() }}).trigger('change');
+                    //     $('#depo').prop('disabled', true);
+                    // }
                     console.log($('#depo').val());
                 } else if (mode === 'edit') {
                     modal.find('.modal-title').text('Edit Gudang');
                     $('#editMode').val(1); // Set editMode ke 1 untuk operasi edit
                     var kode = button.data('kode');
+                    updateDepoOptions("edit");
                     $.ajax({
                         type: "GET",
                         url: "{{ url('setup/gudang/getDetail') }}/"+kode,

@@ -17,9 +17,12 @@ class penyesuaianController extends Controller
 {
     //
     public function index(){
-        $gudang = gudang::where('ID_DEPO',getIdDepo())->get();
         $barang = barang::all();
-        return view("layout.transaksi.penyesuaian.index", compact('gudang','barang'));
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
+        return view("layout.transaksi.penyesuaian.index", compact('barang','tglClosing'));
     }
 
     public function datatable(){
@@ -27,10 +30,18 @@ class penyesuaianController extends Controller
         ->join('gudang','trnsales.ID_GUDANG', 'gudang.ID_GUDANG')
         ->select('trnsales.*', 'gudang.NAMA AS nama_gudang');
 
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
         return DataTables::of($trnsales)
-        ->addColumn('action', function ($row) {
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp;
-            <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+        ->addColumn('action', function ($row) use ($tglClosing) {
+            if($row->TANGGAL <= $tglClosing){
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-kode="detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button>';
+            } else {
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-kode"edit" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-pencil-alt"></span></button> &nbsp;
+                <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+            }
             return $actionButtons;
         })
         ->rawColumns(["action"])

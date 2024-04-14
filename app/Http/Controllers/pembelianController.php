@@ -20,19 +20,38 @@ class pembelianController extends Controller
 
     public function index(){
         $barang = barang::where('ACTIVE',1)->get();
-        $supplier = supplier::orderBy('ID_SUPPLIER')->orderBy('NAMA')->get();
-        $depo = depo::where('ID_DEPO','!=','000')->get();
-        return view('layout.transaksi.pembelian.index', compact('barang','supplier','depo'));
+
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
+        return view('layout.transaksi.pembelian.index', compact('barang','tglClosing'));
     }
 
     public function datatable(){
-        $trninvorder = trninvorder::join('supplier', 'trninvorder.ID_SUPPLIER', 'supplier.ID_SUPPLIER')
-        ->select('trninvorder.*', 'supplier.NAMA AS nama_supplier');
+        $tglClosing = DB::table('closing')
+            ->where('ID_DEPO',getIdDepo())
+            ->orderBy('TGL_CLOSING', 'desc')
+            ->value('TGL_CLOSING');
 
+        $trninvorder = trninvorder::join('supplier', 'trninvorder.ID_SUPPLIER', 'supplier.ID_SUPPLIER')
+        ->join('dtlinvorder',function ($join) {
+            $join->on('trninvorder.BUKTI', '=', 'dtlinvorder.BUKTI')
+                ->on('trninvorder.PERIODE', '=', 'dtlinvorder.PERIODE');
+        })
+        ->select('trninvorder.*', 'supplier.NAMA AS nama_supplier');
         return DataTables::of($trninvorder)
-        ->addColumn('action', function ($row) {
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp;
-            <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+        ->addColumn('action', function ($row) use ($tglClosing) {
+            if($row->TANGGAL <= $tglClosing){
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-kode="detail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp';
+            } else {
+                if($row->STATUS == 1 || $row->STATUS == 2){
+                    $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-kode="detail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp';
+                } else {
+                    $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-kode="edit" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-pencil-alt"></span></span></button> &nbsp;
+                <button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+                }
+            }
             return $actionButtons;
         })
         ->rawColumns(["action"])
@@ -74,8 +93,10 @@ class pembelianController extends Controller
     }
 
     public function generateNOPO($bukti, $periode){
-        return $bukti.$periode;
+        return $bukti.'-'.$periode;
     }
+
+
 
     public function postPembelian(Request $request){
         $bukti = $this->generateBukti($request->tanggal);
@@ -130,69 +151,107 @@ class pembelianController extends Controller
     }
 
     public function postDetailPembelian(Request $request){
-        $currentDateTime = date('Y-m-d H:i:s');
-        // dd($request->all());
-        DB::beginTransaction();
-        try {
-            $data = $request->data;
-            trninvorder::where('BUKTI', $request->bukti)
-            ->where('PERIODE',$request->periode)
-            ->update(
-                [
-                    'DISCOUNT' => $request->diskon,
-                    'PEMBELIAN' => $request->jumlah,
-                    'NETTO' => $request->netto,
-                    'KETERANGAN' => $request->keterangan,
-                    'USEREDIT' => getUserLoggedIn()->ID_USER,
-                    'TGLEDIT' => $currentDateTime
-                ]
-            );
-            foreach ($data as $item) {
-                dtlinvorder::where('BUKTI', $request->bukti)
-                ->where('PERIODE', $request->periode)
-                ->where('ID_BARANG', $item[0])
-                ->update([
-                    'QTYORDER' => $item[1],
-                    'HARGA' => $item[2],
-                    'DISCOUNT' => $item[3],
-                    'JUMLAH' => $item[4],
-                    'USEREDIT' => getUserLoggedIn()->ID_USER,
-                    'TGLEDIT' => $currentDateTime
-                ]);
-                // dd($trnjadi);
-            }
-            DB::commit();
+        $tglClosing = DB::table('closing')
+            ->where('ID_DEPO',getIdDepo())
+            ->orderBy('TGL_CLOSING', 'desc')
+            ->value('TGL_CLOSING');
 
-            // Mengembalikan respons JSON untuk memberi tahu klien bahwa pembaruan berhasil
-            return response()->json(['success'=>true,'message' => 'Update successful']);
-        } catch (\Exception $e) {
-            // Jika terjadi kesalahan, rollback transaksi dan kirim respons kesalahan
-            DB::rollBack();
-            return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
+        $tanggal = trninvorder::where('BUKTI', $request->bukti)
+            ->where('PERIODE',$request->periode)
+            ->value('TANGGAL');
+
+        if ($tanggal > $tglClosing) {
+            $currentDateTime = date('Y-m-d H:i:s');
+            // dd($request->all());
+            DB::beginTransaction();
+            try {
+                $data = $request->data;
+                trninvorder::where('BUKTI', $request->bukti)
+                    ->where('PERIODE',$request->periode)
+                    ->update([
+                        'DISCOUNT' => $request->diskon,
+                        'PEMBELIAN' => $request->jumlah,
+                        'NETTO' => $request->netto,
+                        'KETERANGAN' => $request->keterangan,
+                        'USEREDIT' => getUserLoggedIn()->ID_USER,
+                        'TGLEDIT' => $currentDateTime
+                    ]);
+                foreach ($data as $item) {
+                    dtlinvorder::where('BUKTI', $request->bukti)
+                        ->where('PERIODE', $request->periode)
+                        ->where('ID_BARANG', $item[0])
+                        ->update([
+                            'QTYORDER' => $item[1],
+                            'HARGA' => $item[2],
+                            'DISCOUNT' => $item[3],
+                            'JUMLAH' => $item[4],
+                            'USEREDIT' => getUserLoggedIn()->ID_USER,
+                            'TGLEDIT' => $currentDateTime
+                        ]);
+                    // dd($trnjadi);
+                }
+                DB::commit();
+
+                // Mengembalikan respons JSON untuk memberi tahu klien bahwa pembaruan berhasil
+                return response()->json(['success'=>true,'message' => 'Update Data Berhasil']);
+            } catch (\Exception $e) {
+                // Jika terjadi kesalahan, rollback transaksi dan kirim respons kesalahan
+                DB::rollBack();
+                return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
+            }
+        } else {
+            // Mengembalikan respons JSON untuk memberi tahu klien bahwa tanggal sudah ditutup
+            return response()->json(['success'=>false,'message' => 'Tanggal sudah diclosing']);
         }
     }
 
+
     public function destroy($bukti, $periode){
-        DB::beginTransaction();
-        try {
-            // Delete records from trnsales table
-            trninvorder::where("BUKTI", $bukti)
-                ->where("PERIODE", $periode)
-                ->delete();
 
-            // Delete records from trnjadi table
-            dtlinvorder::where("BUKTI", $bukti)
-                ->where("PERIODE", $periode)
-                ->delete();
+        $tglClosing = DB::table('closing')
+            ->where('ID_DEPO',getIdDepo())
+            ->orderBy('TGL_CLOSING', 'desc')
+            ->value('TGL_CLOSING');
 
-            DB::commit();
+        $tanggal = trninvorder::where("BUKTI", $bukti)
+            ->where("PERIODE", $periode)
+            ->value('TANGGAL');
 
-            // Send a success response after deletion
-            return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
-        } catch (\Exception $e) {
-            // If an error occurs, rollback the transaction and send an error response
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
+        if($tanggal > $tglClosing){
+            DB::beginTransaction();
+            try {
+                // Delete records from trnsales table
+                trninvorder::where("BUKTI", $bukti)
+                    ->where("PERIODE", $periode)
+                    ->delete();
+
+                // Delete records from trnjadi table
+                dtlinvorder::where("BUKTI", $bukti)
+                    ->where("PERIODE", $periode)
+                    ->delete();
+
+                DB::commit();
+
+                // Send a success response after deletion
+                return response()->json(['success' => true, 'message' => 'Data Berhasil Dihapus']);
+            } catch (\Exception $e) {
+                // If an error occurs, rollback the transaction and send an error response
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'Tanggal sudah diclosing']);
         }
+
+    }
+
+    public function getSupplierAll(){
+        $supplier = supplier::orderBy('ID_SUPPLIER')->orderBy('NAMA')->get();
+        return response()->json($supplier);
+    }
+
+    public function getSupplierActive(){
+        $supplier = supplier::where('ACTIVE',1)->orderBy('ID_SUPPLIER')->orderBy('NAMA')->get();
+        return response()->json($supplier);
     }
 }

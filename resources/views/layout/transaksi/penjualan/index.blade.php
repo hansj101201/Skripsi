@@ -139,7 +139,7 @@
                         searchable: false,
                         orderable: false
                     }
-                ]
+                ],
             });
         });
     </script>

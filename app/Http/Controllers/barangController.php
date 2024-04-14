@@ -50,6 +50,7 @@ class barangController extends Controller
             $validatedData = $request->validate([
                 'ID_BARANG' => 'required',
                 'NAMA' => 'required',
+                'NAMASINGKAT' => 'rwquired',
                 'ID_SATUAN' => 'required',
                 'MIN_STOK' => 'required',
                 'ACTIVE' => 'sometimes'
@@ -78,6 +79,7 @@ class barangController extends Controller
             $validatedData = $request->validate([
                 'ID_BARANG' => 'required',
                 'NAMA' => 'required',
+                'NAMASINGKAT' => 'required',
                 'ID_SATUAN' => 'sometimes',
                 'MIN_STOK' => 'required',
                 'ACTIVE' => 'sometimes',
@@ -113,13 +115,5 @@ class barangController extends Controller
             $brgjadi->delete();
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
         }
-    }
-
-
-    public function getAllBarang(){
-        $barang = barang::join('satuan', 'barang.ID_SATUAN', 'satuan.ID_SATUAN')
-        ->select('barang.*', 'satuan.NAMA AS nama_satuan')
-        ->get();
-        return response()->json($barang);
     }
 }

@@ -18,27 +18,35 @@ class transferGudangController extends Controller
     //
     public function index(){
         $barang = barang::all();
-        $gudang = gudang::where('ID_DEPO',getIdDepo())->get();
-        return view("layout.transaksi.transferGudang.index", compact('gudang','barang'));
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
+        return view("layout.transaksi.transferGudang.index", compact('barang','tglClosing'));
     }
 
     public function datatable(){
         $trnsales = trnsales::where('KDTRN','15')
         ->where('NOPERMINTAAN',null)
+        ->whereNull('ID_SALESMAN')
+        ->orWhere('ID_SALESMAN', '')
         ->join('gudang as G1', 'trnsales.ID_GUDANG', 'G1.ID_GUDANG')
         ->join('gudang as G2', 'trnsales.ID_GUDANG_TUJUAN', 'G2.ID_GUDANG')
         ->select('trnsales.*', 'G1.NAMA as NAMA_GUDANG', 'G2.NAMA as NAMA_GUDANG_TUJUAN');
 
+        $tglClosing = DB::table('closing')
+        ->where('ID_DEPO',getIdDepo())
+        ->orderBy('TGL_CLOSING', 'desc')
+        ->value('TGL_CLOSING');
         // dd($trnsales);
         return DataTables::of($trnsales)
 
-        ->addColumn('action', function ($row) {
-            // Initialize the action buttons HTML
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-eye"></span></button>';
-            // Check if $row->jumlah is zero
-            if ($row->JUMLAH == 0) {
-                // If $row->jumlah is zero, add the delete button
-                $actionButtons .= '&nbsp;<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
+        ->addColumn('action', function ($row) use ($tglClosing) {
+
+            if($row->TANGGAL <= $tglClosing){
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-kode="detail" data-toggle="modal" data-target="#addDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-eye"></span></button>';
+            } else {
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-kode="edit" data-toggle="modal" data-target="#addDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'" data-mode="viewDetail"><span class="fas fa-pencil-alt"></span></button> &nbsp;<button class="btn btn-danger btn-sm delete-button" data-toggle="modal" data-target="#deleteDataModal" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><i class="fas fa-trash"></i></button>';
             }
             // Return the action buttons HTML
             return $actionButtons;
@@ -77,6 +85,10 @@ class transferGudangController extends Controller
         $topBukti = trnsales::select('BUKTI')
             ->where('KDTRN', '15')
             ->where('NOPERMINTAAN',null)
+            ->where(function ($query) {
+                $query->whereNull('ID_SALESMAN')
+                    ->orWhere('ID_SALESMAN', '');
+            })
             ->whereYear('TANGGAL', $Tanggal->format('Y')) // Filter by year
             ->orderByDesc('BUKTI') // Order by BUKTI in descending order
             ->first();
@@ -105,22 +117,15 @@ class transferGudangController extends Controller
         try {
             // Generate BUKTI
             $bukti = $this->generateBukti($request->tanggal);
-            // dd($request->nomorpo);
-
-            // dd($bukti);
-            // dd($request->all());
-
             // Format tanggal
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
-            // dd($data);
-            // dd($data);
             $nomor = 1; // Initialize the nomor counter
 
-            // $id = DB::raw()
-
+            $gudangAsal = gudang::where('ID_GUDANG', $request->gudang_asal)->value('NAMA');
+            $gudangTujuan = gudang::where('ID_GUDANG', $request->gudang_tujuan)->value('NAMA');
 
             // Create trnsales record
             trnsales::create([
@@ -159,6 +164,7 @@ class transferGudangController extends Controller
                     'PERIODE' => $request->periode,
                     'ID_BARANG' => $item[0],
                     'QTY' => $item[1],
+                    'KET01' => 'Transfer ke Gudang '.$request->gudang_tujuan.' - '.$gudangTujuan,
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
@@ -173,6 +179,7 @@ class transferGudangController extends Controller
                     'PERIODE' => $request->periode,
                     'ID_BARANG' => $item[0],
                     'QTY' => $item[1],
+                    'KET01' => 'Terima dari Gudang '.$request->gudang_asal.' - '.$gudangAsal,
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,

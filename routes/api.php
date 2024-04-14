@@ -20,8 +20,4 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
-Route::prefix('barang')->group(function(){
-    Route::controller(barangController::class)->group(function(){
-        Route::get('getAllBarang', 'getAllBarang');
-    });
-});
+

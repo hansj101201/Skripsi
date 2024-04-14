@@ -117,11 +117,6 @@ class customerController extends Controller
         }
     }
 
-    public function getAllCustomer(){
-        $customer = customer::all();
-        dd($customer);
-        return response()->json($customer);
-    }
     public function destroy($ID_CUSTOMER)
     {
         $trnjadiCount = trnjadi::where('ID_CUSTOMER', $ID_CUSTOMER)->count();
@@ -134,5 +129,15 @@ class customerController extends Controller
             $customer->delete();
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
         }
+    }
+
+    public function getCustomerActive(){
+        $customer = customer::where('ACTIVE',1)->get();
+        return response()->json($customer);
+    }
+
+    public function getCustomerAll(){
+        $customer = customer::all();
+        return response()->json($customer);
     }
 }
