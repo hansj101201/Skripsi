@@ -19,21 +19,13 @@ class users extends Authenticatable
 
     protected $appends = ['rolenya', 'name'];
 
-    public function getRolenyaAttribute()
-    {
-        return $this->Role->ROLE_NAMA;
-    }
-    public function getNameAttribute()
-    {
-        return $this->NAMA;
-    }
-
     protected $fillable = [
         'ID_USER',
         'NAMA',
         'NOMOR_HP',
         'EMAIL',
         'PASSWORD',
+        'ROLE_ID',
         'ACTIVE',
         'ID_DEPO',
         'TGLENTRY',
@@ -41,6 +33,20 @@ class users extends Authenticatable
         'TGLEDIT',
         'USEREDIT',
     ];
+
+    public function getRolenyaAttribute()
+    {
+        if ($this->Role) {
+            return $this->Role->ROLE_NAMA;
+        } else {
+            return 'No Role Assigned'; // Or any default value you prefer
+        }
+
+    }
+    public function getNameAttribute()
+    {
+        return $this->NAMA;
+    }
 
     public function getAuthPassword()
     {
@@ -58,10 +64,6 @@ class users extends Authenticatable
     public function Role()
     {
         return $this->hasOne(role::class, 'ROLE_ID', 'ROLE_ID');
-    }
-    public function adminlte_image()
-    {
-        return "https://picsum.photos/id/200/300/300";
     }
 
     public function adminlte_desc()

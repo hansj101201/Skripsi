@@ -114,11 +114,7 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Id Barang</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="barang_id_barang" name="ID_BARANG"> <!-- Remove 'col-sm-9' class here -->
-                                @foreach($barang as $Barang)
-                                    <option value="">Pilih</option>
-                                    <option value="{{ $Barang->ID_BARANG }}" readonly>{{ $Barang->ID_BARANG }}</option>
-                                @endforeach
+                            <select class="form-control" id="barang_id_barang" name="ID_BARANG">
                             </select>
                         </div>
                     </div>
@@ -198,6 +194,7 @@
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('/js/updateOptions.js') }}"></script>
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
@@ -207,74 +204,6 @@
         let arrBarang = [];
         let mode;
         let editData;
-
-        function updateDepoOptions(mode) {
-            var url = "";
-            if (mode === 'add') {
-                url = "{{ url('setup/depo/getDepoActive') }}";
-            } else if (mode === 'edit') {
-                url = "{{ url('setup/depo/getDepoAll') }}";
-            }
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#depo').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#depo').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi depo berdasarkan data yang diterima dari server
-                    data.forEach(function(depo) {
-                        $('#depo').append($('<option>', {
-                            value: depo.ID_DEPO,
-                            text: depo.NAMA
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
-        }
-
-        function updateSupplierOptions(mode) {
-            var url = "";
-            if (mode === 'add') {
-                url = "{{ url('transaksi/pembelian/getSupplierActive') }}";
-            } else if (mode === 'edit') {
-                url = "{{ url('transaksi/pembelian/getSupplierAll') }}";
-            }
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#supplier').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#supplier').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi supplier berdasarkan data yang diterima dari server
-                    data.forEach(function(supplier) {
-                        $('#supplier').append($('<option>', {
-                            value: supplier.ID_SUPPLIER,
-                            text: supplier.NAMA
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
-        }
 
         function clearModal() {
             // $('#tanggal').val("");
@@ -354,6 +283,8 @@
                                             data-jumlah="${data[i].JUMLAH}"
                                             ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>'</td>
                                         </tr>`
+                                    } else {
+                                        createTable+= `<td></td></tr>`
                                     }
                                 }
                                 else {
@@ -694,13 +625,18 @@
                 mode = button.data('mode');
                 var modal = $(this);
 
+                var getDepoActiveUrl = "{{ url('setup/depo/getDepoActive') }}";
+                var getDepoAllUrl = "{{ url('setup/depo/getDepoAll') }}";
+                var getSupplierAllUrl = "{{ url('transaksi/pembelian/getSupplierAll') }}";
+                var getSupplierActiveUrl = "{{ url('transaksi/pembelian/getSupplierActive') }}";
+
                 var kode = button.data('kode');
                 if (mode === 'viewDetail') {
                     modal.find('.modal-title').text('View Detail');
                     $('#tanggal').datepicker('destroy');
                     // $("#tanggal").datepicker('destroy');
-                    updateSupplierOptions('edit');
-                    updateDepoOptions('edit');
+                    updateSupplierOptions(getSupplierAllUrl);
+                    updateDepoOptions(getDepoAllUrl);
                     $('#supplier').prop('disabled', true);
                     $('#depo').prop('disabled', true);
                     $('#tambahDataButton').hide();
@@ -727,8 +663,8 @@
                     console.log($('#tanggal').val());
                     $('#tambahDataButton').show();
                     $('#diskon').val(0);
-                    updateSupplierOptions('add');
-                    updateDepoOptions('add');
+                    updateSupplierOptions(getSupplierActiveUrl);
+                    updateDepoOptions(getDepoActiveUrl);
                     modal.find('.modal-title').text('Tambah Order');
 
                     $('#saveBtn').attr('onclick', 'simpanData()');
@@ -744,6 +680,8 @@
                 var supplier = $('#supplier').val();
                 var depo = $('#depo').val();
                 var kode;
+                var getBarangActiveUrl = "{{ url('setup/barang/getBarangActive') }}";
+                var getBarangAllUrl = "{{ url('setup/barang/getBarangAll') }}";
 
                 if (!tanggal){
                     // e.preventDefault();
@@ -772,6 +710,7 @@
                     console.log(mode);
                     var modal = $(this);
                     if (mode === 'add') {
+                        updateBarangOptions(getBarangActiveUrl);
                         modal.find('.modal-title').text('Tambah Data');
                         $('#barang_id_barang').change(function(){
                 // Get the selected value of the select element
@@ -783,6 +722,7 @@
                         $('#saveButton').attr('onclick', 'addTableBarang()');
                         $('#editMode').val('add');
                     } else {
+                        updateBarangOptions(getBarangAllUrl);
                         modal.find('.modal-title').text('Edit Data');
                         kode = button.data('kode');
                         idEdit = kode;

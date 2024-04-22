@@ -16,7 +16,7 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">ID Barang</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_barang" name="ID_BARANG" maxlength="6">
+                            <input type="text" class="form-control" id="kode_barang" name="ID_BARANG" maxlength="6" oninput="this.value = this.value.toUpperCase()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="nama_barang" class="col-sm-3 col-form-label">Nama Barang</label>
+                        <label for="nama_barang" class="col-sm-3 col-form-label">Nama Singkat</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="nama_singkat" name="NAMASINGKAT" maxlength="15">
                         </div>

@@ -117,13 +117,13 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Satuan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="edit_satuan" name="ID_SATUAN" maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="nama_barang" class="col-sm-3 col-form-label">HARGA</label>
+                        <label for="nama_barang" class="col-sm-3 col-form-label">Harga</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="edit_harga" name="HARGA" maxlength="40">
                         </div>

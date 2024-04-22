@@ -13,9 +13,9 @@
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     @csrf
                     <div class="form-group row">
-                        <label for="kode_satuan" class="col-sm-3 col-form-label">Kode Satuan</label>
+                        <label for="kode_satuan" class="col-sm-3 col-form-label">Id Satuan</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_satuan" name="ID_SATUAN" maxlength="6">
+                            <input type="text" class="form-control" id="kode_satuan" name="ID_SATUAN" maxlength="6" oninput="this.value = this.value.toUpperCase()">
                         </div>
                     </div>
                     <div class="form-group row">

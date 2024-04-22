@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\customer;
 use App\Models\salesman;
-use App\Models\trnjadi;
+use App\Models\trnsales;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -23,7 +23,14 @@ class customerController extends Controller
     }
 
     public function datatable(){
-        $customer = customer::all();
+        $idDepo = getIdDepo();
+        if($idDepo=='000'){
+            $customer = customer::all();
+        } else {
+            $customer = customer::join('salesman','customer.ID_SALES','salesman.ID_SALES')
+            ->where('salesman.ID_DEPO',getIdDepo())->get();
+        }
+
         return DataTables::of($customer)
         ->editColumn("ACTIVE", function ($row) {
             return $row->ACTIVE == 1 ? "Ya" : "Tidak";
@@ -42,6 +49,7 @@ class customerController extends Controller
         return response()->json($customer);
     }
     public function store(Request $request){
+        dd($request->all());
         $existingRecord = customer::where('ID_CUSTOMER', $request['ID_CUSTOMER'])->first();
 
         if(!$existingRecord){
@@ -119,9 +127,9 @@ class customerController extends Controller
 
     public function destroy($ID_CUSTOMER)
     {
-        $trnjadiCount = trnjadi::where('ID_CUSTOMER', $ID_CUSTOMER)->count();
+        $trnsalesCount = trnsales::where('ID_CUSTOMER', $ID_CUSTOMER)->count();
         $customer = customer::where('ID_CUSTOMER', $ID_CUSTOMER)->first();
-        if ($trnjadiCount > 0) {
+        if ($trnsalesCount > 0) {
             return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus customer karena sudah digunakan dalam transaksi'], 422);
         } else if (!$customer) {
             return response()->json(['success' => false,'message' => 'Data tidak ditemukan'], 404);

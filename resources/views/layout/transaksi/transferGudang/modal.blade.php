@@ -92,11 +92,7 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="barang_id_barang" name="ID_BARANG"> <!-- Remove 'col-sm-9' class here -->
-                                @foreach($barang as $Barang)
-                                    <option value="">Pilih</option>
-                                    <option value="{{ $Barang->ID_BARANG }}" readonly>{{ $Barang->ID_BARANG }}</option>
-                                @endforeach
+                            <select class="form-control" id="barang_id_barang" name="ID_BARANG">
                             </select>
                         </div>
                     </div>
@@ -163,6 +159,7 @@
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('/js/updateOptions.js') }}"></script>
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
@@ -225,39 +222,6 @@
             });
         }
 
-        function updateGudangOptions(mode) {
-            var url = "";
-            if (mode === 'add') {
-                url = "{{ url('setup/gudang/getGudangActive') }}";
-            } else if (mode === 'edit') {
-                url = "{{ url('setup/gudang/getGudangAll') }}";
-            }
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#gudang, #gudang_tujuan').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#gudang, #gudang_tujuan').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
-                    data.forEach(function(gudang) {
-                        $('#gudang, #gudang_tujuan').append($('<option>', {
-                            value: gudang.ID_GUDANG,
-                            text: gudang.NAMA
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
-        }
 
 
         function simpanData(){
@@ -304,7 +268,6 @@
                 })
             }
         }
-
 
         function fetchData(bukti,periode){
             $.ajax({
@@ -484,6 +447,9 @@
                 var modal = $(this);
                 var kode = button.data('kode');
 
+                var urlGudangActive = "{{ url('setup/gudang/getGudangActive') }}";
+                var urlGudangAll = "{{ url('setup/gudang/getGudangAll') }}";
+
                 if(kode === "detail"){
                     $('#saveBtn').hide();
                 } else if(kode === "edit"){
@@ -491,7 +457,7 @@
                 }
                 console.log(mode);
                 if (mode === 'viewDetail') {
-                    updateGudangOptions("edit");
+                    updateGudangTransferOptions(urlGudangAll);
                     modal.find('.modal-title').text('View Detail');
                     $("#tanggal").datepicker('destroy');
                     $('#gudang').prop('disabled', true);
@@ -505,7 +471,7 @@
                     fetchDetail(bukti,periode);
                     $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
                 } else {
-                    updateGudangOptions("add");
+                    updateGudangTransferOptions(urlGudangActive);
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                     $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
                     $('#tambahDataButton').show();
@@ -548,6 +514,8 @@
                 var kode;
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode');
+                var getBarangActiveUrl = "{{ url('setup/barang/getBarangActive') }}";
+                var getBarangAllUrl = "{{ url('setup/barang/getBarangAll') }}";
 
                 if (!tanggal){
                     // e.preventDefault();
@@ -570,6 +538,7 @@
                 } else {
                     var modal = $(this);
                     if (mode === 'add') {
+                        updateBarangOptions(getBarangActiveUrl);
                         modal.find('.modal-title').text('Tambah Data');
                         $('#barang_id_barang').change(function(){
                             kode = $(this).val();
@@ -581,6 +550,7 @@
                         $('#saveButton').attr('onclick', 'addTableBarang()');
                         $('#editMode').val('add');
                     } else {
+                        updateBarangOptions(getBarangAllUrl);
                         modal.find('.modal-title').text('Edit Data');
                         kode = button.data('kode');
                         console.log(tanggal);

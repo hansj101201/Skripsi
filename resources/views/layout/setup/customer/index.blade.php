@@ -26,7 +26,7 @@
             <table class="table responsive table-stripped table-bordered myTable" id="tableHasil">
                 <thead class="">
                     <tr>
-                        <th> ID Customer </th>
+                        <th> Id Cust </th>
                         <th> Nama </th>
                         <th> Alamat </th>
                         <th> Kota </th>
@@ -121,6 +121,14 @@
                         searchable: false,
                         orderable: false
                     }
+                ],
+                columnDefs: [
+                    { width: '10%', targets: 0 }, // ID_DEPO
+                    { width: '30%', targets: 1 }, // NAMA
+                    { width: '25%', targets: 2 }, // LOKASI
+                    { width: '15%', targets: 3 }, // ACTIVE
+                    { width: '10%', targets: 4 },  // action
+                    { width: '10%', targets: 5 }, // LOKASI
                 ]
             });
         });

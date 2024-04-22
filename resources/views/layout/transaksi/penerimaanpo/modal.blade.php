@@ -263,6 +263,7 @@
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('/js/updateOptions.js') }}"></script>
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
@@ -310,64 +311,6 @@
             }
 
             return true;
-        }
-
-        function updateGudangOptions() {
-            var url = "{{ url('setup/gudang/getGudangActive') }}";
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#gudang').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#gudang').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
-                    data.forEach(function(gudang) {
-                        $('#gudang').append($('<option>', {
-                            value: gudang.ID_GUDANG,
-                            text: gudang.NAMA
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
-        }
-
-        function getNomorPO() {
-            var url = "{{ url('transaksi/gudang/getNomorPo') }}";
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#nomorpo').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#nomorpo').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
-                    data.forEach(function(nomor) {
-                        $('#nomorpo').append($('<option>', {
-                            value: nomor.NOMORPO,
-                            text: nomor.NOMORPO
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
         }
 
         function simpanData(){
@@ -664,10 +607,12 @@
         $(document).ready(function () {
 
             $('#addDataModal').on('show.bs.modal', function (event) {
+                var urlGudang = "{{ url('setup/gudang/getGudangActive') }}";
+                var urlPo = "{{ url('transaksi/gudang/getNomorPo') }}";
                 var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                 $('#tanggal').val(today);
-                updateGudangOptions();
-                getNomorPO();
+                updateGudangOptions(urlGudang);
+                getNomorPO(urlPo);
             });
             $('#addDataModal').on('hide.bs.modal', function (event) {
                 clearModal();

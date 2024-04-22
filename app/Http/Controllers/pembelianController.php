@@ -35,10 +35,6 @@ class pembelianController extends Controller
             ->value('TGL_CLOSING');
 
         $trninvorder = trninvorder::join('supplier', 'trninvorder.ID_SUPPLIER', 'supplier.ID_SUPPLIER')
-        ->join('dtlinvorder',function ($join) {
-            $join->on('trninvorder.BUKTI', '=', 'dtlinvorder.BUKTI')
-                ->on('trninvorder.PERIODE', '=', 'dtlinvorder.PERIODE');
-        })
         ->select('trninvorder.*', 'supplier.NAMA AS nama_supplier');
         return DataTables::of($trninvorder)
         ->addColumn('action', function ($row) use ($tglClosing) {

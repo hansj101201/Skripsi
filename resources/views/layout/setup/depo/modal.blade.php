@@ -16,7 +16,7 @@
                     <div class="form-group row">
                         <label for="kode_depo" class="col-sm-3 col-form-label">ID Depo</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_depo" name="ID_DEPO" maxlength="6">
+                            <input type="text" class="form-control" id="kode_depo" name="ID_DEPO" maxlength="6" oninput="this.value = this.value.toUpperCase()">
                         </div>
                     </div>
                     <div class="form-group row">

@@ -15,7 +15,7 @@
                     <div class="form-group row">
                         <label for="kode_salesman" class="col-sm-3 col-form-label">ID Salesman</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_salesman" name="ID_SALES" maxlength="3">
+                            <input type="text" class="form-control" id="kode_salesman" name="ID_SALES" maxlength="3" oninput="this.value = this.value.toUpperCase()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -33,7 +33,7 @@
                     <div class="form-group row">
                         <label for="nomor_salesman" class="col-sm-3 col-form-label">No HP</label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control" id="nomor_salesman" name="NOMOR_HP" maxlength="15">
+                            <input type="text" class="form-control" id="nomor_salesman" name="NOMOR_HP" maxlength="15" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -95,6 +95,10 @@
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script>
         let mode;
+        function validateNumberInput(input) {
+            // Menghapus karakter selain angka menggunakan regular expression
+            input.value = input.value.replace(/\D/g, '');
+        }
         function clearModal(){
             $('#kode_salesman').val('');
             $('#nama_salesman').val('');
@@ -244,7 +248,7 @@
                     $('#depo').prop('disabled', false);
                     $('#gudang').prop('disabled', false);
                     if ('{{ getIdDepo() }}' !== '000') {
-                        $('#depo').val({{ getIdDepo() }}).trigger('change');
+                        $('#depo').val('{{ getIdDepo() }}').trigger('change');
                         $('#depo').prop('disabled', true);
                         updateGudangOptions('add','{{ getIdDepo() }}');
                     } else {
@@ -342,6 +346,11 @@
 
             $(document).on('click', '#password', function(){
                 $('#password').removeClass('is-invalid');
+            })
+
+            $('#nomor_salesman').on('input', function () {
+                validateNumberInput(this);
+                $(this).val($('#nomor_salesman').val());
             })
         });
     </script>

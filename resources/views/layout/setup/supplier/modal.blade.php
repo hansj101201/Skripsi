@@ -15,7 +15,7 @@
                     <div class="form-group row">
                         <label for="kode_supplier" class="col-sm-3 col-form-label">ID Supplier</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_supplier" name="ID_SUPPLIER" maxlength="6">
+                            <input type="text" class="form-control" id="kode_supplier" name="ID_SUPPLIER" maxlength="6" oninput="this.value = this.value.toUpperCase()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -73,6 +73,10 @@
 
 @push('js')
     <script>
+        function validateNumberInput(input) {
+            // Menghapus karakter selain angka menggunakan regular expression
+            input.value = input.value.replace(/\D/g, '');
+        }
         function clearModal(){
             $('#kode_supplier').val('');
             $('#nama_supplier').val('');
@@ -228,6 +232,11 @@
 
             $(document).on('click', '#telepon', function(){
                 $('#telepon').removeClass('is-invalid');
+            })
+
+            $('#telepon').on('input', function () {
+                validateNumberInput(this);
+                $(this).val($('#telepon').val());
             })
         });
     </script>

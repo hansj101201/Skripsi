@@ -113,7 +113,7 @@ class salesmanController extends Controller
 
     public function destroy($ID_SALES)
     {
-        $trnsales = trnsales::where('ID_SALES', $ID_SALES)->count();
+        $trnsales = trnsales::where('ID_SALESMAN', $ID_SALES)->count();
         $salesman = salesman::where('ID_SALES', $ID_SALES)->first();
 
         if ($trnsales > 0) {

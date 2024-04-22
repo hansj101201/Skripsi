@@ -26,8 +26,8 @@
             <table class="table responsive table-stripped table-bordered myTable" id="tableHasil">
                 <thead class="">
                     <tr>
-                        <th>Id Salesman</th>
-                        <th>Nama Salesman</th>
+                        <th>Id Sales</th>
+                        <th>Nama Sales</th>
                         <th>Email</th>
                         <th>No HP</th>
                         <th>Depo</th>
@@ -79,7 +79,7 @@
                     $('td:eq(6)', row).addClass('text-center');
                 },
                 order: [
-                    // [0, "desc"]
+                    [0, "asc"]
                     // [3, "desc"],
                     // [2, "desc"]
                 ],
@@ -126,6 +126,15 @@
                         searchable: false,
                         orderable: false
                     }
+                ],
+                columnDefs: [
+                    { width: '12%', targets: 0 }, // ID_DEPO
+                    { width: '20%', targets: 1 }, // NAMA
+                    { width: '23%', targets: 2 }, // LOKASI
+                    { width: '15%', targets: 3 }, // ACTIVE
+                    { width: '15%', targets: 4 },  // action
+                    { width: '5%', targets: 5 }, // ACTIVE
+                    { width: '10%', targets: 6 }  // action
                 ]
             });
         });

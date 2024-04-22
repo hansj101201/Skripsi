@@ -15,7 +15,7 @@
                     <div class="form-group row">
                         <label for="kode_gudang" class="col-sm-3 col-form-label">ID Gudang</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_gudang" name="ID_GUDANG" maxlength="6">
+                            <input type="text" class="form-control" id="kode_gudang" name="ID_GUDANG" maxlength="6" oninput="this.value = this.value.toUpperCase()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -71,7 +71,7 @@
             }
         }
 
-        function updateDepoOptions(mode) {
+        function updateDepoOptions(mode, kode = null) {
             var url = "";
             if (mode === 'add') {
                 url = "{{ url('setup/depo/getDepoActive') }}";
@@ -101,6 +101,8 @@
 
                     if(mode === "add"){
                         setDepoValue();
+                    } else if(mode === "edit"){
+                        fetchDetail(kode);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -117,6 +119,32 @@
                 $('#depo').val(idDepo).trigger('change');
                 $('#depo').prop('disabled', true);
             }
+        }
+
+        function fetchDetail(id){
+            console.log('masuk fetch');
+            $.ajax({
+                type: "GET",
+                url: "{{ url('setup/gudang/getDetail') }}/"+id,
+                success: function (data) {
+                    var nama = data[0].NAMA;
+                    var depo = data[0].ID_DEPO;
+                    var aktif = data[0].ACTIVE;
+                    // Isi nilai input field sesuai dengan data yang akan diedit
+                    $('#kode_gudang').val(id).attr('readonly', true); // Tambahkan atribut readonly
+                    $('#nama_gudang').val(nama); // Tambahkan atribut readonly
+                    $('#depo').val(depo).trigger('change');
+                    $('#depo').prop('disabled', true);
+                    if (aktif === 1) {
+                        $('#active').prop('checked', true);
+                    } else {
+                        $('#active').prop('checked', false);
+                    }
+                    $('#addEditForm').attr('action', "{{ route('gudang.update') }}"); // Set rute untuk operasi edit
+                    $('#addEditForm').attr('method', 'POST');
+                    $('#addEditForm').append('<input type="hidden" name="_method" value="PUT">'); // Tambahkan input tersembunyi untuk metode PUT
+                }
+            });
         }
 
 
@@ -161,50 +189,18 @@
 
                 var modal = $(this);
                 if (mode === 'add') {
+                    updateDepoOptions("add");
                     modal.find('.modal-title').text('Tambah Gudang');
                     $('#editMode').val(0); // Set editMode ke 0 untuk operasi add
                     $('#kode_gudang').removeAttr('readonly');
                     $('#nama_gudang').removeAttr('readonly');
                     $('#addEditForm').attr('action', "{{ route('gudang.store') }}"); // Set rute untuk operasi tambah
                     $('#addEditForm').attr('method', 'POST');
-                    updateDepoOptions("add");
-
-                    // console.log({{ getIdDepo() }});
-                    // if ('{{ getIdDepo() }}' !== '000') {
-                    //     $('#depo').val({{ getIdDepo() }}).trigger('change');
-                    //     $('#depo').prop('disabled', true);
-                    // }
-                    console.log($('#depo').val());
                 } else if (mode === 'edit') {
                     modal.find('.modal-title').text('Edit Gudang');
                     $('#editMode').val(1); // Set editMode ke 1 untuk operasi edit
                     var kode = button.data('kode');
-                    updateDepoOptions("edit");
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ url('setup/gudang/getDetail') }}/"+kode,
-                        success: function (data) {
-                            var nama = data[0].NAMA;
-                            var depo = data[0].ID_DEPO;
-                            var aktif = data[0].ACTIVE;
-                            // Isi nilai input field sesuai dengan data yang akan diedit
-                            $('#kode_gudang').val(kode).attr('readonly', true); // Tambahkan atribut readonly
-                            $('#nama_gudang').val(nama); // Tambahkan atribut readonly
-                            $('#depo').val(depo).trigger('change');
-                            $('#depo').prop('disabled', true);
-                            if (aktif === 1) {
-                                $('#active').prop('checked', true);
-                            } else {
-                                $('#active').prop('checked', false);
-                            }
-                            $('#addEditForm').attr('action', "{{ route('gudang.update') }}"); // Set rute untuk operasi edit
-                            $('#addEditForm').attr('method', 'POST');
-                            $('#addEditForm').append('<input type="hidden" name="_method" value="PUT">'); // Tambahkan input tersembunyi untuk metode PUT
-                        }
-                    });
-
-
-
+                    updateDepoOptions("edit",kode);
                 }
             });
 

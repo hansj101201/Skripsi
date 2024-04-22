@@ -122,4 +122,13 @@ class depoController extends Controller
         $depo = depo::where('ID_DEPO','!=','000')->where('ACTIVE',1)->get();
         return response()->json($depo);
     }
+
+    public function getAllDepoActive(){
+        $depo = depo::where('ACTIVE',1)->get();
+        return response()->json($depo);
+    }
+    public function getAllDepo(){
+        $depo = depo::all();
+        return response()->json($depo);
+    }
 }

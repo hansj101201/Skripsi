@@ -169,6 +169,7 @@
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="{{ asset('/js/updateOptions.js') }}"></script>
     <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
@@ -517,103 +518,6 @@
             });
         }
 
-        function updateGudangOptions(mode) {
-            var url = "";
-            if (mode === 'add') {
-                url = "{{ url('setup/gudang/getGudangActive') }}";
-            } else if (mode === 'edit') {
-                url = "{{ url('setup/gudang/getGudangAll') }}";
-            }
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#gudang').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#gudang').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
-                    data.forEach(function(gudang) {
-                        $('#gudang').append($('<option>', {
-                            value: gudang.ID_GUDANG,
-                            text: gudang.NAMA
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
-        }
-
-        function updateNomorPo(mode) {
-            var url = "";
-            if (mode === 'add') {
-                url = "{{ url('transaksi/pengeluaran/getPermintaanActive') }}";
-            } else if (mode === 'edit') {
-                url = "{{ url('transaksi/pengeluaran/getPermintaanAll') }}";
-            }
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#nomorpermintaan').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#nomorpermintaan').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi nomorpermintaan berdasarkan data yang diterima dari server
-                    data.forEach(function(nomorpermintaan) {
-                        $('#nomorpermintaan').append($('<option>', {
-                            value: nomorpermintaan.NOPERMINTAAN,
-                            text: nomorpermintaan.NOPERMINTAAN
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
-        }
-
-        function updateGudangTujuanOptions() {
-            var url = "{{ url('setup/gudang/getGudangSalesAll') }}";
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
-                    $('#gudang_tujuan').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
-                    $('#gudang_tujuan').append($('<option>', {
-                        value: '',
-                        text: 'Pilih'
-                    }));
-                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
-                    data.forEach(function(gudang) {
-                        $('#gudang_tujuan').append($('<option>', {
-                            value: gudang.ID_GUDANG,
-                            text: gudang.NAMA
-                        }));
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
-                }
-            });
-        }
-
         $(document).ready(function () {
         // Function to fetch data based on user input
             var bukti;
@@ -629,7 +533,11 @@
                 var modal = $(this);
                 console.log(mode);
                 var kode = button.data('kode');
-
+                var urlGudangAsalActive = "{{ url('setup/gudang/getGudangActive') }}";
+                var urlGudangAsalAll = "{{ url('setup/gudang/getGudangAll') }}";
+                var urlGudangTujuanAll = "{{ url('setup/gudang/getGudangSalesAll') }}";
+                var urlNoPoActive = "{{ url('transaksi/pengeluaran/getPermintaanActive') }}";
+                var urlNoPoAll = "{{ url('transaksi/pengeluaran/getPermintaanAll') }}";
 
                 if(kode === "edit"){
                     $('#saveBtn').show();
@@ -638,9 +546,9 @@
                 }
                 if (mode === 'viewDetail') {
 
-                    updateNomorPo("edit");
-                    updateGudangOptions("edit");
-                    updateGudangTujuanOptions();
+                    updateNomorPo( urlNoPoAll);
+                    updateGudangOptions(urlGudangAsalAll);
+                    updateGudangTujuanOptions(urlGudangTujuanAll);
                     $('#gudang_tujuan').prop('disabled',true);
                     modal.find('.modal-title').text('View Detail');
                     $("#tanggal").datepicker('destroy');
@@ -659,9 +567,9 @@
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                     $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
 
-                    updateNomorPo("add");
-                    updateGudangOptions("add");
-                    updateGudangTujuanOptions();
+                    updateNomorPo(urlNoPoActive);
+                    updateGudangOptions(urlGudangAsalActive);
+                    updateGudangTujuanOptions(urlGudangTujuanAll);
                     $('#gudang_tujuan').prop('disabled',true);
                     modal.find('.modal-title').text('Add Data');
                     $('#tanggal').datepicker({

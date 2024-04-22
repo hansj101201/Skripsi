@@ -50,7 +50,7 @@ class barangController extends Controller
             $validatedData = $request->validate([
                 'ID_BARANG' => 'required',
                 'NAMA' => 'required',
-                'NAMASINGKAT' => 'rwquired',
+                'NAMASINGKAT' => 'required',
                 'ID_SATUAN' => 'required',
                 'MIN_STOK' => 'required',
                 'ACTIVE' => 'sometimes'
@@ -115,5 +115,17 @@ class barangController extends Controller
             $brgjadi->delete();
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
         }
+    }
+
+    public function getBarangActive()
+    {
+        $barang = barang::where('ACTIVE',1)->get();
+        return response($barang);
+    }
+
+    public function getBarangAll()
+    {
+        $barang = barang::all();
+        return response($barang);
     }
 }

@@ -75,7 +75,7 @@
                     $('td:eq(4)', row).addClass('text-center');
                 },
                 order: [
-                    // [0, "desc"]
+                    [0, "asc"]
                     // [3, "desc"],
                     // [2, "desc"]
                 ],
@@ -114,6 +114,13 @@
                         searchable: false,
                         orderable: false
                     }
+                ],
+                columnDefs: [
+                    { width: '15%', targets: 0 }, // ID_DEPO
+                    { width: '30%', targets: 1 }, // NAMA
+                    { width: '40%', targets: 2 }, // LOKASI
+                    { width: '5%', targets: 3 }, // ACTIVE
+                    { width: '10%', targets: 4 }  // action
                 ]
             });
         });

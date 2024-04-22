@@ -12,16 +12,13 @@
 
 #tableHasil tbody tr td {
     padding: 5px 0; /* Sesuaikan nilai sesuai preferensi Anda */
+    font-size: 14px; /* Mengatur ukuran font */
 }
 /* Baris genap dalam tabel DataTables */
 #tableHasil tbody tr:nth-child(even) {
     background-color: #88b6f1;
 }
 
-#tableHasil tbody td.text-padding {
-    padding: 5px; /* Sesuaikan nilai sesuai preferensi Anda */
-    font-size : 13px;
-}
 
 #tableData th {
     font-weight: normal; /* Menghilangkan efek bold */
@@ -37,6 +34,7 @@
 
 #tableData tbody tr td {
     padding: 5px 0; /* Sesuaikan nilai sesuai preferensi Anda */
+    font-size: 14px; /* Mengatur ukuran font */
 }
 /* Baris genap dalam tabel DataTables */
 #tableData tbody tr:nth-child(even) {
@@ -45,7 +43,7 @@
 
 #tableData tbody td.text-padding {
     padding: 5px; /* Sesuaikan nilai sesuai preferensi Anda */
-    font-size : 13px;
+    font-size : 11px;
 }
 .center-text {
     text-align: center;
@@ -180,3 +178,10 @@ input:checked + .slider:before {
     margin-top: 8px; /* Atur jarak antara teks dengan checkbox */
     font-size: 14px; /* Ukuran teks */
 }
+
+.login-page {
+    background-image: url("/login.jpg"); /* Ganti 'login.jpeg' dengan nama file gambar Anda */
+    background-size: cover; /* Sesuaikan ukuran gambar */
+    background-repeat: no-repeat; /* Hindari pengulangan gambar */
+}
+

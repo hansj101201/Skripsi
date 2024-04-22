@@ -49,6 +49,8 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::delete('/{ID}','destroy');
             Route::get('getDetailBarang', 'getDetailBarang')->name('getDetailBarang');
             Route::get('datatable', 'datatable')->name('barang.datatable');
+            Route::get('getBarangActive', 'getBarangActive');
+            Route::get('getBarangAll', 'getBarangAll');
         });
     });
 
@@ -78,6 +80,8 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::get('getDetail/{ID}','getDetail');
             Route::get('getDepoActive', 'getDepoActive');
             Route::get('getDepoAll', 'getDepoAll');
+            Route::get('getAllDepoActive', 'getAllDepoActive');
+            Route::get('getAllDepo', 'getAllDepo');
         });
     });
 
@@ -100,8 +104,6 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
             Route::delete('/{ID}','destroy');
             Route::get('datatable','datatable')->name('harga.datatable');
             Route::get('getDetail/{iD}','getDetail');
-
-
             Route::get('getHargaBarang', 'getHargaBarang')->name('getHargaBarang');
         });
     });
@@ -169,7 +171,6 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
             Route::get('getDetail/{bukti}/{periode}','getDetail');
             Route::put('postDetailTrnJadi','postDetailTrnJadi')->name('postDetailTrnJadi');
             Route::delete('delete/{bukti}/{periode}','destroy');
-
             Route::get('datatable','datatable')->name('penerimaanpo.datatable');
         });
     });
@@ -212,7 +213,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('pembelian')->group(function(){
+    Route::prefix('pembelian')->middleware(['Login'])->group(function(){
         Route::controller(pembelianController::class)->group(function () {
             Route::get('index', 'index');
             Route::get('datatable', 'datatable')->name('pembelian.datatable');
@@ -239,7 +240,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
     });
 });
 
-Route::prefix('laporan')->group(function(){
+Route::prefix('laporan')->middleware(['Login'])->group(function(){
     Route::controller(laporanController::class)->group(function () {
         Route::get('penjualan', 'penjualan');
         Route::get('stok', 'stok');

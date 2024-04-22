@@ -26,8 +26,9 @@
             <table class="table responsive table-stripped table-bordered myTable" id="tableHasil">
                 <thead class="">
                     <tr>
-                        <th> ID Barang </th>
+                        <th> Id Barang </th>
                         <th> Nama Barang </th>
+                        <th> Nama Singkat </th>
                         <th> Satuan </th>
                         <th> Minimum Stok</th>
                         <th> Aktif </th>
@@ -62,9 +63,9 @@
                         // Get the class of the first data cell of this column
                         var className;
                         className = 'text-left';
-                        if(index == 5) {
+                        if(index == 6) {
                             className = 'text-center';
-                        } else if(index == 3){
+                        } else if(index == 4){
                             className = 'text-right';
                         }
                         // Add the class to the header cell
@@ -75,9 +76,10 @@
                     $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
-                    $('td:eq(3)', row).addClass('text-right').css('padding-right', '10px');
-                    $('td:eq(4)', row).addClass('text-left').css('padding-left', '10px');
-                    $('td:eq(5)', row).addClass('text-center');
+                    $('td:eq(3)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(4)', row).addClass('text-right').css('padding-right', '10px');
+                    $('td:eq(5)', row).addClass('text-left').css('padding-left', '10px');
+                    $('td:eq(6)', row).addClass('text-center');
                 },
                 order: [
                     // [0, "desc"]
@@ -106,6 +108,10 @@
                         name: "NAMA"
                     },
                     {
+                        data: "NAMASINGKAT",
+                        name: "NAMASINGKAT"
+                    },
+                    {
                         data: "nama_satuan",
                         name: "satuan.NAMA"
                     },
@@ -126,6 +132,15 @@
                         searchable: false,
                         orderable: false
                     }
+                ],
+                columnDefs: [
+                    { width: '10%', targets: 0 }, // ID_DEPO
+                    { width: '30%', targets: 1 }, // NAMA
+                    { width: '15%', targets: 2 }, // NAMA
+                    { width: '10%', targets: 3 }, // LOKASI
+                    { width: '15%', targets: 4 }, // ACTIVE
+                    { width: '10%', targets: 5 },  // action
+                    { width: '10%', targets: 6 }  // action
                 ]
             });
         });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\depo;
+use App\Models\role;
 use Illuminate\Http\Request;
 use App\Models\users;
 use Illuminate\Support\Facades\Auth;
@@ -16,14 +17,30 @@ class AuthController extends Controller
     //
     public function index()
     {
-        $depo = depo::all();
-        return view("layout.setup.user.index", compact("depo"));
+        if(getIdDepo() === '000'){
+            $depo = depo::all();
+            $role = role::all();
+        } else {
+            $depo = depo::where("ID_DEPO",getIdDepo());
+            $role = role::where("ROLE_ID",">",2)->get();
+        }
+
+        return view("layout.setup.user.index", compact("depo","role"));
     }
 
     public function datatable(){
         $user = users::leftjoin("depo","user.ID_DEPO","depo.ID_DEPO")
         ->select("user.*",DB::raw("IFNULL(depo.NAMA, null) AS nama_depo"));
-        return DataTables::of($user)
+
+        $idDepo = getIdDepo();
+        if ($idDepo === '000') {
+            // If getIdDepo() returns '000', get all data
+            $usersQuery = $user;
+        } else {
+            // If getIdDepo() returns anything other than '000', filter data by ID_DEPO
+            $usersQuery = $user->where('user.ID_DEPO', $idDepo);
+        }
+        return DataTables::of($usersQuery)
         ->editColumn("ACTIVE", function ($row) {
             return $row->ACTIVE == 1 ? "Ya" : "Tidak";
         })
@@ -84,6 +101,7 @@ class AuthController extends Controller
                 'PASSWORD'=> 'required',
                 'EMAIL'=> 'required|email',
                 'NOMOR_HP'=> 'required',
+                'ROLE_ID'=> 'required',
                 'ACTIVE'=> 'required',
                 'ID_DEPO'=> 'sometimes',
             ]);
@@ -94,9 +112,10 @@ class AuthController extends Controller
             $data['USERENTRY'] = getUserLoggedIn()->ID_USER;
 
             users::create($data);
-            return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
+            return response()->json(['success' => true, 'message' => 'Data User Sudah Di Simpan.']);
         } else {
-            return response()->json(['success' => false, 'message' => 'Gagal Register.']);
+            $existingRecord = Users::where('ID_USER', $request->ID_USER)->join('depo','user.ID_DEPO','depo.ID_DEPO')->select('depo.NAMA')->get();
+            return response()->json(['success' => false, 'message' => 'User sudah ada di depo ','existing_record' => $existingRecord]);
         }
     }
 
@@ -112,6 +131,7 @@ class AuthController extends Controller
                 'NAMA' => 'required',
                 'EMAIL' => 'sometimes',
                 'NOMOR_HP' => 'sometimes',
+                'ROLE_ID'=> 'required',
                 'ID_DEPO' => 'sometimes',
                 'ACTIVE' => 'sometimes',
             ]);
@@ -125,7 +145,7 @@ class AuthController extends Controller
             // dd($users);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
         } else {
-            return response()->json(['success' => false,'error' => 'Data dengan KDJADI tersebut tidak ditemukan'], 404);
+            return response()->json(['success' => false,'error' => 'Data gagal diperbarui'], 404);
         }
     }
 

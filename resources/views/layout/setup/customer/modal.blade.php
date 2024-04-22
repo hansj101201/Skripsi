@@ -11,9 +11,9 @@
                 @csrf
                 <div class="modal-body">
                     <div class="form-group row">
-                        <label for="kode_customer" class="col-sm-3 col-form-label">ID Customer</label>
+                        <label for="kode_customer" class="col-sm-3 col-form-label">Id Customer</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_customer" name="ID_CUSTOMER" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="kode_customer" name="ID_CUSTOMER" maxlength="6" readonly oninput="this.value = this.value.toUpperCase()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -87,6 +87,12 @@
                         </div>
                         <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                             <!-- Form fields for address tab -->
+                            <div class="form-group row">
+                                <div class="form-check form-check-inline" style="margin-left: 10px;">
+                                    <input class="form-check-input" type="checkbox" id="alamat_sama" name="ALAMAT_SAMA">
+                                    <label class="form-check-label" for="alamat_sama">Kirim ke Alamat yang Sama</label>
+                                </div>
+                            </div>
                             <div class="form-group row">
                                 <label for="alamat_kirim" class="col-sm-3 col-form-label">Alamat Kirim</label>
                                 <div class="col-sm-9">
@@ -183,7 +189,7 @@
             return false; // Mengembalikan false jika validasi gagal
         }
 
-        if (idSales == ''){
+        if (idSales == '' || idSales == null){
             toastr.error('Id Sales harus diisi');
             return false;
         }
@@ -225,6 +231,7 @@
         $('#DataModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Tombol yang memicu modal
             var mode = button.data('mode'); // Mengambil mode dari tombol
+            $('#myTab a:first').tab('show');
 
             var modal = $(this);
             if (mode === 'add') {
@@ -277,6 +284,35 @@
         $('#DataModal').on('hide.bs.modal',function(event){
             clearModal();
         })
+
+        $('#alamat_sama').change(function(){
+            // Jika checkbox dicentang
+            if(this.checked) {
+                // Ambil nilai dari input pada tab data
+                var alamat = $('#alamat').val();
+                var kota = $('#kota').val();
+                var kode_pos = $('#kode_pos').val();
+                var telepon = $('#telepon').val();
+                var pic = $('#pic').val();
+                var nomor_hp = $('#nomor_hp').val();
+
+                // Assign nilai tersebut ke input pada tab alamat kirim
+                $('#alamat_kirim').val(alamat);
+                $('#kota_kirim').val(kota);
+                $('#kode_pos_kirim').val(kode_pos);
+                $('#telepon_kirim').val(telepon);
+                $('#pic_kirim').val(pic);
+                $('#nomor_hp_kirim').val(nomor_hp);
+            } else {
+                // Jika checkbox tidak dicentang, kosongkan nilai input pada tab alamat kirim
+                $('#alamat_kirim').val('');
+                $('#kota_kirim').val('');
+                $('#kode_pos_kirim').val('');
+                $('#telepon_kirim').val('');
+                $('#pic_kirim').val('');
+                $('#nomor_hp_kirim').val('');
+            }
+        });
 
         $('#submitForm').click(function(e) {
             e.preventDefault(); // Menghentikan perilaku default tombol submit
