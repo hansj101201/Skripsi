@@ -152,4 +152,19 @@ class gudangController extends Controller
         ->get();
         return response()->json($gudang);
     }
+
+    //untuk api
+    public function getListGudang(Request $request)
+    {
+        $idDepo = $request->ID_DEPO;
+        $gudang = gudang::where('ID_DEPO',$idDepo)
+        ->where('ACTIVE',1)
+        ->whereNotIn('ID_GUDANG', function($query) {
+            $query->select('ID_GUDANG')
+                ->from('salesman');
+        })
+        ->select('gudang.*')
+        ->get();
+        return response()->json($gudang);
+    }
 }

@@ -128,4 +128,14 @@ class barangController extends Controller
         $barang = barang::all();
         return response($barang);
     }
+
+    //untuk api
+    public function getAllBarang(){
+        $barang = barang::where('ACTIVE',1)
+        ->join('satuan', 'barang.ID_SATUAN', 'satuan.ID_SATUAN')
+        ->select('barang.*', 'satuan.NAMA AS nama_satuan')
+        ->get();
+        return response()->json($barang);
+    }
+
 }

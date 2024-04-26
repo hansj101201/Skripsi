@@ -148,4 +148,11 @@ class customerController extends Controller
         $customer = customer::all();
         return response()->json($customer);
     }
+
+    //untuk api
+    public function getCustomer(Request $request){
+        $idSales = $request->ID_SALES;
+        $customer = customer::where('ACTIVE',1)->where('ID_SALES',$idSales)->get();
+        return response()->json($customer);
+    }
 }

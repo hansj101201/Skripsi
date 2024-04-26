@@ -464,4 +464,31 @@ class pdfController extends Controller
 
         return $pdf->inline('Penjualan per Salesman '.$awal.' - '.$akhir.'.pdf');
     }
+
+    public function generatePdf(Request $request)
+    {
+        $awal = $request->AWAL;
+        $akhir = $request->AKHIR;
+        // Generate PDF using SnappyPDF
+        $data = [
+            "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
+            "customer" => $this->getPenjualanCustomer($awal,$akhir)
+        ];
+        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfCustomer', $data)
+            ->setPaper('a4')
+            ->setOrientation('portrait')
+            ->setOption('margin-left', 5)
+            ->setOption('margin-right', 5)
+            ->setOption('margin-top', 30)
+            ->setOption('margin-bottom', 20)
+            ->setOption("footer-right", "Halaman [page] dari [topage]")
+            ->setOption("header-spacing", 5)
+            ->setOption("footer-spacing", 5)
+            ->setOption("enable-local-file-access", true)
+            ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
+            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
+
+        return $pdf->download('example.pdf');
+    }
+
 }
