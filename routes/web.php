@@ -261,6 +261,7 @@ Route::prefix('pdf')->group(function(){
         Route::get('getPenjualanCustomer/{awal}/{akhir}','getPenjualanCustomer');
         Route::get('getPenjualanBarang/{awal}/{akhir}','getPenjualanBarang');
         Route::get('getPenjualanSalesman/{awal}/{akhir}','getPenjualanSalesman');
+        Route::get('getPenjualanPerSalesman/{bukti}/{tahun}','getPenjualanPerSalesman');
 
         Route::get('pdfCustomer/{periode}/{id}', 'pdfCustomer');
         Route::get('pdfSalesman/{periode}/{id}', 'pdfSalesman');

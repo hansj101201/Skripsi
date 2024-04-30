@@ -53,6 +53,7 @@
                     <button id="button1" class="btn btn-primary">Customer</button>
                     <button id="button2" class="btn btn-primary">Salesman</button>
                     <button id="button3" class="btn btn-primary">Barang</button>
+                    <a id="test" href="#" onclick="sendEmail()">Pdf</a>s
                 </div>
             </div>
         </div>
@@ -107,6 +108,16 @@
     <script src="{{ asset('/js/format.js') }}"></script>
     <script>
         var table;
+        function sendEmail() {
+        var awal = 'A0100011'; // Ganti dengan nilai sesuai kebutuhan
+        var akhir = '2024'; // Ganti dengan nilai sesuai kebutuhan
+
+        // Buat URL dengan parameter query AWAL dan AKHIR
+        var url = '/api/pdf/generatePdf?BUKTI=' + awal + '&TAHUN=' + akhir;
+
+        // Redirect ke URL
+        window.location.href = url;
+    }
         $(function () {
             $('#tanggal_awal').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format

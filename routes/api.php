@@ -39,6 +39,7 @@ Route::prefix('salesman')->group(function(){
         Route::post('login','doLogin');
         Route::get('cekEmail','cekEmail');
         Route::put('resetPassword','resetPassword');
+        Route::put('changePassword','changePassword');
     });
 });
 
@@ -85,11 +86,15 @@ Route::prefix('laporanSales')->group(function(){
         Route::get('getPermintaan', 'getPermintaan');
         Route::get('getPenerimaan', 'getPenerimaan');
         Route::get('getPengembalian', 'getPengembalian');
+        Route::get('getPenjualan', 'getPenjualan');
+        Route::get('getSummaryCustomer', 'getSummaryCustomer');
+        Route::get('getSummaryBarang','getSummaryBarang');
     });
 });
 
 Route::prefix('pdf')->group(function(){
     Route::controller(pdfController::class)->group(function(){
         Route::get('generatePdf','generatePdf');
+        Route::get('sendEmail','sendEmail');
     });
 });

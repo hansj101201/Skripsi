@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\pdfEmail;
 use App\Models\barang;
 use App\Models\satuan;
 use App\Models\trnjadi;
@@ -12,6 +13,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class pdfController extends Controller
 {
@@ -339,7 +341,7 @@ class pdfController extends Controller
         $penjualanBarang = [];
 
         foreach ($trnsales as $penjualan) {
-            $detailPenjualan = $this->getDetailPenjualanSalesman($penjualan->ID_BARANG, $awal, $akhir);
+            $detailPenjualan = $this->getDetailPenjualanSalesman($penjualan->ID_SALESMAN, $awal, $akhir);
 
             $penjualanBarang[] = [
                 'ID_SALESMAN' => $penjualan->ID_SALESMAN,
@@ -465,16 +467,78 @@ class pdfController extends Controller
         return $pdf->inline('Penjualan per Salesman '.$awal.' - '.$akhir.'.pdf');
     }
 
-    public function generatePdf(Request $request)
+    public function getPenjualanPerSalesman($bukti,$tahun){
+        $trnsales = trnsales::where('KDTRN',12)
+            ->where('trnsales.BUKTI', $bukti) // Menentukan tabel sumber
+            ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES') // Menentukan tabel sumber
+            ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
+            ->select('trnsales.ID_SALESMAN', 'salesman.NAMA',
+                    DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'),
+                    DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'),
+                    DB::raw('SUM(trnsales.NETTO) as total_netto'),
+                    'trnsales.ID_CUSTOMER', 'customer.NAMA as namacust',
+                    'trnsales.TANGGAL', 'trnsales.BUKTI') // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
+            ->whereRaw("LEFT(trnsales.PERIODE, 4) = '$tahun'")
+            ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA', 'trnsales.ID_CUSTOMER', 'customer.NAMA', 'trnsales.TANGGAL', 'trnsales.BUKTI') // Menentukan tabel sumber
+            ->get();
+
+        $penjualanBarang = [];
+
+        foreach ($trnsales as $penjualan) {
+            $detailPenjualan = $this->getDetailPenjualanPerSalesman($bukti,$tahun);
+
+            $penjualanBarang[] = [
+                'ID_SALESMAN' => $penjualan->ID_SALESMAN,
+                'NAMA' => $penjualan->NAMA,
+                'ID_CUSTOMER' => $penjualan->ID_CUSTOMER,
+                'NAMACUST' => $penjualan->namacust,
+                'BUKTI' => $penjualan->BUKTI,
+                'TANGGAL' => $penjualan->TANGGAL,
+                'TOTAL_PENJUALAN' => $penjualan->total_penjualan,
+                'TOTAL_POTONGAN' => $penjualan->total_potongan,
+                'TOTAL_NETTO' => $penjualan->total_netto,
+                'DETAIL_PENJUALAN' => $detailPenjualan
+            ];
+        }
+
+        // return response()->json($penjualanBarang);
+        return $penjualanBarang;
+    }
+
+    public function getDetailPenjualanPerSalesman($bukti,$tahun)
     {
-        $awal = $request->AWAL;
-        $akhir = $request->AKHIR;
+        $trnsales = trnsales::where('trnsales.KDTRN', 12)
+            ->where('trnsales.BUKTI',$bukti)
+            ->whereRaw("LEFT(trnsales.PERIODE, 4) = '$tahun'")
+            ->join('trnjadi', function ($join) {
+                $join->on('trnsales.BUKTI', '=', 'trnjadi.BUKTI')
+                    ->on('trnsales.PERIODE', '=', 'trnjadi.PERIODE')
+                    ->on('trnsales.KDTRN', '=', 'trnjadi.KDTRN');
+            })
+            ->join('barang','trnjadi.ID_BARANG','barang.ID_BARANG')
+            ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
+            ->select('trnjadi.ID_BARANG', 'barang.NAMA AS nama_barang', 'satuan.NAMA AS nama_satuan',
+                DB::raw('SUM(trnjadi.QTY) as total'),
+                DB::raw('SUM(trnjadi.QTY * trnjadi.HARGA) as subtotal'),
+                DB::raw('SUM(trnjadi.POTONGAN) as potongan'),
+                DB::raw('SUM(trnjadi.JUMLAH) as jumlah'))
+            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA', 'satuan.NAMA')
+            ->orderBy('trnjadi.ID_BARANG')
+            ->get();
+        return $trnsales;
+    }
+
+    public function generateAndSendPdf(Request $request)
+    {
+        $bukti = $request->BUKTI;
+        $tahun = $request->TAHUN;
+        $sendEmail = $request->sendEmail;
         // Generate PDF using SnappyPDF
         $data = [
             "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
-            "customer" => $this->getPenjualanCustomer($awal,$akhir)
+            "salesman" => $this->getPenjualanPerSalesman($bukti,$tahun)
         ];
-        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfCustomer', $data)
+        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfInvoiceKanvas', $data)
             ->setPaper('a4')
             ->setOrientation('portrait')
             ->setOption('margin-left', 5)
@@ -488,7 +552,84 @@ class pdfController extends Controller
             ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
             ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
 
-        return $pdf->download('example.pdf');
+        if ($sendEmail) {
+            $filePath = storage_path('app/example.pdf');
+            $pdf->save($filePath);
+            // Send email with PDF attachment
+            Mail::to("hansthong@gmail.com")->send(new pdfEmail($filePath));
+
+            // Delete the temporary PDF file
+            unlink($filePath);
+
+            return response()->json(['message'=>'success'],200);
+        } else {
+            // Directly download the PDF
+            return $pdf->download($bukti.'.pdf');
+        }
+    }
+
+
+    public function generatePdf(Request $request)
+    {
+        $bukti = $request->BUKTI;
+        $tahun = $request->TAHUN;
+        // Generate PDF using SnappyPDF
+        $data = [
+            "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
+            "salesman" => $this->getPenjualanPerSalesman($bukti,$tahun)
+        ];
+        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfInvoiceKanvas', $data)
+            ->setPaper('a4')
+            ->setOrientation('portrait')
+            ->setOption('margin-left', 5)
+            ->setOption('margin-right', 5)
+            ->setOption('margin-top', 30)
+            ->setOption('margin-bottom', 20)
+            ->setOption("footer-right", "Halaman [page] dari [topage]")
+            ->setOption("header-spacing", 5)
+            ->setOption("footer-spacing", 5)
+            ->setOption("enable-local-file-access", true)
+            ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
+            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
+
+        return $pdf->download($bukti.'.pdf');
+    }
+
+    public function sendEmail(Request $request)
+    {
+
+        $bukti = $request->BUKTI;
+        $tahun = $request->TAHUN;
+        // Generate PDF using SnappyPDF
+        $data = [
+            "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
+            "salesman" => $this->getPenjualanPerSalesman($bukti,$tahun)
+        ];
+        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfInvoiceKanvas', $data)
+            ->setPaper('a4')
+            ->setOrientation('portrait')
+            ->setOption('margin-left', 5)
+            ->setOption('margin-right', 5)
+            ->setOption('margin-top', 30)
+            ->setOption('margin-bottom', 20)
+            ->setOption("footer-right", "Halaman [page] dari [topage]")
+            ->setOption("header-spacing", 5)
+            ->setOption("footer-spacing", 5)
+            ->setOption("enable-local-file-access", true)
+            ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
+            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
+
+        // Generate a temporary file path to store the PDF
+        $filePath = storage_path('app/example.pdf');
+        $pdf->save($filePath);
+
+        // Send email with PDF attachment
+        Mail::to("hansthong@gmail.com")->send(new pdfEmail($filePath));
+
+        // Delete the temporary PDF file
+        unlink($filePath);
+
+        return response()->json(['message'=>'success'],200);
     }
 
 }

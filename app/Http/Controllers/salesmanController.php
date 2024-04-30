@@ -8,6 +8,7 @@ use App\Models\salesman;
 use App\Models\depo;
 use App\Models\trnsales;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
 
@@ -123,6 +124,72 @@ class salesmanController extends Controller
         } else {
             $salesman->delete();
             return response()->json(['success' => true,'message' => 'Data berhasil dihapus'], 200);
+        }
+    }
+
+    //untuk api
+    public function doLogin(Request $request){
+        $request->validate([
+            'ID_SALES' => 'required',
+            'PASSWORD' => 'required',
+        ]);
+
+        $credential = [
+            "ID_SALES" => $request->ID_SALES,
+            "password" => $request->PASSWORD,
+        ];
+        if (Auth::guard('salesman')->attempt($credential)) {
+            $salesman = salesman::where('ID_SALES', $request->ID_SALES)
+                        ->where('active', 1)
+                        ->select('ID_SALES','NAMA','EMAIL','NOMOR_HP','ID_DEPO','ID_GUDANG')
+                        ->get();
+            if ($salesman->isEmpty()) {
+                return response()->json(['message' => 'Login failed'], 401);
+            }
+            return response()->json(['salesman' => $salesman, 'message' => 'Login success'], 200);
+        } else {
+            return response()->json(['message' => 'Login failed'], 401);
+        }
+    }
+
+    public function cekEmail(Request $request){
+        $email = $request->EMAIL;
+
+        $cek = salesman::where('EMAIL',$email)->get();
+
+        if($cek->isEmpty()){
+            return response()->json(['message' => 'email tidak ditemukan'],404);
+        } else {
+            return response()->json(['message' => 'data ditemukan'],200);
+        }
+    }
+
+    public function resetPassword(Request $request){
+        $email = $request->EMAIL;
+        $password = $request->PASSWORD;
+
+        $passwordHashed = Hash::make($password);
+        $data = salesman::where('EMAIL',$email)->first();
+        $data->update(['PASSWORD' => $passwordHashed]);
+        return response()->json(['message' => 'Berhasil mengubah password'],200);
+    }
+
+    public function changePassword(Request $request){
+        $email = $request->EMAIL;
+        $password = $request->PASSWORD;
+        $passwordlama = $request->PASSWORDLAMA;
+
+        $credential = [
+            "EMAIL" => $email,
+            "password" => $passwordlama,
+        ];
+        if (Auth::guard('salesman')->attempt($credential)) {
+            $passwordHashed = Hash::make($password);
+            $data = salesman::where('EMAIL',$email)->first();
+            $data->update(['PASSWORD' => $passwordHashed]);
+            return response()->json(['message' => 'Berhasil mengubah password'],200);
+        } else {
+            return response()->json(['message' => 'Password Lama Salah'], 401);
         }
 
     }

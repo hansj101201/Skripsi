@@ -35,9 +35,6 @@
                     <td style="text-align: right; margin-right: 10px;">{{ number_format($d['TOTAL_POTONGAN'], 0, ',', ',') }}</td>
                     <td style="text-align: right; margin-right: 10px;">{{ number_format($d['TOTAL_NETTO'], 0, ',', ',') }}</td>
                 </tr>
-                @php
-                    $totalasset = 0;
-                @endphp
                 @foreach ($d['DETAIL_PENJUALAN'] as $detail)
                     <tr style="height: 10px;">
                         <td style="text-align: left; margin-left: 10px;">{{ $detail['ID_BARANG'] }}</td>

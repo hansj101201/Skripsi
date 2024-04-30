@@ -21,6 +21,10 @@ class salesman extends Authenticatable
         'TGLENTRY' => 'datetime',
         'TGLEDIT' => 'datetime',
     ];
+    public function getAuthPassword()
+    {
+        return $this->PASSWORD;
+    }
     public function depo()
     {
         return $this->belongsTo(depo::class, 'ID_DEPO', 'ID_DEPO');
