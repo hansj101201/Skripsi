@@ -50,10 +50,19 @@
                     </div>
                 </div>
                 <div class="col">
-                    <button id="button1" class="btn btn-primary">Customer</button>
-                    <button id="button2" class="btn btn-primary">Salesman</button>
-                    <button id="button3" class="btn btn-primary">Barang</button>
-                    <a id="test" href="#" onclick="sendEmail()">Pdf</a>s
+                    <div class="row">
+                        <div class="col">
+                            <button id="button1" class="btn btn-primary">Customer</button>
+                            <button id="button2" class="btn btn-primary">Salesman</button>
+                            <button id="button3" class="btn btn-primary">Barang</button>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <a href="#" onclick="generatePDF('pdf/pdfCustomer')" class="btn btn-primary">PDF Customer</a>
+                            <a href="#" onclick="generatePDF('pdf/pdfSalesman')" class="btn btn-primary">PDF Salesman</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,6 +71,7 @@
                 <tbody>
                 </tbody>
             </table>
+            <h1>Total</h1>
         </div>
     </div>
 
@@ -106,19 +116,32 @@
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/vendor/toastr/toastr.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
+        function generatePDF(url) {
+            var tanggal_awal = $('#tanggal_awal').val();
+            var tanggal_akhir = $('#tanggal_akhir').val();
+
+            // Lakukan pengecekan tanggal_awal dan tanggal_akhir
+            if (tanggal_awal === '' || tanggal_akhir === '') {
+                // Tampilkan pesan toastr jika tanggal belum diinput
+                toastr.error('Mohon lengkapi tanggal sebelum membuat PDF.');
+                return; // Hentikan eksekusi fungsi jika tanggal belum diinput
+            }
+
+            // Navigasikan pengguna ke URL yang ditentukan jika tanggal sudah diinput
+            window.location.href = "{{ url('') }}/" + url + "/" + tanggal_awal + "/" + tanggal_akhir;
+        }
         var table;
-        function sendEmail() {
-        var awal = 'A0100011'; // Ganti dengan nilai sesuai kebutuhan
-        var akhir = '2024'; // Ganti dengan nilai sesuai kebutuhan
-
-        // Buat URL dengan parameter query AWAL dan AKHIR
-        var url = '/api/pdf/generatePdf?BUKTI=' + awal + '&TAHUN=' + akhir;
-
-        // Redirect ke URL
-        window.location.href = url;
-    }
         $(function () {
+            var today = new Date(); // Dapatkan tanggal hari ini
+            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); // Buat objek tanggal dengan tanggal 1 dari bulan saat ini
+            var formattedFirstDay = moment(firstDayOfMonth).format('DD-MM-YYYY'); // Format tanggal sebagai string 'DD-MM-YYYY'
+
+            $('#tanggal_awal').val(formattedFirstDay); // Set nilai tanggal awal ke tanggal pertama bulan ini
+            var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+            $('#tanggal_akhir').val(today);
             $('#tanggal_awal').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format
                 minDate: 0,
@@ -176,11 +199,11 @@
                         $('td:eq(5)', row).addClass('text-center');
                     },
                     layout: {
-                        top2Start:{
-                            buttons:[
-                                // 'copy', 'csv',
-                                'excel', 'pdf', 'print']
-                        },
+                        // top2Start:{
+                        //     buttons:[
+                        //         // 'copy', 'csv',
+                        //         'excel', 'pdf', 'print']
+                        // },
                         topStart: "pageLength"
                     },
                     columns: [
@@ -261,11 +284,11 @@
                         $('td:eq(5)', row).addClass('text-center');
                     },
                     layout: {
-                        top2Start:{
-                            buttons:[
-                                // 'copy', 'csv',
-                                'excel', 'pdf', 'print']
-                        },
+                        // top2Start:{
+                        //     buttons:[
+                        //         // 'copy', 'csv',
+                        //         'excel', 'pdf', 'print']
+                        // },
                         topStart: "pageLength"
                     },
                     columns: [
@@ -342,11 +365,11 @@
                         $('td:eq(4)', row).addClass('text-right').css('padding-right', '10px');
                     },
                     layout: {
-                        top2Start:{
-                            buttons:[
-                                // 'copy', 'csv',
-                                'excel', 'pdf', 'print']
-                        },
+                        // top2Start:{
+                        //     buttons:[
+                        //         // 'copy', 'csv',
+                        //         'excel', 'pdf', 'print']
+                        // },
                         topStart: "pageLength"
                     },
                     columns: [
@@ -419,11 +442,11 @@
                         $('td:eq(6)', row).addClass('text-right').css('padding-right', '10px');
                     },
                     layout: {
-                        top2Start:{
-                            buttons:[
-                                // 'copy', 'csv',
-                                'excel', 'pdf', 'print']
-                        },
+                        // top2Start:{
+                        //     buttons:[
+                        //         // 'copy', 'csv',
+                        //         'excel', 'pdf', 'print']
+                        // },
                         topStart: "pageLength"
                     },
                     columns: [

@@ -425,9 +425,12 @@ class pdfController extends Controller
     {
         $data = [
             "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
-            "customer" => $this->getPenjualanCustomer($awal,$akhir)
+            "data" => $this->getPenjualanCustomer($awal,$akhir),
+            "mode" => 'Customer',
+            "awal" => $awal,
+            "akhir" => $akhir
         ];
-        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfCustomer', $data)
+        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfCustSales', $data)
             ->setPaper('a4')
             ->setOrientation('portrait')
             ->setOption('margin-left', 5)
@@ -441,16 +444,19 @@ class pdfController extends Controller
             ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
             ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
 
-        return $pdf->download('Penjualan per Customer '.$awal.' - '.$akhir.'.pdf');
+        return $pdf->inline('Penjualan per Customer '.$awal.' - '.$akhir.'.pdf');
     }
 
     public function pdfSalesman($awal,$akhir)
     {
         $data = [
             "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
-            "salesman" => $this->getPenjualanSalesman($awal,$akhir)
+            "data" => $this->getPenjualanSalesman($awal,$akhir),
+            "mode" => 'Salesman',
+            "awal" => $awal,
+            "akhir" => $akhir
         ];
-        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfSalesman', $data)
+        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfCustSales', $data)
             ->setPaper('a4')
             ->setOrientation('portrait')
             ->setOption('margin-left', 5)

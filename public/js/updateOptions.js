@@ -27,7 +27,7 @@ function updateGudangOptions(urlPass) {
     });
 }
 
-function updateBarangOptions(urlPass) {
+function updateBarangOptions(urlPass, callback) {
     console.log("masuk");
     var url = urlPass;
     $.ajax({
@@ -50,12 +50,18 @@ function updateBarangOptions(urlPass) {
                     text: barang.ID_BARANG
                 }));
             });
+
+            // Panggil callback setelah selesai memperbarui opsi barang
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
         }
     });
 }
+
 
 function updateDepoOptions(urlPass) {
     var url = urlPass;

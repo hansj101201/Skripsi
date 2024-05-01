@@ -74,6 +74,8 @@
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/vendor/toastr/toastr.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
         function generatePDF(url) {
             var tanggal_awal = $('#tanggal_awal').val();
@@ -91,6 +93,13 @@
         }
         var table;
         $(function () {
+            var today = new Date(); // Dapatkan tanggal hari ini
+            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); // Buat objek tanggal dengan tanggal 1 dari bulan saat ini
+            var formattedFirstDay = moment(firstDayOfMonth).format('DD-MM-YYYY'); // Format tanggal sebagai string 'DD-MM-YYYY'
+
+            $('#tanggal_awal').val(formattedFirstDay); // Set nilai tanggal awal ke tanggal pertama bulan ini
+            var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+            $('#tanggal_akhir').val(today);
             $('#tanggal_awal').datepicker({
                 format: 'dd-mm-yyyy', // Set your desired date format
                 minDate: 0,

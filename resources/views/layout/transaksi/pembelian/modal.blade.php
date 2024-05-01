@@ -203,7 +203,7 @@
         let idEdit = '';
         let arrBarang = [];
         let mode;
-        let editData;
+        var editData = false;
 
         function clearModal() {
             // $('#tanggal').val("");
@@ -216,8 +216,11 @@
             $('#listBarang').empty();
             $('#supplier').prop('disabled', false);
             $('#depo').prop('disabled', false);
-            $('#keterangan').val();
+            $('#keterangan').val("");
             $('#saveBtn').prop('disabled',false);
+            $('#saveBtn').show();
+            $('#keterangan').prop('readonly', false);
+            $('#diskon').prop('readonly', false);
         }
 
         function fetchData(bukti,periode){
@@ -245,6 +248,7 @@
 
         function fetchDetail(bukti,periode){
             var tanggalPenutupanCompact = "{{ $tglClosing }}";
+            console.log("tanggal"+tanggalPenutupanCompact);
             $.ajax({
                 url: "{{ url('transaksi/pembelian/getDetail') }}/"+bukti+"/"+periode,
                 method: "GET",
@@ -263,7 +267,8 @@
 
                         // Convert data[i].TANGGAL menjadi objek Date
                         var tanggalTransaksi = new Date(data[i].TANGGAL);
-                        // console.log(data[i]);
+
+                        console.log("edit"+editData);
                         createTable +=
                             `<tr id="${data[i].ID_BARANG}">
                                 <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
@@ -273,8 +278,9 @@
                                 <td class="text-right" style="padding-right: 10px;">${harga}</td>
                                 <td class="text-right" style="padding-right: 10px;">${potongan}</td>
                                 <td class="text-right" style="padding-right: 10px;">${jumlah}</td>`
-                                if(tanggalTransaksi > tanggalPenutupan){
-                                    if(editData){
+
+                                if(tanggalPenutupanCompact == "a") {
+                                    if(editData == true){
                                         createTable += `<td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
                                             data-kode="${data[i].ID_BARANG}"
                                             data-qty="${data[i].QTYORDER}"
@@ -286,10 +292,23 @@
                                     } else {
                                         createTable+= `<td></td></tr>`
                                     }
+
+                                } else if(tanggalTransaksi > tanggalPenutupan){
+                                    if(editData == true){
+                                        createTable += `<td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
+                                            data-kode="${data[i].ID_BARANG}"
+                                            data-qty="${data[i].QTYORDER}"
+                                            data-potongan="${data[i].DISCOUNT}"
+                                            data-harga="${data[i].HARGA}"
+                                            data-jumlah="${data[i].JUMLAH}"
+                                            ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>'</td>
+                                        </tr>`
+                                    } else {
+                                        createTable+= `<td></td></tr>`
+                                    }
+                                } else {
+                                    createTable+= `<td></td></tr>`
                                 }
-                                else {
-                            createTable+= `<td></td></tr>`;
-                        };
                         i++;
                     }
                     $('#listBarang').append(createTable);
@@ -407,7 +426,7 @@
             }
 
             return true;
-         }
+        }
 
         function addTableBarang(){
             if(cekBarang()){
@@ -484,6 +503,7 @@
             var discountString = $('#diskon').val().trim();
             var discount = discountString !== '' ? parseFloat(discountString.replace(/[^\d]/g, '')) : 0;
 
+            console.log('edit '+editData);
             $('#'+idEdit).empty();
             let createRow ='';
             createRow +=
@@ -495,17 +515,20 @@
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>`;
-
-            if (editData){
-                createRow += `<td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal"
+                if(editData){
+                    createRow += `<td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal"
                     data-kode="${kode}"
                     data-qty="${qty}"
                     data-potongan="${potongan}"
                     data-harga="${harga}"
                     data-jumlah="${jumlah}"
                     ><i class="fas fa-pencil-alt"></i></button>
-                &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>`
-            }
+                &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>`;
+                                    } else {
+                                        createTable+= `<td></td>`
+                                    }
+
+
             $('#'+idEdit).append(createRow);
 
             $('#dataModal').hide();
@@ -583,24 +606,27 @@
 
         function enableDatepicker() {
             var tanggalPenutupanCompact = "{{ $tglClosing }}";
+            if (tanggalPenutupanCompact === "a") {
 
-            var tanggalPenutupan = new Date(tanggalPenutupanCompact);
-
-            // Menambahkan satu hari ke tanggal penutupan
-            tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
-
-            // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
-            var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
-
-            $('#tanggal').datepicker({
-                format: 'dd-mm-yyyy', // Set your desired date format
-                startDate: tanggalMulai,
-                defaultDate: 'now', // Set default date to 'now'
-                autoclose: true // Close the datepicker when a date is selected
-            });
-            $('#datepicker').on('click', function() {
-                $('#tanggal').datepicker('show');
-            });
+                $('#tanggal').datepicker({
+                    format: 'dd-mm-yyyy', // Set your desired date format
+                    defaultDate: 'now', // Set default date to 'now'
+                    autoclose: true // Close the datepicker when a date is selected
+                });
+            } else {
+                var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+                tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+                var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+                $('#tanggal').datepicker({
+                    format: 'dd-mm-yyyy', // Set your desired date format
+                    startDate: tanggalMulai,
+                    defaultDate: 'now', // Set default date to 'now'
+                    autoclose: true // Close the datepicker when a date is selected
+                });
+                $('#datepicker').on('click', function() {
+                    $('#tanggal').datepicker('show');
+                });
+            }
         }
 
         $(document).ready(function () {
@@ -621,6 +647,7 @@
             });
 
             $('#addDataModal').on('show.bs.modal', function (event) {
+                clearModal();
                 var button = $(event.relatedTarget);
                 mode = button.data('mode');
                 var modal = $(this);
@@ -653,6 +680,8 @@
                         $('#saveBtn').show();
                     } else if(kode === "detail"){
                         $('#saveBtn').hide();
+                        $('#keterangan').prop('readonly', true);
+                        $('#diskon').prop('readonly', true);
                     }
 
                 } else {
@@ -671,9 +700,8 @@
                 }
             });
 
-
-
             $('#dataModal').on('show.bs.modal', function(event) {
+                clearModalBarang();
                 var tanggal =  $('#tanggal').val();
 
                 console.log(tanggal);
@@ -710,51 +738,45 @@
                     console.log(mode);
                     var modal = $(this);
                     if (mode === 'add') {
-                        updateBarangOptions(getBarangActiveUrl);
-                        modal.find('.modal-title').text('Tambah Data');
-                        $('#barang_id_barang').change(function(){
-                // Get the selected value of the select element
-                            kode = $(this).val();
-                            console.log(kode);
-                            editModeValue = "add";
-                            getData(kode, tanggal);
-                        })
-                        $('#saveButton').attr('onclick', 'addTableBarang()');
-                        $('#editMode').val('add');
+                        updateBarangOptions(getBarangActiveUrl, function() {
+                            modal.find('.modal-title').text('Tambah Data');
+                            $('#barang_id_barang').change(function(){
+                                kode = $(this).val();
+                                console.log(kode);
+                                editModeValue = "add";
+                                getData(kode, tanggal);
+                            });
+                            $('#saveButton').attr('onclick', 'addTableBarang()');
+                            $('#editMode').val('add');
+                        });
                     } else {
-                        updateBarangOptions(getBarangAllUrl);
-                        modal.find('.modal-title').text('Edit Data');
-                        kode = button.data('kode');
-                        idEdit = kode;
-                        console.log(tanggal);
-                        console.log(kode);
-                        var qty = button.data('qty');
-                        var harga = button.data('harga');
-                        var jumlah = button.data('jumlah');
-                        var potongan = button.data('potongan');
-                        console.log(qty);
-                        console.log(harga);
-                        console.log(jumlah);
-                        console.log(potongan);
-                        $('#barang_id_barang').val(kode).trigger('change');
-                        $('#barang_id_barang').prop('disabled', true);
-                        getData(kode, tanggal);
-                        $('#saveButton').attr('onclick', 'editTableBarang()');
-                        $('#editMode').val(editModeValue);
-                        $('#barang_qty').val(formatHarga(parseFloat(qty)));
-                        $('#barang_harga').val(formatHarga(parseFloat(harga)));
-                        $('#barang_potongan').val(formatHarga(parseFloat(potongan)));
-                        $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
+                        updateBarangOptions(getBarangAllUrl, function() {
+                            modal.find('.modal-title').text('Edit Data');
+                            kode = button.data('kode');
+                            console.log('kode' +kode);
+                            idEdit = kode;
+                            console.log(tanggal);
+                            console.log(kode);
+                            var qty = button.data('qty');
+                            var harga = button.data('harga');
+                            var jumlah = button.data('jumlah');
+                            var potongan = button.data('potongan');
+                            console.log(qty);
+                            console.log(harga);
+                            console.log(jumlah);
+                            console.log(potongan);
+                            $('#barang_id_barang').val(kode).trigger('change');
+                            $('#barang_id_barang').prop('disabled', true);
+                            getData(kode, tanggal);
+                            $('#saveButton').attr('onclick', 'editTableBarang()');
+                            $('#editMode').val(editModeValue);
+                            $('#barang_qty').val(formatHarga(parseFloat(qty)));
+                            $('#barang_harga').val(formatHarga(parseFloat(harga)));
+                            $('#barang_potongan').val(formatHarga(parseFloat(potongan)));
+                            $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
+                        });
                     }
                 }
-            });
-            $('#addDataModal').on('hide.bs.modal', function(event) {
-                clearModal();
-            });
-
-
-            $('#dataModal').on('hide.bs.modal', function(event) {
-                clearModalBarang();
             });
 
             $('#diskon').on('input', function() {

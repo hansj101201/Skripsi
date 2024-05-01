@@ -25,6 +25,8 @@ class pembelianController extends Controller
         ->where('ID_DEPO',getIdDepo())
         ->orderBy('TGL_CLOSING', 'desc')
         ->value('TGL_CLOSING');
+
+        $tglClosing = $tglClosing ?? "a";
         return view('layout.transaksi.pembelian.index', compact('barang','tglClosing'));
     }
 
