@@ -287,7 +287,7 @@
                                             data-potongan="${data[i].DISCOUNT}"
                                             data-harga="${data[i].HARGA}"
                                             data-jumlah="${data[i].JUMLAH}"
-                                            ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>'</td>
+                                            ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${data[i].ID_BARANG}')"><i class="fas fa-trash"></i></button></td>'</td>
                                         </tr>`
                                     } else {
                                         createTable+= `<td></td></tr>`
@@ -301,7 +301,7 @@
                                             data-potongan="${data[i].DISCOUNT}"
                                             data-harga="${data[i].HARGA}"
                                             data-jumlah="${data[i].JUMLAH}"
-                                            ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>'</td>
+                                            ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${data[i].ID_BARANG}')"><i class="fas fa-trash"></i></button></td>'</td>
                                         </tr>`
                                     } else {
                                         createTable+= `<td></td></tr>`
@@ -462,7 +462,7 @@
                             data-potongan="${potongan}"
                             data-harga="${harga}"
                             data-jumlah="${jumlah}"
-                            ><i class="fas fa-pencil-alt"></i></button>&nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>
+                            ><i class="fas fa-pencil-alt"></i></button>&nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${kode}')"><i class="fas fa-trash"></i></button></td>
                     </tr>`
                 $('#listBarang').append(createTable);
                 $('#dataModal').hide();
@@ -523,7 +523,7 @@
                     data-harga="${harga}"
                     data-jumlah="${jumlah}"
                     ><i class="fas fa-pencil-alt"></i></button>
-                &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>`;
+                &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${kode}')"><i class="fas fa-trash"></i></button></td>`;
                                     } else {
                                         createTable+= `<td></td>`
                                     }

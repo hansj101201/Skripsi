@@ -21,7 +21,7 @@
                     <div class="form-group row">
                         <label for="nama_user" class="col-sm-3 col-form-label">Nama</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nama_user" name="NAMA" maxlength="40">
+                            <input type="text" class="form-control" id="nama_user" name="NAMA" maxlength="20">
                         </div>
                     </div>
                     <div class="form-group row">

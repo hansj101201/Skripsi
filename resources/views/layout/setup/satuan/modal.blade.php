@@ -39,7 +39,6 @@
         function clearModal(){
             $('#kode_satuan').val("");
             $('#nama_satuan').val("");
-            $('#active').prop('checked', true);
 
             if ($('#addEditForm input[name="_method"]').length > 0) {
                 $('#addEditForm input[name="_method"]').remove(); // Hapus input tersembunyi untuk metode PUT
@@ -68,6 +67,7 @@
         $(document).ready(function() {
 
             $('#DataModal').on('show.bs.modal', function(event) {
+                clearModal();
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode'); // Mengambil mode dari tombol
 

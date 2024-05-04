@@ -58,7 +58,7 @@
                 <div id="detailBarang">
                     <table class="table table-stripped table-bordered myTable" id = "tableData">
                         <thead>
-                            <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                            <th class="text-left" style="padding-left: 10px;"> Id Barang </th>
                             <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
                             <th class="text-left" style="padding-left: 10px;"> Satuan </th>
                             <th class="text-right" style="padding-right: 10px;"> QTY </th>
@@ -312,7 +312,7 @@
                                         data-nama="${data[i].nama_barang}"
                                         data-satuan="${data[i].nama_satuan}"
                                         data-qty="${qty}"
-                                        ><i class="fas fa-pencil-alt"></i></button></button></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${data[i].ID_BARANG})"><i class="fas fa-trash"></i></button></td>`
+                                        ><i class="fas fa-pencil-alt"></i></button></button></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${data[i].ID_BARANG}')"><i class="fas fa-trash"></i></button></td>`
                                     } else {
                                         createTable += `<td></td>`
                                     }
@@ -349,7 +349,7 @@
                         data-satuan="${satuan}"
                         data-qty="${qty}"
                         data-stok="${qty}"
-                        ><i class="fas fa-pencil-alt"></i></button></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>
+                        ><i class="fas fa-pencil-alt"></i></button></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${kode}')"><i class="fas fa-trash"></i></button></td>
                 </tr>`
             $('#listBarang').append(createTable);
             $('#dataModal').hide();
@@ -388,9 +388,7 @@
         }
 
         function deleteRow(rowId) {
-            // Mencari elemen baris berdasarkan ID
             var row = document.getElementById(rowId);
-            // Menghapus baris dari tabel
             row.parentNode.removeChild(row);
         }
         function simpanDataTrnJadi(){
@@ -538,39 +536,43 @@
                 } else {
                     var modal = $(this);
                     if (mode === 'add') {
-                        updateBarangOptions(getBarangActiveUrl);
-                        modal.find('.modal-title').text('Tambah Data');
-                        $('#barang_id_barang').change(function(){
-                            kode = $(this).val();
-                            console.log(kode);
-                            $('#stok_lama').val(0);
-                            editModeValue = "add";
-                            getData(kode, tanggal, gudang);
+                        updateBarangOptions(getBarangActiveUrl, function() {
+                            modal.find('.modal-title').text('Tambah Data');
+                            $('#barang_id_barang').change(function(){
+                                kode = $(this).val();
+                                console.log(kode);
+                                $('#stok_lama').val(0);
+                                editModeValue = "add";
+                                getData(kode, tanggal, gudang);
+                            });
+                            $('#saveButton').attr('onclick', 'addTableBarang()');
+                            $('#editMode').val('add');
                         });
-                        $('#saveButton').attr('onclick', 'addTableBarang()');
-                        $('#editMode').val('add');
-                    } else {
-                        updateBarangOptions(getBarangAllUrl);
-                        modal.find('.modal-title').text('Edit Data');
-                        kode = button.data('kode');
-                        console.log(tanggal);
-                        console.log(gudang);
-                        console.log(kode);
-                        var qty = button.data('qty');
-                        $('#barang_id_barang').val(kode).trigger('change');
-                        $('#barang_id_barang').prop('disabled', true);
-                        getData(kode, tanggal, gudang);
 
-                        if (mode === 'editAdd') {
-                            $('#stok_lama').val(0);
-                            editModeValue = 'editAdd';
-                        } else if (mode === 'edit') {
-                            $('#stok_lama').val(qty);
-                            editModeValue = 'edit';
-                        }
-                        $('#saveButton').attr('onclick', 'editTableBarang()');
-                        $('#editMode').val(editModeValue);
-                        $('#barang_qty').val(qty);
+                    } else {
+                        updateBarangOptions(getBarangAllUrl, function () {
+                            modal.find('.modal-title').text('Edit Data');
+                            kode = button.data('kode');
+                            console.log(tanggal);
+                            console.log(gudang);
+                            console.log(kode);
+                            var qty = button.data('qty');
+                            $('#barang_id_barang').val(kode).trigger('change');
+                            $('#barang_id_barang').prop('disabled', true);
+                            getData(kode, tanggal, gudang);
+
+                            if (mode === 'editAdd') {
+                                $('#stok_lama').val(0);
+                                editModeValue = 'editAdd';
+                            } else if (mode === 'edit') {
+                                $('#stok_lama').val(qty);
+                                editModeValue = 'edit';
+                            }
+                            $('#saveButton').attr('onclick', 'editTableBarang()');
+                            $('#editMode').val(editModeValue);
+                            $('#barang_qty').val(qty);
+                        });
+
                     }
                 }
             });
