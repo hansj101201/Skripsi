@@ -117,6 +117,7 @@ class transferGudangController extends Controller
         try {
             // Generate BUKTI
             $bukti = $this->generateBukti($request->tanggal);
+            // dd ($bukti);
             // Format tanggal
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));

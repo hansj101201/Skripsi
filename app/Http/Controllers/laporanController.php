@@ -88,7 +88,6 @@ class laporanController extends Controller
                 'PERIODE' => $periode,
                 'GUDANG' => $idGudang
             ];
-
             array_push($stokPerBarang, $newItem);
         }
 

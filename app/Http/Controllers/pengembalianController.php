@@ -73,7 +73,7 @@ class pengembalianController extends Controller
                 'ID_GUDANG' => $idGudang,
                 'ID_GUDANG_TUJUAN' => $idGudangTujuan,
                 'ID_DEPO' => $idDepo,
-                'ID_SALES' => $idSales
+                'ID_SALESMAN' => $idSales
             ]);
 
             trnsales::create([
@@ -83,7 +83,7 @@ class pengembalianController extends Controller
                 'PERIODE' => $periode,
                 'ID_GUDANG' => $idGudangTujuan,
                 'ID_DEPO' => $idDepo,
-                'ID_SALES' => $idSales
+                'ID_SALESMAN' => $idSales
             ]);
             // Create trnjadi records
             for ($i = 0; $i < count($dataArray); $i++) {
