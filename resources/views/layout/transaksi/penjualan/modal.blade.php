@@ -30,12 +30,12 @@
 
                 <div class="form-row">
                     <div class="form-group col">
-                        <label for="gudang">GUDANG:</label>
+                        <label for="gudang">Gudang:</label>
                         <select class="form-control" id="gudang" name="ID_GUDANG">
                         </select>
                     </div>
                     <div class="form-group col">
-                        <label for="customer">CUSTOMER:</label>
+                        <label for="customer">Customer:</label>
                         <select class="form-control" id="customer" name="ID_CUSTOMER">
                         </select>
                     </div>
@@ -56,10 +56,10 @@
                 <div id="detailBarang">
                     <table class="table table-stripped table-bordered myTable" id = "tableData">
                         <thead>
-                            <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                            <th class="text-left" style="padding-left: 10px;"> Id Barang </th>
                             <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
                             <th class="text-left" style="padding-left: 10px;"> Satuan </th>
-                            <th class="text-right" style="padding-right: 10px;"> QTY </th>
+                            <th class="text-right" style="padding-right: 10px;"> Qty </th>
                             <th class="text-right" style="padding-right: 10px;"> Harga </th>
                             <th class="text-right" style="padding-right: 10px;"> Potongan </th>
                             <th class="text-right" style="padding-right: 10px;"> Jumlah </th>
@@ -111,7 +111,7 @@
                     <input type="hidden" id="stok_lama">
                     <input type="hidden" id="editMode" name="editMode" value="add">
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Id Barang</label>
                         <div class="col-sm-9">
                             <select class="form-control" id="barang_id_barang" name="ID_BARANG">
                             </select>
@@ -136,25 +136,25 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Qty</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_qty" name="QTY" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">HARGA</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Harga</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_harga" name="HARGA" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">POTONGAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Potongan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_potongan" name="POTONGAN" inputmode="numeric">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">JUMLAH</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Jumlah</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control text-right" id="barang_jumlah" name="JUMLAH" readonly>
                         </div>

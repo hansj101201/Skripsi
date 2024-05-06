@@ -237,7 +237,7 @@ function updateNomorPo(urlPass) {
     });
 }
 
-function updateGudangTransferOptions(urlPass) {
+function updateGudangTransferOptions(urlPass, callback) {
     var url = urlPass;
     $.ajax({
         url: url,
@@ -259,6 +259,9 @@ function updateGudangTransferOptions(urlPass) {
                     text: gudang.NAMA
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
