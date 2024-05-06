@@ -505,7 +505,7 @@
             return true;
         }
 
-        function getData(kode, tanggal, gudang) {
+        function getData(kode, tanggal, gudang, callback) {
             $.ajax({
                 url: "{{ route('getDetailBarang') }}", // Replace with the URL that handles the AJAX request
                 type: 'GET',
@@ -527,6 +527,9 @@
                         success: function(data) {
                             console.log(data);
                             $('#saldo').val(parseFloat(data).toFixed(0));
+                            if (typeof callback === "function") {
+                                callback();
+                            }
                         }
                     });
                 },
@@ -594,7 +597,18 @@
                     $('#tanggal').val(
                         today
                     ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
-                    modal.find('.modal-title').text('Add Data');
+                    $('#tanggal').datepicker({
+                        format: 'dd-mm-yyyy', // Set your desired date format
+                        minDate: 0,
+                        defaultDate: 'now', // Set default date to 'now'
+                        autoclose: true // Close the datepicker when a date is selected
+                    });
+                    $('.date, #datepicker').on('click', function() {
+                        $('#tanggal').datepicker('show');
+                        addMode = true;
+                        editMode = true;
+                    });
+                    modal.find('.modal-title').text('Tambah Pengeluaran ke Kanvas');
                     updateNomorPo(urlNoPoActive);
                     updateGudangOptions(urlGudangAsalActive);
                     updateGudangTujuanOptions(urlGudangTujuanAll);
@@ -641,12 +655,11 @@
                 startDate: tanggalMulai,
                 defaultDate: 'now', // Set default date to 'now'
                 autoclose: true, // Close the datepicker when a date is selected
-                forceParse: false,
             });
 
             $('.date, #datepicker').on('click', function() {
                 $('#tanggal').datepicker('show');
-                mode = 'add';
+                addMode = true;
                 editMode = true;
             });
 
@@ -665,9 +678,12 @@
                 var tanggal = $('#tanggal').val();
                 var gudang = $('#gudang').val();
                 var gudang_tujuan = $('#gudang_tujuan').val();
-                var kode;
+
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode');
+                var kode = button.data('kode');
+                var qtykirim = button.data('qtykirim');
+                var qtyminta = button.data('qtyminta');
 
                 if (!tanggal) {
                     // e.preventDefault();
@@ -689,18 +705,24 @@
                     return false;
                 } else {
                     var modal = $(this);
-                    if (mode === 'add') {
+                    if (mode === 'add' || addMode) {
                         modal.find('.modal-title').text('Tambah Data');
                         $('#stok_lama').val(0);
-                        getData(kode, tanggal, gudang);
-                        $('#editMode').val('add');
+                        $('#kode_barang').val(kode);
+                        getData(kode, tanggal, gudang, function() {
+                            $('#editMode').val('add');
+                            if (qtykirim > parseFloat($('#saldo').val())) {
+                                $('#qtykirim').val(parseFloat($('#saldo').val()));
+                            } else {
+                                $('#qtykirim').val(qtykirim);
+                            }
+                            $('#qtyorder').val(qtyminta);
+
+                        });
                     } else {
                         modal.find('.modal-title').text('Edit Data');
                         kode = button.data('kode');
-                        var qtykirim = button.data('qtykirim');
-                        var qtyminta = button.data('qtyminta');
-                        var tanggal = $('#tanggal').val();
-                        var gudang = $('#gudang').val();
+
 
                         if (cekData()) {
                             console.log('bisa masuk');

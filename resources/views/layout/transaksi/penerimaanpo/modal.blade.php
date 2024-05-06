@@ -182,7 +182,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Simpan</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanData">Simpan</button>
             </div>
         </div>
     </div>
@@ -706,7 +706,26 @@
                 $('#qtyterima').val(qtykirim);
                 $('#qtykirim').val(qtyorder-qtykirim);
                 idEdit = kode;
+                $('#btnSimpanData').prop('disabled',false);
             });
+
+            $('#qtykirim').on('input', function(){
+                var qtykirimInput = $(this).val().trim();
+                var qtykirim = parseFloat(qtykirimInput === '' ? 0 : qtykirimInput);
+                var qtyterima = parseFloat($('#qtyterima').val());
+                var qtyorder = parseFloat($('#qtyorder').val());
+
+                var hasil = qtykirim + qtyterima
+                console.log(hasil);
+                console.log(qtyorder);
+                if (hasil > qtyorder || qtykirim == 0){
+                    console.log('aaa');
+                    $('#btnSimpanData').prop('disabled',true);
+                } else {
+                    console.log('bbb');
+                    $('#btnSimpanData').prop('disabled',false);
+                }
+            })
             $(document).on('click', '.edit-detail-button', function () {
                 var kode = $(this).data('kode');
                 console.log(kode);

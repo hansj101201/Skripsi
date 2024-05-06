@@ -218,7 +218,7 @@
             $('#listBarang').empty();
             $('#gudang').prop('disabled', false);
             $('#customer').prop('disabled', false);
-            $('#keterangan').val();
+            $('#keterangan').val('');
             $('#saveBtn').prop('disabled',false);
         }
 
@@ -404,6 +404,26 @@
             var discountString = $('#diskon').val().trim();
             var discount = discountString !== '' ? parseFloat(discountString.replace(/[^\d]/g, '')) : 0;
 
+            var lewat = true;
+            if (kode == '') {
+                lewat = false;
+            }
+            if (nama == '') {
+                lewat = false;
+            }
+            if (satuan == '') {
+                lewat = false;
+            }
+            if (qty == '') {
+                lewat = false;
+            }
+            if (qty == 0) {
+                lewat = false;
+            }
+
+            if (lewat){
+
+
             let createTable = "";
 
             createTable +=
@@ -422,7 +442,7 @@
                         data-harga="${harga}"
                         data-jumlah="${jumlah}"
                         data-stok="${qty}"
-                        ><i class="fas fa-pencil-alt"></i></button>&nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow(${kode})"><i class="fas fa-trash"></i></button></td>
+                        ><i class="fas fa-pencil-alt"></i></button>&nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${kode}')"><i class="fas fa-trash"></i></button></td>
                 </tr>`
             $('#listBarang').append(createTable);
             $('#dataModal').hide();
@@ -435,6 +455,9 @@
             $('#customer').prop('disabled', true);
             sumSubtotal();
             sumNetto();
+            } else {
+                toastr.error('Qty tidak boleh 0');
+            }
         }
 
         function deleteRow(rowId) {
@@ -575,6 +598,8 @@
                     $('#customer').prop('disabled', true);
                     $('#tambahDataButton').hide();
                     $('#datepicker').off('click');
+                    $('#keterangan').attr('readonly',true);
+                    $('#diskon').attr('readonly',true);
                     var bukti = button.data('bukti');
                     var periode = button.data('periode');
                     console.log(bukti);
@@ -588,8 +613,11 @@
                     $('#tanggal').val(today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
                     $('#tambahDataButton').show();
                     $('#diskon').val(0);
-                    modal.find('.modal-title').text('Add Data');
+                    modal.find('.modal-title').text('Entry Penjualan');
                     enableDatepicker();
+                    $('#keterangan').attr('readonly',false);
+                    $('#diskon').attr('readonly',false);
+                    $('#saveBtn').show();
                     $('#saveBtn').attr('onclick', 'simpanData()');
                 }
             });
@@ -623,8 +651,8 @@
                     console.log(mode);
                     var modal = $(this);
                     if (mode === 'add') {
-                        updateBarangOptions(getBarangActiveUrl);
-                        modal.find('.modal-title').text('Tambah Data');
+                        updateBarangOptions(getBarangActiveUrl,function(){
+                            modal.find('.modal-title').text('Tambah Barang');
                         $('#barang_id_barang').change(function(){
                 // Get the selected value of the select element
                             kode = $(this).val();
@@ -636,9 +664,10 @@
                         })
                         $('#saveButton').attr('onclick', 'addTableBarang()');
                         $('#editMode').val('add');
+                        });
                     } else {
-                        updateBarangOptions(getBarangAllUrl);
-                        modal.find('.modal-title').text('Edit Data');
+                        updateBarangOptions(getBarangAllUrl, function () {
+                            modal.find('.modal-title').text('Edit Data');
                         kode = button.data('kode');
                         console.log(tanggal);
                         console.log(gudang);
@@ -663,6 +692,7 @@
                         $('#barang_harga').val(formatHarga(parseFloat(harga)));
                         $('#barang_potongan').val(formatHarga(parseFloat(potongan)));
                         $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
+                        });
                     }
                 }
             });

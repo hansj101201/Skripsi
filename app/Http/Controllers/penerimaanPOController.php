@@ -132,7 +132,7 @@ class penerimaanPOController extends Controller
     }
 
     public function updateStatusPO($nomorpo){
-        $data = DB::table('abc.dtlinvorder')
+        $data = DB::table('hansjrco_abc.dtlinvorder')
             ->whereIn('BUKTI', function ($query) use ($nomorpo) {
                 $query->select('BUKTI')
                     ->from('trninvorder')
