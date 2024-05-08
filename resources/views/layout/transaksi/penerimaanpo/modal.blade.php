@@ -163,19 +163,19 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY ORDER</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="qtyorder" name="QTYORDER" maxlength="6" readonly>
+                            <input type="text" class="form-control text-right" id="qtyorder" name="QTYORDER" maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">SUDAH TERIMA</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="qtyterima" maxlength="6" readonly>
+                            <input type="text" class="form-control text-right" id="qtyterima" maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="qtykirim" name="QTYKIRIM" maxlength="6" >
+                            <input type="text" class="form-control text-right" id="qtykirim" name="QTYKIRIM" maxlength="6" >
                         </div>
                     </div>
                 </div>
@@ -220,7 +220,7 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_qty" name="QTY" maxlength="6" >
+                            <input type="text" class="form-control text-right" id="detail_qty" name="QTY" maxlength="6" >
                         </div>
                     </div>
                 </div>
@@ -323,7 +323,7 @@
                 var tanggal = $('#tanggal').val();
                 $('#tableData tbody tr').each(function(index, row) {
                     var idBarang = $(row).find('td:eq(0)').text();
-                    var qtyKirim = $(row).find('td:eq(4)').text();
+                    var qtyKirim = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
                     var idSatuan = $(row).find('td:eq(5)').text(); // Index adjusted if needed
 
                     arrBarang.push([idBarang, qtyKirim, idSatuan]);
@@ -363,9 +363,9 @@
             var kode = $('#kode_barang').val();
             var nama = $('#nama_barang').val();
             var satuan = $('#satuan').val();
-            var qtyorder = parseFloat($('#qtyorder').val()); // Parse as float
-            var qtykirim = parseFloat($('#qtyterima').val()); // Parse as float
-            var qty = parseFloat($('#qtykirim').val()); // Parse as float
+            var qtyorder = parseFloat($('#qtyorder').val().replace(/[^\d]/g, '')); // Parse as float
+            var qtykirim = parseFloat($('#qtyterima').val().replace(/[^\d]/g, '')); // Parse as float
+            var qty = parseFloat($('#qtykirim').val().replace(/[^\d]/g, '')); // Parse as float
 
             if(qty > (qtyorder - qtykirim)){
                 toastr.error("qty kirim tidak boleh lebih besar");
@@ -379,8 +379,8 @@
                 <td class="text-left" style="padding-left: 10px;">${kode}</td>
                 <td class="text-left" style="padding-left: 10px;">${nama}</td>
                 <td class="text-left" style="padding-left: 10px;">${satuan}</td>
-                <td class="text-right" style="padding-right: 10px;">${qtyorder}</td>
-                <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                <td class="text-right" style="padding-right: 10px;">${formatHarga(qtyorder)}</td>
+                <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                 <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                     data-kode="${kode}"
                     data-nama="${nama}"
@@ -410,7 +410,7 @@
                 <td class="text-left" style="padding-left: 10px;">${kode}</td>
                 <td class="text-left" style="padding-left: 10px;">${nama}</td>
                 <td class="text-left" style="padding-left: 10px;">${satuan}</td>
-                <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                 <td class="hide">${stok}</td>
                 <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
                     data-kode="${kode}"
@@ -464,7 +464,7 @@
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
-                                                <td class="text-right" style="padding-right: 10px;">${qtyOrder}</td>
+                                                <td class="text-right" style="padding-right: 10px;">${formatHarga(qtyOrder)}</td>
                                                 <td class="text-right" style="padding-right: 10px;">0</td>
                                                 <td class="hide">${data[i].ID_SATUAN}</td>
                                                 <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
@@ -525,8 +525,8 @@
                                             <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
                                             <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                             <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
-                                            <td class="text-right" style="padding-right: 10px;">${qty}</td>
-                                            <td class="hide">${stok}</td>`
+                                            <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
+                                            <td class="hide">${formatHarga(stok)}</td>`
 
                                             if(tanggalTransaksi > tanggalPenutupan){
                                                 if($('#detailjumlah').val()==0){
@@ -571,8 +571,8 @@
             arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(3)').text();
-                var stok = $(row).find('td:eq(4)').text();
+                var qtyKirim = $(row).find('td:eq(3)').text().replace(/[^\d]/g, '');
+                var stok = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
                 arrBarang.push([idBarang, qtyKirim, stok]);
             });
             console.log(arrBarang);
@@ -702,22 +702,23 @@
                 $('#kode_barang').val(kode); // Tambahkan atribut readonly
                 $('#nama_barang').val(nama); // Tambahkan atribut readonly
                 $('#satuan').val(satuan);
-                $('#qtyorder').val(qtyorder);
-                $('#qtyterima').val(qtykirim);
-                $('#qtykirim').val(qtyorder-qtykirim);
+                $('#qtyorder').val(formatHarga(qtyorder));
+                $('#qtyterima').val(formatHarga(qtykirim));
+                $('#qtykirim').val(formatHarga(qtyorder-qtykirim));
                 idEdit = kode;
                 $('#btnSimpanData').prop('disabled',false);
             });
 
             $('#qtykirim').on('input', function(){
-                var qtykirimInput = $(this).val().trim();
+                var qtykirimInput = $(this).val().replace(/[^\d]/g, '');
                 var qtykirim = parseFloat(qtykirimInput === '' ? 0 : qtykirimInput);
-                var qtyterima = parseFloat($('#qtyterima').val());
-                var qtyorder = parseFloat($('#qtyorder').val());
+                var qtyterima = parseFloat($('#qtyterima').val().replace(/[^\d]/g, ''));
+                var qtyorder = parseFloat($('#qtyorder').val().replace(/[^\d]/g, ''));
 
                 var hasil = qtykirim + qtyterima
                 console.log(hasil);
                 console.log(qtyorder);
+                $(this).val(formatHarga(qtykirim));
                 if (hasil > qtyorder || qtykirim == 0){
                     console.log('aaa');
                     $('#btnSimpanData').prop('disabled',true);
@@ -737,7 +738,7 @@
                 $('#detail_kode_barang').val(kode); // Tambahkan atribut readonly
                 $('#detail_nama_barang').val(nama); // Tambahkan atribut readonly
                 $('#detail_satuan').val(satuan);
-                $('#detail_qty').val(qty);
+                $('#detail_qty').val(formatHarga(qty));
                 $('#stok_lama').val(stok);
                 console.log(stok);
                 idEdit = kode;
@@ -747,6 +748,16 @@
                 console.log(id);
                 if (id) {
                     fetchDataById(id);
+                }
+            });
+
+            $('#detail_qty').on('input', function() {
+                var qtyString = $(this).val().replace(/[^\d]/g, '');
+                var qty = parseFloat(qtyString);
+
+                // Pastikan qty dan harga merupakan angka yang valid
+                if (!isNaN(qty)) {
+                    $(this).val(formatHarga(qty));
                 }
             });
             $(document).on('click', '.delete-button', function () {

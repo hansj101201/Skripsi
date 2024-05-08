@@ -101,22 +101,22 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Satuan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="barang_satuan" name="SATUAN"
                                 maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">STOK</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly>
+                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Qty</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_qty" name="QTY">
+                            <input type="text" class="form-control" id="barang_qty" name="QTY" style="text-align: right;">
                         </div>
                     </div>
                 </div>
@@ -207,7 +207,7 @@
                         },
                         success: function(data) {
                             console.log(data);
-                            $('#barang_saldo').val(parseFloat(data).toFixed(0));
+                            $('#barang_saldo').val(formatHarga(parseFloat(data).toFixed(0)));
                         }
                     });
                 },
@@ -287,7 +287,8 @@
                     let createTable = "";
                     let i = 0
                     while (i < data.length) {
-                        let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
+                        let qty = parseFloat(data[i].QTY).toFixed(0);
+                        let qtyFormat = formatHarga(parseFloat(data[i].QTY).toFixed(0));
                         // console.log(data[i]);
                         var tanggalPenutupan = new Date(tanggalPenutupanCompact);
 
@@ -298,7 +299,7 @@
                                     <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
                                     <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                     <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
-                                    <td class="text-right" style="padding-right: 10px;">${qty}</td>`
+                                    <td class="text-right" style="padding-right: 10px;">${qtyFormat}</td>`
                         if (tanggalTransaksi > tanggalPenutupan) {
                             createTable +=
                                 `<td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#dataModal" data-mode="edit"
@@ -469,6 +470,7 @@
             var bukti;
             var periode;
             var editModeValue;
+            var isSaveButtonActive = false;
             $('#addDataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget);
                 var mode = button.data('mode');
@@ -586,6 +588,27 @@
                 }
             });
 
+            $('#barang_qty').on('input', function() {
+                var qtyString = $(this).val().replace(/[^\d]/g, '');
+                var qty = parseFloat(qtyString);
+
+                if (isNaN(qty) || qtyString === '') {
+        qty = 0;
+    }
+                $(this).val(formatHarga(qty));
+
+                if(qty == 0){
+                    isSaveButtonActive = false;
+                } else {
+                    isSaveButtonActive = true;
+                }
+
+                if (isSaveButtonActive) {
+                    $('#saveButton').prop('disabled', false);
+                } else {
+                    $('#saveButton').prop('disabled', true);
+                }
+            });
 
             $(document).on('click', '#tanggal', function() {
                 $('#tanggal').removeClass('is-invalid');

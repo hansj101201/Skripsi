@@ -1,8 +1,8 @@
-@extends("adminlte::page")
+@extends('adminlte::page')
 
-@section('title','Laporan Penjualan')
+@section('title', 'Laporan Penjualan')
 
-@section('plugins.Datatables',true)
+@section('plugins.Datatables', true)
 
 @push('css')
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
@@ -59,8 +59,10 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col">
-                            <a href="#" onclick="generatePDF('pdf/pdfCustomer')" class="btn btn-primary">PDF Customer</a>
-                            <a href="#" onclick="generatePDF('pdf/pdfSalesman')" class="btn btn-primary">PDF Salesman</a>
+                            <a href="#" onclick="generatePDF('pdf/pdfCustomer')" class="btn btn-primary">PDF
+                                Customer</a>
+                            <a href="#" onclick="generatePDF('pdf/pdfSalesman')" class="btn btn-primary">PDF
+                                Salesman</a>
                         </div>
                     </div>
                 </div>
@@ -71,7 +73,15 @@
                 <tbody>
                 </tbody>
             </table>
-            <h1>Total</h1>
+            <b>
+                <p>Total: <span id="total"></span></p>
+            </b>
+            <b>
+                <p>Potongan: <span id="potongan"></span></p>
+            </b>
+            <b>
+                <p>Netto: <span id="netto"></span></p>
+            </b>
         </div>
     </div>
 
@@ -134,10 +144,12 @@
             window.location.href = "{{ url('') }}/" + url + "/" + tanggal_awal + "/" + tanggal_akhir;
         }
         var table;
-        $(function () {
+        $(function() {
             var today = new Date(); // Dapatkan tanggal hari ini
-            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); // Buat objek tanggal dengan tanggal 1 dari bulan saat ini
-            var formattedFirstDay = moment(firstDayOfMonth).format('DD-MM-YYYY'); // Format tanggal sebagai string 'DD-MM-YYYY'
+            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(),
+            1); // Buat objek tanggal dengan tanggal 1 dari bulan saat ini
+            var formattedFirstDay = moment(firstDayOfMonth).format(
+            'DD-MM-YYYY'); // Format tanggal sebagai string 'DD-MM-YYYY'
 
             $('#tanggal_awal').val(formattedFirstDay); // Set nilai tanggal awal ke tanggal pertama bulan ini
             var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
@@ -168,10 +180,36 @@
                 table = $("#tableHasil").DataTable({
                     serverSide: true,
                     processing: true,
-                    ajax: url,
-                    order: [[0, "desc"]],
+                    ajax: {
+                        url: url,
+                        dataSrc: function(json) {
+                            // Hitung total pada sisi klien dengan menjumlahkan nilai pada kolom keempat
+                            var total = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_penjualan);
+                            }, 0);
+                            var potongan = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_potongan);
+                            }, 0);
+                            var netto = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_netto);
+                            }, 0);
+
+                            // Tampilkan total di luar tabel
+                            $('#total').text(formatHarga(total));
+                            $('#potongan').text(formatHarga(potongan));
+                            $('#netto').text(formatHarga(netto));
+
+                            return json.data;
+                        }
+                    },
+                    order: [
+                        [0, "desc"]
+                    ],
                     pageLength: 10,
-                    lengthMenu: [10, 25, 50, 100, 500, { label: "Lihat Semua", value: -1 }],
+                    lengthMenu: [10, 25, 50, 100, 500, {
+                        label: "Lihat Semua",
+                        value: -1
+                    }],
                     responsive: true,
                     drawCallback: function(settings) {
                         var api = this.api();
@@ -181,16 +219,17 @@
                             var className = 'text-left'; // Default to left alignment
                             // Set alignment based on column index or other criteria as needed
                             if (index === 2 || index === 3 || index === 4) {
-                                className = 'text-right'; // For example, set alignment of column index 4 to right
+                                className =
+                                'text-right'; // For example, set alignment of column index 4 to right
                             }
-                            if (index === 5){
+                            if (index === 5) {
                                 className = 'text-center';
                             }
                             // Add the class to the header cell
                             $(api.column(index).header()).addClass(className);
                         });
                     },
-                    createdRow: function (row, data, dataIndex) {
+                    createdRow: function(row, data, dataIndex) {
                         $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(2)', row).addClass('text-right').css('padding-right', '10px');
@@ -206,8 +245,7 @@
                         // },
                         topStart: "pageLength"
                     },
-                    columns: [
-                        {
+                    columns: [{
                             data: "ID_CUSTOMER",
                             name: "ID_CUSTOMER",
                         },
@@ -253,10 +291,36 @@
                 table = $("#tableHasil").DataTable({
                     serverSide: true,
                     processing: true,
-                    ajax: url,
-                    order: [[0, "desc"]],
+                    ajax: {
+                        url: url,
+                        dataSrc: function(json) {
+                            // Hitung total pada sisi klien dengan menjumlahkan nilai pada kolom keempat
+                            var total = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_penjualan);
+                            }, 0);
+                            var potongan = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_potongan);
+                            }, 0);
+                            var netto = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_netto);
+                            }, 0);
+
+                            // Tampilkan total di luar tabel
+                            $('#total').text(formatHarga(total));
+                            $('#potongan').text(formatHarga(potongan));
+                            $('#netto').text(formatHarga(netto));
+
+                            return json.data;
+                        }
+                    },
+                    order: [
+                        [0, "desc"]
+                    ],
                     pageLength: 10,
-                    lengthMenu: [10, 25, 50, 100, 500, { label: "Lihat Semua", value: -1 }],
+                    lengthMenu: [10, 25, 50, 100, 500, {
+                        label: "Lihat Semua",
+                        value: -1
+                    }],
                     responsive: true,
                     drawCallback: function(settings) {
                         var api = this.api();
@@ -266,16 +330,17 @@
                             var className = 'text-left'; // Default to left alignment
                             // Set alignment based on column index or other criteria as needed
                             if (index === 2 || index === 3 || index === 4) {
-                                className = 'text-right'; // For example, set alignment of column index 4 to right
+                                className =
+                                'text-right'; // For example, set alignment of column index 4 to right
                             }
-                            if (index === 5){
+                            if (index === 5) {
                                 className = 'text-center';
                             }
                             // Add the class to the header cell
                             $(api.column(index).header()).addClass(className);
                         });
                     },
-                    createdRow: function (row, data, dataIndex) {
+                    createdRow: function(row, data, dataIndex) {
                         $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(2)', row).addClass('text-right').css('padding-right', '10px');
@@ -291,8 +356,7 @@
                         // },
                         topStart: "pageLength"
                     },
-                    columns: [
-                        {
+                    columns: [{
                             data: "ID_SALESMAN",
                             name: "ID_SALESMAN",
                         },
@@ -338,10 +402,36 @@
                 table = $("#tableHasil").DataTable({
                     serverSide: true,
                     processing: true,
-                    ajax: url,
-                    order: [[0, "desc"]],
+                    ajax: {
+                        url: url,
+                        dataSrc: function(json) {
+                            // Hitung total pada sisi klien dengan menjumlahkan nilai pada kolom keempat
+                            var total = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_penjualan);
+                            }, 0);
+                            var potongan = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_potongan);
+                            }, 0);
+                            var netto = json.data.reduce(function(prev, curr) {
+                                return prev + parseFloat(curr.total_netto);
+                            }, 0);
+
+                            // Tampilkan total di luar tabel
+                            $('#total').text(formatHarga(total));
+                            $('#potongan').text(formatHarga(potongan));
+                            $('#netto').text(formatHarga(netto));
+
+                            return json.data;
+                        }
+                    },
+                    order: [
+                        [0, "desc"]
+                    ],
                     pageLength: 10,
-                    lengthMenu: [10, 25, 50, 100, 500, { label: "Lihat Semua", value: -1 }],
+                    lengthMenu: [10, 25, 50, 100, 500, {
+                        label: "Lihat Semua",
+                        value: -1
+                    }],
                     responsive: true,
                     drawCallback: function(settings) {
                         var api = this.api();
@@ -351,13 +441,14 @@
                             var className = 'text-left'; // Default to left alignment
                             // Set alignment based on column index or other criteria as needed
                             if (index === 2 || index === 3 || index === 4) {
-                                className = 'text-right'; // For example, set alignment of column index 4 to right
+                                className =
+                                'text-right'; // For example, set alignment of column index 4 to right
                             }
                             // Add the class to the header cell
                             $(api.column(index).header()).addClass(className);
                         });
                     },
-                    createdRow: function (row, data, dataIndex) {
+                    createdRow: function(row, data, dataIndex) {
                         $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(2)', row).addClass('text-right').css('padding-right', '10px');
@@ -372,8 +463,7 @@
                         // },
                         topStart: "pageLength"
                     },
-                    columns: [
-                        {
+                    columns: [{
                             data: "ID_BARANG",
                             name: "ID_BARANG",
                         },
@@ -414,9 +504,14 @@
                     serverSide: true,
                     processing: true,
                     ajax: url,
-                    order: [[0, "desc"]],
+                    order: [
+                        [0, "desc"]
+                    ],
                     pageLength: 10,
-                    lengthMenu: [10, 25, 50, 100, 500, { label: "Lihat Semua", value: -1 }],
+                    lengthMenu: [10, 25, 50, 100, 500, {
+                        label: "Lihat Semua",
+                        value: -1
+                    }],
                     responsive: true,
                     drawCallback: function(settings) {
                         var api = this.api();
@@ -426,13 +521,14 @@
                             var className = 'text-left'; // Default to left alignment
                             // Set alignment based on column index or other criteria as needed
                             if (index === 3 || index === 4 || index === 5 || index === 6) {
-                                className = 'text-right'; // For example, set alignment of column index 4 to right
+                                className =
+                                'text-right'; // For example, set alignment of column index 4 to right
                             }
                             // Add the class to the header cell
                             $(api.column(index).header()).addClass(className);
                         });
                     },
-                    createdRow: function (row, data, dataIndex) {
+                    createdRow: function(row, data, dataIndex) {
                         $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
@@ -449,8 +545,7 @@
                         // },
                         topStart: "pageLength"
                     },
-                    columns: [
-                        {
+                    columns: [{
                             data: "ID_BARANG",
                             name: "ID_BARANG",
                         },
@@ -495,16 +590,16 @@
                 });
             }
 
-            function cekTanggal(){
+            function cekTanggal() {
                 var tanggal_awal = $('#tanggal_awal').val();
                 var tanggal_akhir = $('#tanggal_akhir').val();
 
-                if(tanggal_awal == ''){
+                if (tanggal_awal == '') {
                     $('#tanggal_awal').addClass('is-invalid');
                     toastr.error("Tanggal Awal harus diisi");
                     return false;
                 }
-                if(tanggal_akhir == ''){
+                if (tanggal_akhir == '') {
                     $('#tanggal_akhir').addClass('is-invalid');
                     toastr.error("Tanggal Akhir harus diisi");
                     return false;
@@ -512,10 +607,10 @@
                 return true;
             }
 
-            $('#tanggal_akhir').click(function(){
+            $('#tanggal_akhir').click(function() {
                 $('#tanggal_akhir').removeClass('is-invalid');
             })
-            $('#tanggal_awal').click(function(){
+            $('#tanggal_awal').click(function() {
                 $('#tanggal_awal').removeClass('is-invalid');
             })
 
@@ -555,11 +650,11 @@
                 // Masukkan thead yang baru ke dalam tabel
                 $('#tableHasil').empty().append(newThead);
 
-                if(buttonId === 'button1'){
+                if (buttonId === 'button1') {
                     loadDataTable(url);
-                } else if (buttonId === 'button2'){
+                } else if (buttonId === 'button2') {
                     loadDataTable2(url);
-                } else if (buttonId === 'button3'){
+                } else if (buttonId === 'button3') {
                     loadDataTable3(url);
                 }
 
@@ -579,10 +674,12 @@
                 var titleText = 'Detail Omzet ';
                 if (mode === 'Salesman') {
                     titleText += mode + ' : ' + nama;
-                    url = `{{ url('laporan/getDetailPenjualanSalesman/${kode}/${tanggal_awal}/${tanggal_akhir}') }}`;
+                    url =
+                        `{{ url('laporan/getDetailPenjualanSalesman/${kode}/${tanggal_awal}/${tanggal_akhir}') }}`;
                 } else if (mode === 'Customer') {
                     titleText += mode + ' : ' + nama;
-                    url = `{{ url('laporan/getDetailPenjualanCustomer/${kode}/${tanggal_awal}/${tanggal_akhir}') }}`;
+                    url =
+                        `{{ url('laporan/getDetailPenjualanCustomer/${kode}/${tanggal_awal}/${tanggal_akhir}') }}`;
                 }
 
                 modal.find('.modal-title').text(titleText);

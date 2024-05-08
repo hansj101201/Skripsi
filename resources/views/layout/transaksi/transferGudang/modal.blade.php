@@ -108,22 +108,24 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Satuan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="barang_satuan" name="SATUAN"
                                 maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">STOK</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly>
+                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly
+                                style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Qty</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_qty" name="QTY">
+                            <input type="text" class="form-control" id="barang_qty" name="QTY"
+                                style="text-align: right;">
                         </div>
                     </div>
                 </div>
@@ -218,7 +220,7 @@
                         },
                         success: function(data) {
                             console.log(data);
-                            $('#barang_saldo').val(parseFloat(data).toFixed(0));
+                            $('#barang_saldo').val(formatHarga(parseFloat(data).toFixed(0)));
                         }
                     });
                 },
@@ -521,7 +523,7 @@
                         var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                         $('#tanggal').val(
                             today
-                            ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                        ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
                         $('#tambahDataButton').show();
                         modal.find('.modal-title').text('Add Data');
                         var tanggalPenutupanCompact = "{{ $tglClosing }}";
@@ -627,21 +629,27 @@
             });
 
             $('#barang_qty').on('input', function() {
-                var qty = parseFloat($(this).val());
-                var saldo = parseFloat($('#barang_saldo').val());
+                var qtyString = $(this).val().replace(/[^\d]/g, '');
+                var qty = parseFloat(qtyString);
+                var saldo = parseFloat($('#barang_saldo').val().replace(/[^\d]/g, ''));
                 var stok = parseFloat($('#stok_lama').val());
 
                 // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(qty)) {
                     if (qty > stok) {
                         if (qty - stok > saldo) {
+                            $(this).val(formatHarga(qty));
                             // Munculkan Toast
                             toastr.error('Barang tidak boleh melebihi stok');
                             isSaveButtonActive = false; // Set tombol "Simpan" menjadi nonaktif
                         } else {
+                            $(this).val(formatHarga(qty));
                             isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
                         }
+                    } else if (qty == 0) {
+                        isSaveButtonActive = false;
                     } else {
+                        $(this).val(formatHarga(qty));
                         isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
                     }
                 }

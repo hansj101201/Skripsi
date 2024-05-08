@@ -88,7 +88,7 @@ class penjualanController extends Controller
             $nextBukti = intval($topBukti->BUKTI) + 1;
             $formattedBukti = str_pad($nextBukti, strlen($topBukti->BUKTI), '0', STR_PAD_LEFT);
         } else {
-            $nextBukti = "000001";
+            $nextBukti = "00000001";
             $formattedBukti = $nextBukti;
         }
         return $formattedBukti;

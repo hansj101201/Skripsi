@@ -62,7 +62,7 @@ class permintaanController extends Controller
             $nomor = 1; // Initialize the nomor counter
 
 
-            $nopermintaan = $bukti.$request->PERIODE;
+            $nopermintaan = $bukti.'-'.$request->PERIODE;
 
             trnsales::create([
                 'KDTRN' => '30',

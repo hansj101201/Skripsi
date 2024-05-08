@@ -1,8 +1,8 @@
-@extends("adminlte::page")
+@extends('adminlte::page')
 
-@section('title','Laporan Stok')
+@section('title', 'Laporan Stok')
 
-@section('plugins.Datatables',true)
+@section('plugins.Datatables', true)
 
 @push('css')
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
@@ -21,10 +21,10 @@
             <div class="row">
                 <div class="col">
                     <div class="form-group row">
-                        <label for="periode" class="col-sm-3 col-form-label">PERIODE :</label>
+                        <label for="periode" class="col-sm-3 col-form-label">Periode :</label>
                         <div class="col-sm-9">
                             <select class="form-control" id="periode" name="PERIODE">
-                                @foreach($periode as $p)
+                                @foreach ($periode as $p)
                                     <option value="{{ $p->PERIODE }}">{{ $p->PERIODE }}</option>
                                 @endforeach
                             </select>
@@ -36,7 +36,7 @@
                         <label for="gudang" class="col-sm-3 col-form-label">Gudang : </label>
                         <div class="col-sm-9">
                             <select class="form-control" id="gudang" name="ID_GUDANG">
-                                @foreach($gudang as $p)
+                                @foreach ($gudang as $p)
                                     <option value="{{ $p->ID_GUDANG }}">{{ $p->NAMA }}</option>
                                 @endforeach
                             </select>
@@ -54,7 +54,7 @@
             <table class="table responsive table-stripped table-bordered myTable" id="tableHasil">
                 <thead class="">
                     <tr>
-                        <th> ID Barang </th>
+                        <th> Id Barang </th>
                         <th> Nama Barang </th>
                         <th> Satuan </th>
                         <th> Stok Awal </th>
@@ -79,6 +79,13 @@
                     <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" class="btn-custom-close">&times;</span>
                     </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Id Barang: <span id="idBarang"></span></p>
+                    <p>Nama Barang: <span id="namaBarang"></span></p>
+                    <p>Saldo Awal: <span id="saldoAwal"></span></p>
+                    <p>Saldo Akhir: <span id="saldoAkhir"></span></p>
                 </div>
                 <div class="modal-body">
                     <!-- Table to display data from DataTable -->
@@ -108,7 +115,7 @@
     <script src="{{ asset('/vendor/toastr/toastr.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
     <script>
-        function createDataTable(periode,gudang) {
+        function createDataTable(periode, gudang) {
             if ($.fn.DataTable.isDataTable('#tableHasil')) {
                 $('#tableHasil').DataTable().destroy();
             }
@@ -123,16 +130,16 @@
                         // Get the class of the first data cell of this column
                         var className;
                         className = 'text-left';
-                        if(index == 3 || index == 4 || index == 5 || index == 6 || index ==7){
+                        if (index == 3 || index == 4 || index == 5 || index == 6 || index == 7) {
                             className = 'text-right';
-                        } else if(index == 8){
+                        } else if (index == 8) {
                             className = 'text-center'
                         }
                         // Add the class to the header cell
                         $(api.column(index).header()).addClass(className);
                     });
                 },
-                createdRow: function (row, data, dataIndex) {
+                createdRow: function(row, data, dataIndex) {
                     $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
@@ -148,15 +155,15 @@
                     // [3, "desc"],
                     // [2, "desc"]
                 ],
-                pageLength:10,
-                lengthMenu : [10, 25, 50, 100, 500, {
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100, 500, {
                     label: "Lihat Semua",
                     value: -1
                 }],
                 responsive: true,
                 layout: {
-                    top2Start:{
-                        buttons:[
+                    top2Start: {
+                        buttons: [
                             // 'copy',
                             // 'csv',
                             'excel',
@@ -166,8 +173,7 @@
                     },
                     topStart: "pageLength"
                 },
-                columns: [
-                    {
+                columns: [{
                         data: "ID_BARANG",
                         name: "ID_BARANG",
                     },
@@ -224,7 +230,7 @@
             });
         }
 
-        function createDataTable1(periode,gudang,barang) {
+        function createDataTable1(periode, gudang, barang) {
             if ($.fn.DataTable.isDataTable('#tableData')) {
                 $('#tableData').DataTable().destroy();
             }
@@ -239,14 +245,14 @@
                         // Get the class of the first data cell of this column
                         var className;
                         className = 'text-left';
-                        if(index == 3 || index == 4){
+                        if (index == 3 || index == 4) {
                             className = 'text-right';
                         }
                         // Add the class to the header cell
                         $(api.column(index).header()).addClass(className);
                     });
                 },
-                createdRow: function (row, data, dataIndex) {
+                createdRow: function(row, data, dataIndex) {
                     $('td:eq(0)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                     $('td:eq(2)', row).addClass('text-left').css('padding-left', '10px');
@@ -258,25 +264,25 @@
                     // [3, "desc"],
                     // [2, "desc"]
                 ],
-                pageLength:10,
-                lengthMenu : [10, 25, 50, 100, 500, {
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100, 500, {
                     label: "Lihat Semua",
                     value: -1
                 }],
                 responsive: true,
                 layout: {
-                    top2Start:{
-                        buttons:[
+                    top2Start: {
+                        buttons: [
                             // 'copy', 'csv',
-                            'excel', 'pdf', 'print']
+                            'excel', 'pdf', 'print'
+                        ]
                     },
                     topStart: "pageLength"
                 },
-                columns: [
-                    {
+                columns: [{
                         data: "TANGGAL",
                         name: "TANGGAL",
-                        render: function (data, type, full, meta) {
+                        render: function(data, type, full, meta) {
                             return dateFormat(data); // Return empty string if data is not provided
                         }
                     },
@@ -307,9 +313,9 @@
         }
 
         // Panggil fungsi untuk membuat tabel saat tombol ditekan
-        $(document).ready(function () {
-            $('#button').click(function () {
-                createDataTable(($('#periode').val()),($('#gudang').val()));
+        $(document).ready(function() {
+            $('#button').click(function() {
+                createDataTable(($('#periode').val()), ($('#gudang').val()));
             });
 
             $('#DataModal').on('show.bs.modal', function(event) {
@@ -317,12 +323,16 @@
                 var kode = button.data('kode'); // Mengambil mode dari tombol
                 var periode = button.data('periode');
                 var gudang = button.data('gudang');
+                var nama = button.data('nama');
+                var awal = button.data('awal');
+                var akhir = button.data('akhir');
 
-                createDataTable1(periode,gudang,kode);
+                $('#idBarang').text(kode);
+                $('#namaBarang').text(nama);
+                $('#saldoAwal').text(formatHarga(parseFloat(awal)));
+                $('#saldoAkhir').text(formatHarga(parseFloat(akhir)));
+                createDataTable1(periode, gudang, kode);
             });
         });
-
-
     </script>
 @endpush
-

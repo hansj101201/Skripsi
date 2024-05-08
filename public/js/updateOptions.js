@@ -1,4 +1,4 @@
-function updateGudangOptions(urlPass) {
+function updateGudangOptions(urlPass, callback) {
     var url = urlPass
     $.ajax({
         url: url,
@@ -20,6 +20,9 @@ function updateGudangOptions(urlPass) {
                     text: gudang.NAMA
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
@@ -121,7 +124,7 @@ function updateSupplierOptions(urlPass) {
     });
 }
 
-function updateCustomerOptions(urlPass) {
+function updateCustomerOptions(urlPass, callback) {
     var url = urlPass
     $.ajax({
         url: url,
@@ -143,6 +146,9 @@ function updateCustomerOptions(urlPass) {
                     text: customer.NAMA
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);

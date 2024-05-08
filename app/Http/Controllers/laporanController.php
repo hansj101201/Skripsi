@@ -101,7 +101,8 @@ class laporanController extends Controller
         return DataTables::of($stokPerBarangObject)
         ->addColumn('action', function ($row) {
             $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal"
-            data-target="#DataModal" data-kode="'.$row->ID_BARANG.'" data-periode="'.$row->PERIODE.'" data-gudang="'.$row->GUDANG.'">
+            data-target="#DataModal" data-kode="'.$row->ID_BARANG.'" data-awal="'.$row->STOK_AWAL.'" data-akhir="'.$row->STOK_AKHIR.'"
+            data-nama="'.$row->NAMA_BARANG.'" data-periode="'.$row->PERIODE.'" data-gudang="'.$row->GUDANG.'">
             <span class="fas fa-eye"></span></button> &nbsp';
             return $actionButtons;
         })
@@ -322,6 +323,7 @@ class laporanController extends Controller
             return (object) $item;
         });
 
+        // dump($dataObject);
         return DataTables::of($dataObject)
             ->make(true);
     }
