@@ -229,16 +229,19 @@
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(4)').text();
-
-                arrBarang.push([idBarang, qtyKirim]);
+                if(qtyKirim > 0){
+                    arrBarang.push([idBarang, qtyKirim]);
+                }
             });
             console.log(arrBarang);
             console.log($('#tanggal').val());
 
+            if (arrBarang.length === 0) {
+                toastr.error('Qty harus diisi');
+                return; // Menghentikan eksekusi jika arrBarang kosong
+            }
             var _token = $('meta[name="csrf-token"]').attr('content');
-
             var tanggal = $('#tanggal').val();
-
             if (tanggal != '') {
                 $.ajax({
                     url: "{{ route('postTrnCanvas') }}",

@@ -70,7 +70,7 @@ class permintaanController extends Controller
                 'ID_GUDANG' => $idGudang,
                 'ID_DEPO' => $idDepo,
                 'NOPERMINTAAN' => $nopermintaan,
-                'STATUS' => '0',
+                'STATUS' => 0,
                 'TGLENTRY' => $currentDateTime
             ]);
 

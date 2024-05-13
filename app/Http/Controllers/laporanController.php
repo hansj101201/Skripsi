@@ -378,9 +378,11 @@ class laporanController extends Controller
         $trnjadi = trnjadi::where('KDTRN',12)
             ->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Tanggal harus berada di antara tanggal awal dan akhir
             ->join('barang', 'trnjadi.ID_BARANG', '=', 'barang.ID_BARANG') // Menentukan tabel sumber
-            ->select('trnjadi.ID_BARANG', 'barang.NAMA', DB::raw('SUM(trnjadi.HARGA) as total_penjualan'),
-            DB::raw('SUM(trnjadi.POTONGAN) as total_potongan'), DB::raw('SUM(trnjadi.JUMLAH) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
-            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA'); // Menentukan tabel sumber
+            ->select('trnjadi.ID_BARANG', 'barang.NAMA',DB::raw('SUM(trnjadi.Qty) as total_qty'),
+            DB::raw('SUM(trnjadi.QTY * trnjadi.HARGA) as total_penjualan'), // Perkalian QTY dengan HARGA dan menjumlahkannya
+        DB::raw('SUM(trnjadi.POTONGAN) as total_potongan')
+            ,DB::raw('SUM(trnjadi.JUMLAH) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
+            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA');
         return Datatables::of($trnjadi)
             ->make(true);
     }

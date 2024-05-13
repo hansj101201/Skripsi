@@ -65,7 +65,7 @@ function updateBarangOptions(urlPass, callback) {
     });
 }
 
-function updateDepoOptions(urlPass) {
+function updateDepoOptions(urlPass, callback) {
     var url = urlPass;
     $.ajax({
         url: url,
@@ -87,6 +87,9 @@ function updateDepoOptions(urlPass) {
                     text: depo.NAMA
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
@@ -94,7 +97,7 @@ function updateDepoOptions(urlPass) {
     });
 }
 
-function updateSupplierOptions(urlPass) {
+function updateSupplierOptions(urlPass, callback) {
     var url = urlPass;
     $.ajax({
         url: url,
@@ -116,6 +119,9 @@ function updateSupplierOptions(urlPass) {
                     text: supplier.NAMA
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);

@@ -629,7 +629,7 @@
                 var tanggalPenutupan = new Date(tanggalPenutupanCompact);
                 tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
                 var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan
-                .getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+                    .getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
                 $('#tanggal').datepicker({
                     format: 'dd-mm-yyyy', // Set your desired date format
                     startDate: tanggalMulai,
@@ -672,21 +672,25 @@
 
                 var kode = button.data('kode');
                 if (mode === 'viewDetail') {
-                    modal.find('.modal-title').text('View Detail');
-                    $('#tanggal').datepicker('destroy');
-                    // $("#tanggal").datepicker('destroy');
-                    updateSupplierOptions(getSupplierAllUrl);
-                    updateDepoOptions(getDepoAllUrl);
-                    $('#supplier').prop('disabled', true);
-                    $('#depo').prop('disabled', true);
-                    $('#tambahDataButton').hide();
-                    // $('#datepicker').off('click');
-                    var bukti = button.data('bukti');
-                    var periode = button.data('periode');
 
-                    console.log(bukti);
-                    fetchData(bukti, periode);
-                    fetchDetail(bukti, periode);
+                    updateSupplierOptions(getSupplierAllUrl, function() {
+                        updateDepoOptions(getDepoAllUrl, function() {
+                            modal.find('.modal-title').text('View Detail');
+                            $('#tanggal').datepicker('destroy');
+                            $('#supplier').prop('disabled', true);
+                            $('#depo').prop('disabled', true);
+                            $('#tambahDataButton').hide();
+                            // $('#datepicker').off('click');
+                            var bukti = button.data('bukti');
+                            var periode = button.data('periode');
+
+                            console.log(bukti);
+                            fetchData(bukti, periode);
+                            fetchDetail(bukti, periode);
+                        });
+                    });
+
+
 
                     if (kode === "edit") {
                         $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
@@ -700,7 +704,7 @@
                 } else {
                     var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
                     $('#tanggal').val(
-                    today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                        today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
 
                     enableDatepicker();
                     console.log($('#tanggal').val());

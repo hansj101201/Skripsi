@@ -405,7 +405,7 @@
                     ajax: {
                         url: url,
                         dataSrc: function(json) {
-                            // Hitung total pada sisi klien dengan menjumlahkan nilai pada kolom keempat
+
                             var total = json.data.reduce(function(prev, curr) {
                                 return prev + parseFloat(curr.total_penjualan);
                             }, 0);
@@ -416,7 +416,6 @@
                                 return prev + parseFloat(curr.total_netto);
                             }, 0);
 
-                            // Tampilkan total di luar tabel
                             $('#total').text(formatHarga(total));
                             $('#potongan').text(formatHarga(potongan));
                             $('#netto').text(formatHarga(netto));
@@ -453,7 +452,6 @@
                         $('td:eq(1)', row).addClass('text-left').css('padding-left', '10px');
                         $('td:eq(2)', row).addClass('text-right').css('padding-right', '10px');
                         $('td:eq(3)', row).addClass('text-right').css('padding-right', '10px');
-                        $('td:eq(4)', row).addClass('text-right').css('padding-right', '10px');
                     },
                     layout: {
                         // top2Start:{
@@ -472,15 +470,8 @@
                             name: "barang.NAMA"
                         },
                         {
-                            data: "total_penjualan",
-                            name: "trnjadi.HARGA",
-                            render: function(data, type, full, meta) {
-                                return formatHarga(parseFloat(data));
-                            }
-                        },
-                        {
-                            data: "total_potongan",
-                            name: "trnjadi.POTONGAN",
+                            data: "total_qty",
+                            name: "trnjadi.QTY",
                             render: function(data, type, full, meta) {
                                 return formatHarga(parseFloat(data));
                             }
@@ -631,7 +622,7 @@
                     headers = ['Id Salesman', 'Nama Salesman', 'Jumlah', 'Potongan', 'Netto', 'Aksi'];
                 } else if (buttonId === 'button3') {
                     url = url = `{{ url('laporan/getPenjualanBarang/${tanggal_awal}/${tanggal_akhir}') }}`;
-                    headers = ['Id Barang', 'Nama Barang', 'Jumlah', 'Potongan', 'Netto'];
+                    headers = ['Id Barang', 'Nama Barang','Qty', 'Netto'];
                 }
 
                 // Buat elemen thead baru

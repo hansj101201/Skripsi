@@ -15,7 +15,7 @@ class Layout extends Controller
     public function index()
     {
         $tanggalAwal = date('Y-m-01');
-        $tanggalAkhir = date('Y-m-t');
+        $tanggalAkhir = date('Y-m-d');
 
         $idDepo = getIdDepo();
         if ($idDepo == 000) {
@@ -28,7 +28,7 @@ class Layout extends Controller
                     DB::raw('SUM(trnjadi.HARGA) as total_penjualan'),
                     DB::raw('SUM(trnjadi.POTONGAN) as total_potongan'),
                     DB::raw('SUM(trnjadi.JUMLAH) as total_netto')
-                ) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
+                )
                 ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA')
                 ->get();
 
@@ -50,11 +50,13 @@ class Layout extends Controller
                 ->groupBy('trnsales.ID_CUSTOMER', 'customer.NAMA')
                 ->get();
 
-            $stok = DB::table('stkjadi')
-                ->join('gudang', 'stkjadi.ID_GUDANG', 'gudang.ID_GUDANG')
-                ->select('stkjadi.SALDO', 'gudang.NAMA', 'stkjadi.ID_GUDANG')
-                ->groupBy('stkjadi.SALDO', 'gudang.NAMA', 'stkjadi.ID_GUDANG')
+                $stok = DB::table('stkjadi')
+                ->join('barang', 'stkjadi.ID_BARANG', 'barang.ID_BARANG')
+                ->select('stkjadi.ID_BARANG', 'barang.NAMA', DB::raw('SUM(stkjadi.SALDO) as total_saldo'))
+                ->groupBy('stkjadi.ID_BARANG', 'barang.NAMA')
                 ->get();
+
+
         } else {
             $penjualanBarang = trnjadi::where('KDTRN', 12)
                 ->where('trnjadi.ID_DEPO', getIdDepo())
@@ -91,11 +93,10 @@ class Layout extends Controller
                 ->get();
 
             $stok = DB::table('stkjadi')
-                ->where('stkjadi.ID_DEPO', getIdDepo())
-                ->join('gudang', 'stkjadi.ID_GUDANG', 'gudang.ID_GUDANG')
-                ->select('stkjadi.SALDO', 'gudang.NAMA', 'stkjadi.ID_GUDANG')
-                ->groupBy('stkjadi.SALDO', 'gudang.NAMA', 'stkjadi.ID_GUDANG')
-                ->get();
+            ->join('barang', 'stkjadi.ID_BARANG', 'barang.ID_BARANG')
+            ->select('stkjadi.ID_BARANG', 'barang.NAMA', DB::raw('SUM(stkjadi.SALDO) as total_saldo'))
+            ->groupBy('stkjadi.ID_BARANG', 'barang.NAMA')
+            ->get();
         }
 
         return View('layout.dashboard', compact('penjualanBarang', 'penjualanSalesman', 'penjualanCustomer', 'stok', 'tanggalAwal', 'tanggalAkhir'));
