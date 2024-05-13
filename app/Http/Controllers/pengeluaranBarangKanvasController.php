@@ -248,7 +248,6 @@ class pengeluaranBarangKanvasController extends Controller
         ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->value("NOPERMINTAAN");
-        dd($nopermintaan);
         try {
             trnsales::where("KDTRN", "05")
                 ->where("BUKTI", $bukti)
