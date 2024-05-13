@@ -112,8 +112,6 @@
         }
 
         function setDepoValue() {
-            // Di sini Anda bisa menetapkan nilai depo sesuai kebutuhan
-            console.log('{{ getIdDepo() }}');
             var idDepo = '{{ getIdDepo() }}';
             if (idDepo !== '000') {
                 $('#depo').val(idDepo).trigger('change');
@@ -168,7 +166,7 @@
                 return false; // Mengembalikan false jika validasi gagal
             }
 
-            return true; // Mengembalikan true jika semua validasi berhasil
+            return true;
         }
 
         $(document).ready(function() {

@@ -129,14 +129,14 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Satuan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="barang_satuan" name="SATUAN"
                                 maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">STOK</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly>
                         </div>
@@ -782,7 +782,6 @@
             });
 
             $('#barang_qty').on('input', function() {
-                // Ambil nilai qty dan harga
                 var qtyString = $(this).val().replace(/[^\d]/g, '');
                 var qty = parseFloat(qtyString);
                 var saldo = parseFloat($('#barang_saldo').val());
@@ -791,18 +790,14 @@
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
                 var harga = parseFloat(hargaString);
-
-                // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(qty) && !isNaN(harga)) {
                     if (qty > stok) {
                         if (qty - stok > saldo) {
                             toastr.error('Barang tidak boleh melebihi stok');
-                            return; // Hentikan eksekusi
+                            return;
                         } else {}
                     }
-                    // Hitung nilai jumlah
                     var jumlah = qty * harga - potongan;
-                    // Set nilai jumlah pada input jumlah
                     $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
                     $(this).val(formatHarga(qty));
                 }
@@ -818,31 +813,6 @@
 
             $(document).on('click', '#customer', function() {
                 $('#customer').removeClass('is-invalid');
-            });
-
-            $(document).on('click', '.delete-button', function() {
-                bukti = $(this).data('bukti');
-                periode = $(this).data('periode');
-                console.log("kode " + bukti);
-            });
-            $('#confirmDeleteButton').on('click', function() {
-                $.ajax({
-                    method: 'DELETE',
-                    url: "{{ url('transaksi/penjualan/delete') }}/" + bukti + "/" + periode,
-                    data: {
-                        '_token': '{{ csrf_token() }}',
-                    },
-                    success: function(response) {
-                        $('#deleteDataModal').modal('hide'); // Correct the selector here
-                        $('.modal-backdrop').remove();
-                        toastr.success(response.message);
-                        table.draw();
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle errors, for example, display error messages
-                        console.error(response.message);
-                    }
-                });
             });
         });
     </script>

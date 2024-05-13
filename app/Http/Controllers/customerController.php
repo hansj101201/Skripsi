@@ -28,7 +28,7 @@ class customerController extends Controller
             $customer = customer::all();
         } else {
             $customer = customer::join('salesman','customer.ID_SALES','salesman.ID_SALES')
-            ->where('salesman.ID_DEPO',getIdDepo())->get();
+            ->where('salesman.ID_DEPO',getIdDepo())->select('customer.*');
         }
 
         return DataTables::of($customer)
@@ -45,13 +45,10 @@ class customerController extends Controller
 
     public function getDetail($id){
         $customer = customer::where('ID_CUSTOMER',$id)->get();
-        // dd($customer);
         return response()->json($customer);
     }
     public function store(Request $request){
-        dd($request->all());
         $existingRecord = customer::where('ID_CUSTOMER', $request['ID_CUSTOMER'])->first();
-
         if(!$existingRecord){
             $validatedData = $request->validate([
                 'ID_CUSTOMER' => 'required',
@@ -72,19 +69,14 @@ class customerController extends Controller
                 'ID_SALES'=> 'required',
                 'TITIK_GPS'=> 'sometimes',
             ]);
-
             $data = $validatedData;
-
             $currentDateTime = date('Y-m-d H:i:s');
             $data['TGLENTRY'] = $currentDateTime;
-            // ID tidak ada dalam database, maka buat entitas baru
             customer::create($data);
             return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
         } else {
-            // ID sudah ada dalam database, kirim respons JSON dengan pesan kesalahan
             return response()->json(['success' => false, 'message' => 'Data Sudah Ada.']);
         }
-
     }
 
     public function update(Request $request){

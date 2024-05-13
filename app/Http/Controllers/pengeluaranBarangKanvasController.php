@@ -51,16 +51,12 @@ class pengeluaranBarangKanvasController extends Controller
     }
 
     public function fetchData($id){
-        // dd($id);
         $trnsales = trnsales::join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
         ->select('trnsales.*', 'salesman.ID_GUDANG AS gudang_sales')
         ->where('trnsales.KDTRN', '30')
         ->where('trnsales.NOPERMINTAAN', $id)
         ->where('trnsales.STATUS', 0)
         ->get();
-
-        // dd($trnsales);
-        // dd($trnsales);
         if($trnsales->isNotEmpty()){
             return response()->json($trnsales);
         } else {
@@ -69,14 +65,11 @@ class pengeluaranBarangKanvasController extends Controller
     }
 
     public function fetchDataSelesai($id){
-        // dd($id);
         $trnsales = trnsales::join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
         ->select('trnsales.*', 'salesman.ID_GUDANG AS gudang_sales')
         ->where('trnsales.KDTRN', '30')
         ->where('trnsales.NOPERMINTAAN', $id)
         ->get();
-
-        // dd($trnsales);
         if($trnsales->isNotEmpty()){
             return response()->json($trnsales);
         } else {
@@ -111,57 +104,44 @@ class pengeluaranBarangKanvasController extends Controller
         // Extract and increment BUKTI if it exists, otherwise start from S000001
         if ($topBukti) {
             $nextBukti = intval(substr($topBukti->BUKTI, 1)) + 1;
-            $formattedBukti = 'S' . str_pad($nextBukti, 5, '0', STR_PAD_LEFT);
+            $formattedBukti = 'S' . str_pad($nextBukti, 7, '0', STR_PAD_LEFT);
         } else {
             $nextBukti = 1;
-            $formattedBukti = 'S' . str_pad($nextBukti, 5, '0', STR_PAD_LEFT);
+            $formattedBukti = 'S' . str_pad($nextBukti, 7, '0', STR_PAD_LEFT);
         }
 
         return $formattedBukti;
     }
 
     public function updateTrnsalesStatus($nopermintaan) {
-
-        // Update the trnsales record where KDTRN is 30 and NOPERMINTAAN is equal to the value from the request
         trnsales::where('KDTRN', '30')
             ->where('NOPERMINTAAN', $nopermintaan)
             ->update(['STATUS' => 1]);
+        return response()->json(['success' => true, 'message' => 'trnsales STATUS updated successfully'], 200);
+    }
 
-        // Return a success response
+    public function reverseTrnsalesStatus($nopermintaan) {
+        trnsales::where('KDTRN', '30')
+            ->where('NOPERMINTAAN', $nopermintaan)
+            ->update(['STATUS' => 0]);
         return response()->json(['success' => true, 'message' => 'trnsales STATUS updated successfully'], 200);
     }
 
 
     public function postTrnCanvas(Request $request){
-        // $bukti = $this->generateBukti($request->tanggal);
-        // dd($bukti);
-
-        // dd($request->all());
         $currentDateTime = date('Y-m-d H:i:s');
-        // Start a transaction
         DB::beginTransaction();
-
         try {
-            // Generate BUKTI
             $bukti = $this->generateBukti($request->tanggal);
-            // dd($request->nomorpo);
-
-
-            // Format tanggal
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
-            // dd($data);
-            // dd($data);
-            $nomor = 1; // Initialize the nomor counter
-
+            $nomor = 1;
             $gudangTujuan = gudang::where('ID_GUDANG', $request->gudang_tujuan)
             ->value('NAMA');
-
             $gudangAsal = gudang::where('ID_GUDANG',$request->gudang_asal)
             ->value('NAMA');
-            // Create trnsales record
             trnsales::create([
                 'KDTRN' => '15',
                 'TANGGAL' => $tanggalFormatted,
@@ -175,8 +155,6 @@ class pengeluaranBarangKanvasController extends Controller
                 'USERENTRY' => getUserLoggedIn()->ID_USER,
                 'TGLENTRY' => $currentDateTime
             ]);
-
-
             trnsales::create([
                 'KDTRN' => '05',
                 'TANGGAL' => $tanggalFormatted,
@@ -191,9 +169,7 @@ class pengeluaranBarangKanvasController extends Controller
             ]);
 
             $this->updateTrnsalesStatus($request->nopermintaan);
-            // Create trnjadi records
             foreach ($data as $item) {
-                // dd($item[2]);
                 trnjadi::create([
                     'KDTRN' => '15',
                     'TANGGAL' => $tanggalFormatted,
@@ -206,7 +182,7 @@ class pengeluaranBarangKanvasController extends Controller
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'KET01' => 'Pengeluaran Kanvas ke '.$request->gudang_tujuan.' - '.$gudangTujuan,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor++, // Increment nomor for each item
+                    'NOMOR' => $nomor,
                 ]);
 
                 trnjadi::create([
@@ -221,20 +197,14 @@ class pengeluaranBarangKanvasController extends Controller
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor++, // Increment nomor for each item
+                    'NOMOR' => $nomor,
                 ]);
+                $nomor++;
             }
-
-            // Commit the transaction if all operations succeed
             DB::commit();
-
-            // Return a success response
             return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan dengan No Bukti '. $bukti, 'bukti' => $bukti], 200);
         } catch (\Exception $e) {
-            // Rollback the transaction if an error occurs
             DB::rollback();
-
-            // Return an error response
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -243,9 +213,7 @@ class pengeluaranBarangKanvasController extends Controller
         $currentDateTime = date('Y-m-d H:i:s');
         DB::beginTransaction();
         try {
-            // dd($request->bukti);
             $data = $request->data;
-            // dd($data);
             foreach ($data as $item) {
                 $trnjadi = trnjadi::where('KDTRN', '15')
                 ->where('BUKTI', $request->bukti)
@@ -256,7 +224,6 @@ class pengeluaranBarangKanvasController extends Controller
                     'USEREDIT' => getUserLoggedIn()->ID_USER,
                     'TGLEDIT' => $currentDateTime,
                 ]);
-
                 trnjadi::where('KDTRN', '05')
                 ->where('BUKTI', $request->bukti)
                 ->where('PERIODE', $request->periode)
@@ -268,13 +235,43 @@ class pengeluaranBarangKanvasController extends Controller
                 ]);
             }
             DB::commit();
-
-            // Mengembalikan respons JSON untuk memberi tahu klien bahwa pembaruan berhasil
             return response()->json(['success'=>true,'message' => 'Update successful']);
         } catch (\Exception $e) {
-            // Jika terjadi kesalahan, rollback transaksi dan kirim respons kesalahan
             DB::rollBack();
             return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
+        }
+    }
+
+    public function destroy($bukti, $periode){
+        DB::beginTransaction();
+        $nopermintaan = trnsales::where("KDTRN","05")
+        ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->value("NOPERMINTAAN");
+        dd($nopermintaan);
+        try {
+            trnsales::where("KDTRN", "05")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
+            trnjadi::where("KDTRN", "05")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
+            trnsales::where("KDTRN", "15")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
+            trnjadi::where("KDTRN", "15")
+                ->where("BUKTI", $bukti)
+                ->where("PERIODE", $periode)
+                ->delete();
+            $this->reverseTrnsalesStatus($nopermintaan);
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
         }
     }
 

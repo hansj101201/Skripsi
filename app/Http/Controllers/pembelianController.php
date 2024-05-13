@@ -94,23 +94,18 @@ class pembelianController extends Controller
         return $bukti.'-'.$periode;
     }
 
-
-
     public function postPembelian(Request $request){
         $bukti = $this->generateBukti($request->tanggal);
         $currentDateTime = date('Y-m-d H:i:s');
         DB::beginTransaction();
-        // dd($request->all());
         try {
             $bukti = $this->generateBukti($request->tanggal);
-            // dd($bukti);
             $nomorpo = $this->generateNOPO($bukti, $request->periode);
-            // dd($nomorpo);
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
-            $nomor = 1; // Initialize the nomor counter
+            $nomor = 1;
             trninvorder::create([
                 'TANGGAL' => $tanggalFormatted,
                 'BUKTI' => $bukti,
@@ -137,7 +132,7 @@ class pembelianController extends Controller
                     'JUMLAH' => $item[4],
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor++, // Increment nomor for each item
+                    'NOMOR' => $nomor++,
                 ]);
             }
             DB::commit();
@@ -160,7 +155,6 @@ class pembelianController extends Controller
 
         if ($tanggal > $tglClosing) {
             $currentDateTime = date('Y-m-d H:i:s');
-            // dd($request->all());
             DB::beginTransaction();
             try {
                 $data = $request->data;
@@ -186,26 +180,19 @@ class pembelianController extends Controller
                             'USEREDIT' => getUserLoggedIn()->ID_USER,
                             'TGLEDIT' => $currentDateTime
                         ]);
-                    // dd($trnjadi);
                 }
                 DB::commit();
-
-                // Mengembalikan respons JSON untuk memberi tahu klien bahwa pembaruan berhasil
                 return response()->json(['success'=>true,'message' => 'Update Data Berhasil']);
             } catch (\Exception $e) {
-                // Jika terjadi kesalahan, rollback transaksi dan kirim respons kesalahan
                 DB::rollBack();
                 return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
             }
         } else {
-            // Mengembalikan respons JSON untuk memberi tahu klien bahwa tanggal sudah ditutup
             return response()->json(['success'=>false,'message' => 'Tanggal sudah diclosing']);
         }
     }
 
-
     public function destroy($bukti, $periode){
-
         $tglClosing = DB::table('closing')
             ->where('ID_DEPO',getIdDepo())
             ->orderBy('TGL_CLOSING', 'desc')
@@ -218,22 +205,15 @@ class pembelianController extends Controller
         if($tanggal > $tglClosing){
             DB::beginTransaction();
             try {
-                // Delete records from trnsales table
                 trninvorder::where("BUKTI", $bukti)
                     ->where("PERIODE", $periode)
                     ->delete();
-
-                // Delete records from trnjadi table
                 dtlinvorder::where("BUKTI", $bukti)
                     ->where("PERIODE", $periode)
                     ->delete();
-
                 DB::commit();
-
-                // Send a success response after deletion
                 return response()->json(['success' => true, 'message' => 'Data Berhasil Dihapus']);
             } catch (\Exception $e) {
-                // If an error occurs, rollback the transaction and send an error response
                 DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
             }

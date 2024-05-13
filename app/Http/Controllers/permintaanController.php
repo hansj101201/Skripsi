@@ -60,10 +60,7 @@ class permintaanController extends Controller
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $nomor = 1; // Initialize the nomor counter
-
-
             $nopermintaan = $bukti.'-'.$request->PERIODE;
-
             trnsales::create([
                 'KDTRN' => '30',
                 'TANGGAL' => $tanggalFormatted,

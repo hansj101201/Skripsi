@@ -14,7 +14,7 @@
     <div class="card mb-4">
         <div class="card-header" style="display: flex; flex-direction: column;">
             <div>
-                <h1 class="card-title">Laporan Penjualan</h1>
+                <h1 class="card-title">Display Penjualan</h1>
             </div>
         </div>
         <div class="card-header">

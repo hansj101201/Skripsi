@@ -100,14 +100,13 @@ class penjualanController extends Controller
         DB::beginTransaction();
         $customer = customer::where('ID_CUSTOMER', $request->customer)
         ->value('NAMA');
-        // dd($customer);
         try {
             $bukti = $this->generateBukti($request->tanggal);
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
-            $nomor = 1; // Initialize the nomor counter
+            $nomor = 1;
             trnsales::create([
                 'KDTRN' => '12',
                 'TANGGAL' => $tanggalFormatted,
@@ -139,7 +138,7 @@ class penjualanController extends Controller
                     'KET01' => 'Penjualan ke Customer '.$request->customer.' - '.$customer,
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor++, // Increment nomor for each item
+                    'NOMOR' => $nomor++,
                 ]);
             }
             DB::commit();
@@ -147,31 +146,6 @@ class penjualanController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-    public function destroy($bukti, $periode){
-        DB::beginTransaction();
-        try {
-            // Delete records from trnsales table
-            trnsales::where("KDTRN", "12")
-                ->where("BUKTI", $bukti)
-                ->where("PERIODE", $periode)
-                ->delete();
-
-            // Delete records from trnjadi table
-            trnjadi::where("KDTRN", "12")
-                ->where("BUKTI", $bukti)
-                ->where("PERIODE", $periode)
-                ->delete();
-
-            DB::commit();
-
-            // Send a success response after deletion
-            return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
-        } catch (\Exception $e) {
-            // If an error occurs, rollback the transaction and send an error response
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
         }
     }
 }

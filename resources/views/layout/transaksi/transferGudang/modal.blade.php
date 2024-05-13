@@ -633,24 +633,21 @@
                 var qty = parseFloat(qtyString);
                 var saldo = parseFloat($('#barang_saldo').val().replace(/[^\d]/g, ''));
                 var stok = parseFloat($('#stok_lama').val());
-
-                // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(qty)) {
                     if (qty > stok) {
                         if (qty - stok > saldo) {
                             $(this).val(formatHarga(qty));
-                            // Munculkan Toast
                             toastr.error('Barang tidak boleh melebihi stok');
-                            isSaveButtonActive = false; // Set tombol "Simpan" menjadi nonaktif
+                            isSaveButtonActive = false;
                         } else {
                             $(this).val(formatHarga(qty));
-                            isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
+                            isSaveButtonActive = true;
                         }
                     } else if (qty == 0) {
                         isSaveButtonActive = false;
                     } else {
                         $(this).val(formatHarga(qty));
-                        isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
+                        isSaveButtonActive = true;
                     }
                 }
 

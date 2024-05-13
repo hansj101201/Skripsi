@@ -44,10 +44,7 @@ class gudangController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // Periksa apakah ID yang akan ditambahkan sudah ada dalam database
         $existingRecord = gudang::where('ID_GUDANG', $request['ID_GUDANG'])->first();
-
         if (!$existingRecord) {
             $validatedData = $request->validate([
                 'ID_GUDANG' => 'required',
@@ -59,11 +56,9 @@ class gudangController extends Controller
 
             $currentDateTime = date('Y-m-d H:i:s');
             $data['TGLENTRY'] = $currentDateTime;
-            // ID tidak ada dalam database, maka buat entitas baru
             gudang::create($data);
             return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
         } else {
-            // ID sudah ada dalam database, kirim respons JSON dengan pesan kesalahan
             return response()->json(['success' => false, 'message' => 'Data Sudah Ada.']);
         }
     }

@@ -59,25 +59,17 @@ class hargaController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'MULAI_BERLAKU' => 'required', // Add your validation rules here
-            'ID_BARANG.*' => 'required', // Validate each ID_BARANG field in the array
-            'HARGA.*' => 'required', // Validate each HARGA field in the array
+            'MULAI_BERLAKU' => 'required',
+            'ID_BARANG.*' => 'required',
+            'HARGA.*' => 'required',
         ]);
         $mulai_berlaku = DateTime::createFromFormat('d-m-Y', $validatedData['MULAI_BERLAKU']);
-
-        // Mengatur zona waktu ke Asia/Jakarta
         $mulai_berlaku->setTimezone(new DateTimeZone('Asia/Jakarta'));
-
-        // Format tanggal ke dalam format yang diinginkan
         $mulai_berlaku_formatted = $mulai_berlaku->format('Y-m-d');
         $currentDateTime = date('Y-m-d H:i:s');
         $latestHarga = harga::orderBy('MULAI_BERLAKU', 'desc')->select('MULAI_BERLAKU')->first();
-
-    // Jika tidak ada tanggal terbaru, langsung simpan data
         if (!$latestHarga) {
             foreach ($request->ID_BARANG as $key => $value) {
-                // Here you can save each entry to your database or perform other actions
-                // For example, you can create a new Harga model instance and save it
                 $harga = new harga();
                 $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
                 $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
@@ -90,8 +82,6 @@ class hargaController extends Controller
             $mulai_formatted = date('d-m-Y', strtotime($latestHarga['MULAI_BERLAKU']));
             if ($latestHarga['MULAI_BERLAKU'] < $mulai_berlaku_formatted) {
                 foreach ($request->ID_BARANG as $key => $value) {
-                    // Here you can save each entry to your database or perform other actions
-                    // For example, you can create a new Harga model instance and save it
                     $harga = new harga();
                     $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
                     $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
@@ -104,7 +94,6 @@ class hargaController extends Controller
                 return response()->json(['success' => false, 'message' => 'Tanggal harus lebih besar dari tanggal '.$mulai_formatted]);
             }
         }
-
     }
 
     public function update(Request $request)

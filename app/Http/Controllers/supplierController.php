@@ -37,9 +37,7 @@ class supplierController extends Controller
     }
     public function store(Request $request)
     {
-        // Periksa apakah ID yang akan ditambahkan sudah ada dalam database
         $existingRecord = supplier::where('ID_SUPPLIER', $request['ID_SUPPLIER'])->first();
-
         if (!$existingRecord) {
             $validatedData = $request->validate([
                 'ID_SUPPLIER' => 'required',
@@ -54,11 +52,9 @@ class supplierController extends Controller
 
             $currentDateTime = date('Y-m-d H:i:s');
             $data['TGLENTRY'] = $currentDateTime;
-            // ID tidak ada dalam database, maka buat entitas baru
             supplier::create($data);
             return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
         } else {
-            // ID sudah ada dalam database, kirim respons JSON dengan pesan kesalahan
             return response()->json(['success' => false, 'message' => 'Data Sudah Ada.']);
         }
     }

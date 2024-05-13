@@ -106,31 +106,18 @@ class transferGudangController extends Controller
     }
 
     public function postTransferGudang(Request $request){
-        // $bukti = $this->generateBukti($request->tanggal);
-        // dd($bukti);
-
-        // dd($request->all());
         $currentDateTime = date('Y-m-d H:i:s');
-        // Start a transaction
         DB::beginTransaction();
-
         try {
-            // Generate BUKTI
             $bukti = $this->generateBukti($request->tanggal);
-            // dd ($bukti);
-            // Format tanggal
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
-            $nomor = 1; // Initialize the nomor counter
-
+            $nomor = 1;
             $gudangAsal = gudang::where('ID_GUDANG', $request->gudang_asal)->value('NAMA');
             $gudangTujuan = gudang::where('ID_GUDANG', $request->gudang_tujuan)->value('NAMA');
-
-            // Create trnsales record
             trnsales::create([
-
                 'KDTRN' => '15',
                 'TANGGAL' => $tanggalFormatted,
                 'BUKTI' => $bukti,
@@ -142,7 +129,6 @@ class transferGudangController extends Controller
                 'USERENTRY' => getUserLoggedIn()->ID_USER,
                 'TGLENTRY' => $currentDateTime
             ]);
-
             trnsales::create([
                 'KDTRN' => '05',
                 'TANGGAL' => $tanggalFormatted,
@@ -154,9 +140,7 @@ class transferGudangController extends Controller
                 'USERENTRY' => getUserLoggedIn()->ID_USER,
                 'TGLENTRY' => $currentDateTime
             ]);
-            // Create trnjadi records
             foreach ($data as $item) {
-                // dd($item[2]);
                 trnjadi::create([
                     'KDTRN' => '15',
                     'TANGGAL' => $tanggalFormatted,
@@ -169,9 +153,8 @@ class transferGudangController extends Controller
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor, // Increment nomor for each item
+                    'NOMOR' => $nomor,
                 ]);
-
                 trnjadi::create([
                     'KDTRN' => '05',
                     'TANGGAL' => $tanggalFormatted,
@@ -184,21 +167,14 @@ class transferGudangController extends Controller
                     'ID_DEPO' => getIdDepo(),
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
-                    'NOMOR' => $nomor, // Increment nomor for each item
+                    'NOMOR' => $nomor,
                 ]);
                 $nomor++;
             }
-
-            // Commit the transaction if all operations succeed
             DB::commit();
-
-            // Return a success response
             return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan dengan No Bukti '. $bukti, 'bukti' => $bukti], 200);
         } catch (\Exception $e) {
-            // Rollback the transaction if an error occurs
             DB::rollback();
-
-            // Return an error response
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -208,7 +184,6 @@ class transferGudangController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->data;
-            // dd($data);
             foreach ($data as $item) {
                 trnjadi::where('KDTRN', '15')
                 ->where('BUKTI', $request->bukti)
@@ -219,7 +194,6 @@ class transferGudangController extends Controller
                     'USEREDIT' => getUserLoggedIn()->ID_USER,
                     'TGLEDIT' => $currentDateTime,
                 ]);
-
                 trnjadi::where('KDTRN', '05')
                 ->where('BUKTI', $request->bukti)
                 ->where('PERIODE', $request->periode)
@@ -231,11 +205,8 @@ class transferGudangController extends Controller
                 ]);
             }
             DB::commit();
-
-            // Mengembalikan respons JSON untuk memberi tahu klien bahwa pembaruan berhasil
             return response()->json(['success'=>true,'message' => 'Update successful']);
         } catch (\Exception $e) {
-            // Jika terjadi kesalahan, rollback transaksi dan kirim respons kesalahan
             DB::rollBack();
             return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
         }
@@ -244,36 +215,25 @@ class transferGudangController extends Controller
     public function destroy($bukti, $periode){
         DB::beginTransaction();
         try {
-            // Delete records from trnsales table
             trnsales::where("KDTRN", "05")
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->delete();
-
-            // Delete records from trnjadi table
             trnjadi::where("KDTRN", "05")
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->delete();
-
             trnsales::where("KDTRN", "15")
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->delete();
-
-            // Delete records from trnjadi table
             trnjadi::where("KDTRN", "15")
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->delete();
-
-
             DB::commit();
-
-            // Send a success response after deletion
             return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
         } catch (\Exception $e) {
-            // If an error occurs, rollback the transaction and send an error response
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
         }

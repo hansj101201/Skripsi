@@ -34,10 +34,8 @@ class AuthController extends Controller
 
         $idDepo = getIdDepo();
         if ($idDepo === '000') {
-            // If getIdDepo() returns '000', get all data
             $usersQuery = $user;
         } else {
-            // If getIdDepo() returns anything other than '000', filter data by ID_DEPO
             $usersQuery = $user->where('user.ID_DEPO', $idDepo);
         }
         return DataTables::of($usersQuery)
@@ -123,8 +121,6 @@ class AuthController extends Controller
     {
 
         $users = users::where('ID_USER', $request['ID_USER'])->first();
-
-        // dd($users);
         if ($users) {
             $validatedData = $request->validate([
                 'ID_USER' => 'required',
@@ -135,14 +131,10 @@ class AuthController extends Controller
                 'ID_DEPO' => 'sometimes',
                 'ACTIVE' => 'sometimes',
             ]);
-
             $currentDateTime = date('Y-m-d H:i:s');
             $validatedData['USEREDIT'] = getUserLoggedIn()->ID_USER;
             $validatedData['TGLEDIT'] = $currentDateTime;
-            // dd($validatedData);
             $users->update($validatedData);
-
-            // dd($users);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
         } else {
             return response()->json(['success' => false,'error' => 'Data gagal diperbarui'], 404);

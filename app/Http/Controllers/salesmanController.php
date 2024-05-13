@@ -49,10 +49,7 @@ class salesmanController extends Controller
 
     public function store(Request $request)
     {
-        // Periksa apakah ID yang akan ditambahkan sudah ada dalam database
         $existingRecord = salesman::where('ID_SALES', $request['ID_SALES'])->first();
-        // dd($request->all());
-        // dd($existingRecord);
         if (!$existingRecord) {
             $validatedData = $request->validate([
                 'ID_SALES' => 'required',
@@ -84,10 +81,7 @@ class salesmanController extends Controller
 
     public function update(Request $request)
     {
-
         $salesman = salesman::where('ID_SALES', $request['ID_SALES'])->first();
-
-        // dd($salesman);
         if ($salesman) {
             $validatedData = $request->validate([
                 'ID_SALES' => 'required',
@@ -191,6 +185,5 @@ class salesmanController extends Controller
         } else {
             return response()->json(['message' => 'Password Lama Salah'], 401);
         }
-
     }
 }

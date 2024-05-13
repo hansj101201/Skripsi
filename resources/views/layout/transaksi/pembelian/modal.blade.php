@@ -799,8 +799,6 @@
                 var subtotal = parseFloat(subtotalString);
                 var discountString = $(this).val().trim();
                 var discount = discountString !== '' ? parseFloat(discountString.replace(/[^\d]/g, '')) : 0;
-
-                // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(discount) && !isNaN(subtotal)) {
                     var hasil = subtotal - discount;
                     if (hasil > 0) {
@@ -813,7 +811,6 @@
                         isSaveBtn = false;
                     }
                 }
-
                 if (isSaveBtn) {
                     $('#saveBtn').prop('disabled', false);
                 } else {
@@ -881,29 +878,20 @@
 
             $('#barang_qty').on('input', function() {
                 validateNumberInput(this);
-                // Ambil nilai qty dan harga
                 var qtyString = $(this).val();
                 var qty = qtyString !== '' ? parseFloat(qtyString.replace(/[^\d]/g, '')) : 0;
                 var potonganString = $('#barang_potongan').val().trim();
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
                 var harga = parseFloat(hargaString);
-
                 $(this).val(formatHarga(qty));
-
-                // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(qty) && !isNaN(harga)) {
                     isSaveButtonActive = true;
-
-                    // Hitung nilai jumlah
                     var jumlah = qty * harga - potongan;
-                    // Set nilai jumlah pada input jumlah
                     $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
-
                 } else {
                     isSaveButtonActive = false;
                 }
-
                 if (isSaveButtonActive) {
                     $('#saveButton').prop('disabled', false);
                 } else {

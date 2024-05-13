@@ -640,30 +640,22 @@
             })
 
             var tanggalPenutupanCompact = "{{ $tglClosing }}";
-
             var tanggalPenutupan = new Date(tanggalPenutupanCompact);
-
-            // Menambahkan satu hari ke tanggal penutupan
             tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
-
-            // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
             var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
             $('.datepicker').datepicker({
-                format: 'dd-mm-yyyy', // Set your desired date format
+                format: 'dd-mm-yyyy',
                 startDate: tanggalMulai,
-                defaultDate: 'now', // Set default date to 'now'
-                autoclose: true // Close the datepicker when a date is selected
+                defaultDate: 'now',
+                autoclose: true
             });
 
             $('#datepicker').on('click', function() {
-                // Function to execute when the calendar icon is clicked
-                // For example, you can open the datepicker
                 $('#tanggal').datepicker('show');
             });
 
             $('#editDataModal').on('click', '.btn-primary', function() {
                 event.preventDefault();
-                // Call the editTableBarang function to handle the editing process
                 editTableBarang();
             });
             $('#editDetailModal').on('click', '.btn-primary', function () {

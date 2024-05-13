@@ -113,7 +113,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
+                        <label for="kode_barang" class="col-sm-3 col-form-label">Satuan</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="satuan" name="SATUAN" maxlength="6"
                                 readonly>
@@ -318,7 +318,7 @@
                             let i = 0;
                             createTable += `<table class="table table-stripped table-bordered myTable" id="tableData">
                                 <thead>
-                                    <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                                    <th class="text-left" style="padding-left: 10px;"> Id Barang </th>
                                     <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
                                     <th class="text-left" style="padding-left: 10px;"> Satuan </th>
                                     <th class="text-right" style="padding-right: 10px;"> QTY Minta </th>
@@ -391,7 +391,7 @@
                                     let i = 0
                                     createTable += `<table class="table table-stripped table-bordered myTable" id = "tableData">
                                         <thead>
-                                            <th class="text-left" style="padding-left: 10px;"> Kode Barang </th>
+                                            <th class="text-left" style="padding-left: 10px;"> Id Barang </th>
                                             <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
                                             <th class="text-left" style="padding-left: 10px;"> Satuan </th>
                                             <th class="text-right" style="padding-right: 10px;"> Qty Minta </th>
@@ -678,15 +678,12 @@
                 var tanggal = $('#tanggal').val();
                 var gudang = $('#gudang').val();
                 var gudang_tujuan = $('#gudang_tujuan').val();
-
-                var button = $(event.relatedTarget); // Tombol yang memicu modal
+                var button = $(event.relatedTarget);
                 var mode = button.data('mode');
                 var kode = button.data('kode');
                 var qtykirim = button.data('qtykirim');
                 var qtyminta = button.data('qtyminta');
-
                 if (!tanggal) {
-                    // e.preventDefault();
                     $('#tanggal').addClass('is-invalid')
                     toastr.error('Tanggal harus diisi');
                     return false;
@@ -717,19 +714,15 @@
                                 $('#qtykirim').val(qtykirim);
                             }
                             $('#qtyorder').val(qtyminta);
-
+                            $('#saveButton').attr('onclick', 'editTableBarang()');
                         });
                     } else {
                         modal.find('.modal-title').text('Edit Data');
                         kode = button.data('kode');
-
-
                         if (cekData()) {
                             console.log('bisa masuk');
                             getData(kode, tanggal, gudang);
-                            // Isi nilai input field sesuai dengan data yang akan diedit
-                            $('#kode_barang').val(kode); // Tambahkan atribut readonly
-
+                            $('#kode_barang').val(kode);
                             $('#qtyorder').val(qtyminta);
                             $('#qtykirim').val(qtykirim);
                             $('#stok_lama').val(qtykirim);
@@ -750,25 +743,22 @@
                 console.log("stok" + stok);
                 console.log("saldo" + saldo);
                 console.log(editModeValue);
-                // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(qty)) {
                     if (qty <= qtyminta) {
                         if (qty > stok) {
                             if (qty - stok > saldo) {
-                                // Munculkan Toast
                                 toastr.error('Barang tidak boleh melebihi stok');
-                                isSaveButtonActive = false; // Set tombol "Simpan" menjadi nonaktif
+                                isSaveButtonActive = false;
                             } else {
-                                isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
+                                isSaveButtonActive = true;
                             }
                         } else {
-                            isSaveButtonActive = true; // Set tombol "Simpan" menjadi aktif
+                            isSaveButtonActive = true;
                         }
                     } else {
                         toastr.error('Barang tidak boleh melebihi permintaan');
-                        isSaveButtonActive = false; // Set tombol "Simpan" menjadi nonaktif
+                        isSaveButtonActive = false;
                     }
-
                 }
                 if (isSaveButtonActive) {
                     $('#saveButton').prop('disabled', false);

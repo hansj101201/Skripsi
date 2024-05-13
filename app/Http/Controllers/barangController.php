@@ -42,9 +42,6 @@ class barangController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        // Periksa apakah ID yang akan ditambahkan sudah ada dalam database
-        // dd($request->all());
         $existingRecord = barang::where('ID_BARANG', $request['ID_BARANG'])->first();
         if (!$existingRecord) {
             $validatedData = $request->validate([
@@ -71,10 +68,7 @@ class barangController extends Controller
 
     public function update(Request $request)
     {
-
         $barang = barang::where('ID_BARANG', $request['ID_BARANG'])->first();
-
-        // dd($barang);
         if ($barang) {
             $validatedData = $request->validate([
                 'ID_BARANG' => 'required',
@@ -84,14 +78,10 @@ class barangController extends Controller
                 'MIN_STOK' => 'required',
                 'ACTIVE' => 'sometimes',
             ]);
-
             $currentDateTime = date('Y-m-d H:i:s');
             $validatedData['USEREDIT'] = getUserLoggedIn()->ID_USER;
             $validatedData['TGLEDIT'] = $currentDateTime;
-            // dd($validatedData);
             $barang->update($validatedData);
-
-            // dd($barang);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
         } else {
             return response()->json(['success' => false,'error' => 'Data dengan KDJADI tersebut tidak ditemukan'], 404);

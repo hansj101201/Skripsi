@@ -30,7 +30,6 @@ class penerimaanPOController extends Controller
     public function getNomorPo()
     {
         $idDepo = trim(getIdDepo());
-        // dd($idDepo);
         if ($idDepo != '000') {
             $trnorder = trninvorder::where('STATUS', '!=', 2)->where('ID_DEPO',getIdDepo())->get();
         } else {
@@ -111,20 +110,16 @@ class penerimaanPOController extends Controller
     }
 
     public function generateBukti($tanggal){
-        // $topBukti = $this->fetchTopBukti($tanggal);
         $Tanggal = DateTime::createFromFormat('d-m-Y', $tanggal);
-        // Retrieve the top 1 BUKTI for the current year using Eloquent
         $topBukti = trnsales::select('BUKTI')
             ->where('KDTRN','01')
-            ->whereYear('TANGGAL', $Tanggal->format('Y')) // Filter by year
-            ->orderByDesc('BUKTI') // Order by BUKTI in descending order
+            ->whereYear('TANGGAL', $Tanggal->format('Y'))
+            ->orderByDesc('BUKTI')
             ->first();
-    // Jika data ditemukan, tambahkan 1 ke nilai BUKTI
         if ($topBukti) {
             $nextBukti = intval($topBukti->BUKTI) + 1;
             $formattedBukti = str_pad($nextBukti, strlen($topBukti->BUKTI), '0', STR_PAD_LEFT);
         } else {
-            // Jika tidak ada data, mulai dari 1
             $nextBukti = "000001";
             $formattedBukti = $nextBukti;
         }
@@ -154,27 +149,14 @@ class penerimaanPOController extends Controller
 
     public function postTrnJadi(Request $request){
         $currentDateTime = date('Y-m-d H:i:s');
-        // Start a transaction
         DB::beginTransaction();
-
-
         try {
-            // Generate BUKTI
             $bukti = $this->generateBukti($request->tanggal);
-
-            // Format tanggal
-
             $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
             $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
-
             $data = $request->data;
-            // dd($data);
-            // dd($data);
-            $nomor = 1; // Initialize the nomor counter
-
-
-            // Create trnsales record
+            $nomor = 1;
             trnsales::create([
                 'KDTRN' => '01',
                 'TANGGAL' => $tanggalFormatted,
@@ -188,10 +170,8 @@ class penerimaanPOController extends Controller
                 'USERENTRY' => getUserLoggedIn()->ID_USER,
                 'TGLENTRY' => $currentDateTime
             ]);
-
             $namaSupplier = supplier::where('ID_SUPPLIER',$request->supplier)
             ->value('NAMA');
-            // Create trnjadi records
             foreach ($data as $item) {
                 $data = DB::table('dtlinvorder')
                 ->whereIn('BUKTI', function ($query) use ($request) {
@@ -206,7 +186,6 @@ class penerimaanPOController extends Controller
                 })
                 ->where('ID_BARANG', $item[0])
                 ->update(['QTYKIRIM' => DB::raw('QTYKIRIM + ' . $item[1])]);
-                // dd($item[2]);
                 trnjadi::create([
                     'KDTRN' => '01',
                     'TANGGAL' => $tanggalFormatted,
@@ -219,22 +198,14 @@ class penerimaanPOController extends Controller
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
                     'KET01' => 'Terima dari Supplier '.$request->supplier.' - '.$namaSupplier,
-                    'NOMOR' => $nomor++, // Increment nomor for each item
+                    'NOMOR' => $nomor++,
                 ]);
             }
-
             $this->updateStatusPO($request->nomorpo);
-
-            // Commit the transaction if all operations succeed
             DB::commit();
-
-            // Return a success response
             return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan dengan No Bukti '. $bukti, 'bukti' => $bukti], 200);
         } catch (\Exception $e) {
-            // Rollback the transaction if an error occurs
             DB::rollback();
-
-            // Return an error response
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -260,8 +231,6 @@ class penerimaanPOController extends Controller
                 ->update(['QTYKIRIM' => DB::raw('QTYKIRIM - ' . $item[2] . ' + ' . $item[1]),
                 'USEREDIT' => getUserLoggedIn()->ID_USER,
                 'TGLEDIT' => $currentDateTime]);
-
-
                 trnjadi::where('KDTRN', '01')
                     ->where('BUKTI', $request->bukti)
                     ->where('PERIODE', $request->periode)
@@ -275,11 +244,8 @@ class penerimaanPOController extends Controller
                 $this->updateStatusPO($request->nomorpo);
             }
             DB::commit();
-
-            // Mengembalikan respons JSON untuk memberi tahu klien bahwa pembaruan berhasil
             return response()->json(['success'=>true,'message' => 'Update successful']);
         } catch (\Exception $e) {
-            // Jika terjadi kesalahan, rollback transaksi dan kirim respons kesalahan
             DB::rollBack();
             return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
         }
@@ -311,9 +277,7 @@ class penerimaanPOController extends Controller
                 ->select("trnjadi.ID_BARANG", "trnjadi.QTY")
                 ->get()
                 ->toArray();
-
             foreach($trnjadi as $item){
-                // dd($item['QTY']);
                 $nomorpo = $trnsales[0]['NOMORPO'];
                 DB::table('dtlinvorder')
                 ->whereIn('BUKTI', function ($query) use ($nomorpo) {
@@ -331,27 +295,17 @@ class penerimaanPOController extends Controller
                 'USEREDIT' => getUserLoggedIn()->ID_USER,
                 'TGLEDIT' => $currentDateTime]);
             }
-
-
-            // Delete records from trnsales table
             trnsales::where("KDTRN", "01")
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->delete();
-
-            // Delete records from trnjadi table
             trnjadi::where("KDTRN", "01")
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->delete();
-
             DB::commit();
-
-            // Send a success response after deletion
             return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
         } catch (\Exception $e) {
-            // If an error occurs, rollback the transaction and send an error response
-            dd($e->getMessage());
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
         }

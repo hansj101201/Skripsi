@@ -126,16 +126,11 @@
                 url: url,
                 method: 'GET',
                 success: function(data) {
-                    console.log(data);
-                    // Kosongkan dulu opsi gudang yang ada
                     $('#gudang').empty();
-
-                    // Tambahkan opsi pertama dengan nilai kosong
                     $('#gudang').append($('<option>', {
                         value: '',
                         text: 'Pilih'
                     }));
-                    // Tambahkan opsi gudang berdasarkan data yang diterima dari server
                     data.forEach(function(gudang) {
                         $('#gudang').append($('<option>', {
                             value: gudang.ID_GUDANG,
@@ -168,27 +163,27 @@
             if (kode_salesman.trim() === '') {
                 toastr.error('Kode salesman harus diisi');
                 $('#kode_salesman').addClass('is-invalid');
-                return false; // Mengembalikan false jika validasi gagal
+                return false;
             }
 
             if (nama_salesman.trim() === '') {
                 toastr.error('Nama salesman harus diisi');
                 $('#nama_salesman').addClass('is-invalid');
-                return false; // Mengembalikan false jika validasi gagal
+                return false;
             }
 
             var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 toastr.error('Email tidak valid');
                 $('#email_salesman').addClass('is-invalid');
-                return false; // Mengembalikan false jika validasi gagal
+                return false;
             }
 
             var numericRegex = /^\d{10,}$/;
             if (!numericRegex.test(nomor)) {
                 toastr.error('Nomor HP minim 10 angka');
                 $('#nomor_salesman').addClass('is-invalid');
-                return false; // Mengembalikan false jika validasi gagal
+                return false;
             }
 
             if (depo == ''){
@@ -204,7 +199,7 @@
             if (password.trim() === ''  && mode === 'add') {
                 toastr.error('Password harus diisi');
                 $('#password').addClass('is-invalid');
-                return false; // Mengembalikan false jika validasi gagal
+                return false;
             }
             return true; // Mengembalikan true jika semua validasi berhasil
         }

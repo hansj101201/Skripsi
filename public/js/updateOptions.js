@@ -65,7 +65,6 @@ function updateBarangOptions(urlPass, callback) {
     });
 }
 
-
 function updateDepoOptions(urlPass) {
     var url = urlPass;
     $.ajax({
