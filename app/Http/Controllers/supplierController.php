@@ -51,6 +51,7 @@ class supplierController extends Controller
             $data = $validatedData;
 
             $currentDateTime = date('Y-m-d H:i:s');
+            $data['USERENTRY'] = getUserLoggedIn()->ID_USER;
             $data['TGLENTRY'] = $currentDateTime;
             supplier::create($data);
             return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
@@ -80,6 +81,7 @@ class supplierController extends Controller
             ]);
 
             $currentDateTime = date('Y-m-d H:i:s');
+            $validatedData['USEREDIT'] = getUserLoggedIn()->ID_USER;
             $validatedData['TGLEDIT'] = $currentDateTime;
             // dd($validatedData);
             $supplier->update($validatedData);

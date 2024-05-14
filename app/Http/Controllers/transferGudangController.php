@@ -99,7 +99,7 @@ class transferGudangController extends Controller
             $formattedBukti = str_pad($nextBukti, strlen($topBukti->BUKTI), '0', STR_PAD_LEFT);
         } else {
             // Jika tidak ada data, mulai dari 1
-            $nextBukti = "000001";
+            $nextBukti = "00000001";
             $formattedBukti = $nextBukti;
         }
         return $formattedBukti;

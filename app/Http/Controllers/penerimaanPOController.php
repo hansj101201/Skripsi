@@ -120,7 +120,7 @@ class penerimaanPOController extends Controller
             $nextBukti = intval($topBukti->BUKTI) + 1;
             $formattedBukti = str_pad($nextBukti, strlen($topBukti->BUKTI), '0', STR_PAD_LEFT);
         } else {
-            $nextBukti = "000001";
+            $nextBukti = "00000001";
             $formattedBukti = $nextBukti;
         }
         return $formattedBukti;
@@ -295,6 +295,7 @@ class penerimaanPOController extends Controller
                 'USEREDIT' => getUserLoggedIn()->ID_USER,
                 'TGLEDIT' => $currentDateTime]);
             }
+            $this->updateStatusPO($trnsales[0]['NOMORPO']);
             trnsales::where("KDTRN", "01")
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
@@ -303,6 +304,8 @@ class penerimaanPOController extends Controller
                 ->where("BUKTI", $bukti)
                 ->where("PERIODE", $periode)
                 ->delete();
+
+
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
         } catch (\Exception $e) {

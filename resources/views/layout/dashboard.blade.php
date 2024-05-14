@@ -45,7 +45,7 @@
     <script>
         var ctx = document.getElementById('chartPenjualanBarang').getContext('2d');
         var penjualanBarangLabels = {!! json_encode($penjualanBarang->pluck('NAMA')) !!};
-        var penjualanBarangData = {!! json_encode($penjualanBarang->pluck('total_penjualan')) !!};
+        var penjualanBarangData = {!! json_encode($penjualanBarang->pluck('total_netto')) !!};
 
         if (penjualanBarangLabels.length > 0 && penjualanBarangData.length > 0) {
             var chartPenjualanBarang = new Chart(ctx, {

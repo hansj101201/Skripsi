@@ -55,6 +55,7 @@ class gudangController extends Controller
             $data = $validatedData;
 
             $currentDateTime = date('Y-m-d H:i:s');
+            $data['USERENTRY'] = getUserLoggedIn()->ID_USER;
             $data['TGLENTRY'] = $currentDateTime;
             gudang::create($data);
             return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
@@ -78,8 +79,8 @@ class gudangController extends Controller
             ]);
 
             $currentDateTime = date('Y-m-d H:i:s');
+            $validatedData['USEREDIT'] = getUserLoggedIn()->ID_USER;
             $validatedData['TGLEDIT'] = $currentDateTime;
-            // dd($validatedData);
             $gudang->update($validatedData);
 
             // dd($barang);

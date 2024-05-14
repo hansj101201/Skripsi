@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 
 class pdfController extends Controller
@@ -472,6 +473,7 @@ class pdfController extends Controller
 
         return $pdf->inline('Penjualan per Salesman '.$awal.' - '.$akhir.'.pdf');
     }
+
 
     public function getPenjualanPerSalesman($bukti,$tahun){
         $trnsales = trnsales::where('KDTRN',12)

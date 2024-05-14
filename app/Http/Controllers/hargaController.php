@@ -74,6 +74,7 @@ class hargaController extends Controller
                 $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
                 $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
                 $harga->HARGA = str_replace(',', '', $validatedData['HARGA'][$key]);
+                $harga->USERENTRY = getUserLoggedIn()->ID_USER;
                 $harga->TGLENTRY = $currentDateTime;
                 $harga->save();
             }
@@ -86,6 +87,7 @@ class hargaController extends Controller
                     $harga->MULAI_BERLAKU = $mulai_berlaku_formatted;
                     $harga->ID_BARANG = $validatedData['ID_BARANG'][$key];
                     $harga->HARGA = str_replace(',', '', $validatedData['HARGA'][$key]);
+                    $harga->USERENTRY = getUserLoggedIn()->ID_USER;
                     $harga->TGLENTRY = $currentDateTime;
                     $harga->save();
                 }
@@ -110,6 +112,7 @@ class hargaController extends Controller
             $validatedData['HARGA'] = str_replace(',', '', $validatedData['HARGA']);
 
             $currentDateTime = date('Y-m-d H:i:s');
+            $validatedData['USEREDIT'] = getUserLoggedIn()->ID_USER;
             $validatedData['TGLEDIT'] = $currentDateTime;
             // dd($validatedData);
             $harga->update($validatedData);

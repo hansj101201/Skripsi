@@ -57,14 +57,6 @@
                             <button id="button3" class="btn btn-primary">Barang</button>
                         </div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col">
-                            <a href="#" onclick="generatePDF('pdf/pdfCustomer')" class="btn btn-primary">PDF
-                                Customer</a>
-                            <a href="#" onclick="generatePDF('pdf/pdfSalesman')" class="btn btn-primary">PDF
-                                Salesman</a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -129,20 +121,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
-        function generatePDF(url) {
-            var tanggal_awal = $('#tanggal_awal').val();
-            var tanggal_akhir = $('#tanggal_akhir').val();
-
-            // Lakukan pengecekan tanggal_awal dan tanggal_akhir
-            if (tanggal_awal === '' || tanggal_akhir === '') {
-                // Tampilkan pesan toastr jika tanggal belum diinput
-                toastr.error('Mohon lengkapi tanggal sebelum membuat PDF.');
-                return; // Hentikan eksekusi fungsi jika tanggal belum diinput
-            }
-
-            // Navigasikan pengguna ke URL yang ditentukan jika tanggal sudah diinput
-            window.location.href = "{{ url('') }}/" + url + "/" + tanggal_awal + "/" + tanggal_akhir;
-        }
         var table;
         $(function() {
             var today = new Date(); // Dapatkan tanggal hari ini

@@ -71,6 +71,7 @@ class permintaanController extends Controller
                 'ID_DEPO' => $idDepo,
                 'NOPERMINTAAN' => $nopermintaan,
                 'STATUS' => 0,
+                'USERENTRY' => $idSales,
                 'TGLENTRY' => $currentDateTime
             ]);
 
@@ -88,6 +89,8 @@ class permintaanController extends Controller
                     'QTY' => $item[2],
                     'ID_DEPO' => $idDepo,
                     'NOMOR' => $nomor++, // Increment nomor for each item
+                    'USERENTRY' => $idSales,
+                    'TGLENTRY' => $currentDateTime
                 ]);
             }
 

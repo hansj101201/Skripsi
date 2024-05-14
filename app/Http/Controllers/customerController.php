@@ -71,6 +71,7 @@ class customerController extends Controller
             ]);
             $data = $validatedData;
             $currentDateTime = date('Y-m-d H:i:s');
+            $data['USERENTRY'] = getUserLoggedIn()->ID_USER;
             $data['TGLENTRY'] = $currentDateTime;
             customer::create($data);
             return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
@@ -105,11 +106,9 @@ class customerController extends Controller
                 'TITIK_GPS'=> 'sometimes',
             ]);
 
-            // dd($validatedData);
-
             $currentDateTime = date('Y-m-d H:i:s');
+            $validatedData['USEREDIT'] = getUserLoggedIn()->ID_USER;
             $validatedData['TGLEDIT'] = $currentDateTime;
-            // ID tidak ada dalam database, maka buat entitas baru
             $customer->update($validatedData);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
         } else {

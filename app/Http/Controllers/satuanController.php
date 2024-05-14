@@ -43,6 +43,7 @@ class satuanController extends Controller
             $data = $validatedData;
 
             $currentDateTime = date('Y-m-d H:i:s');
+            $data['USERENTRY'] = getUserLoggedIn()->ID_USER;
             $data['TGLENTRY'] = $currentDateTime;
             satuan::create($data);
             return response()->json(['success' => true, 'message' => 'Data Sudah Di Simpan.']);
@@ -64,6 +65,7 @@ class satuanController extends Controller
             ]);
 
             $currentDateTime = date('Y-m-d H:i:s');
+            $validatedData['USEREDIT'] = getUserLoggedIn()->ID_USER;
             $validatedData['TGLEDIT'] = $currentDateTime;
             $satuan->update($validatedData);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
