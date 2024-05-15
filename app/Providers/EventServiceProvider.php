@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
 use Illuminate\Support\Str;
 
@@ -31,74 +32,83 @@ class EventServiceProvider extends ServiceProvider
         Event::listen(BuildingMenu::class, function (BuildingMenu $event) {
 
             if (auth()->check()) {
-                // $userRoles = auth()->user()->Role()->pluck('ROLE_NAMA')->toArray();
-                // Log::info('Current user roles: ' . implode(', ', $userRoles));
+                $userRoles = auth()->user()->Role()->pluck('ROLE_NAMA')->toArray();
+                Log::info('Current user roles: ' . implode(', ', $userRoles));
 
                 $menuList = Menu::orderBy("MENU_URUTAN")->get();
+
                 foreach ($menuList as $menu) {
                     /**
                      *  Tambah Header, hanya jika nama menu header tersebut, belum pernah terdaftar dalam key menu-menu yang sudah ditambahkan ssebelumnya
                      */
-                    if (!$event->menu->itemKeyExists($menu->MENU_GROUP)) {
-                        $event->menu->add([
-                            'key' => $menu->MENU_GROUP,
-                            'header' => Str::upper($menu->MENU_GROUP),
-                            'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+                    $menuRoles = $menu->Roles->pluck('ROLE_NAMA')->toArray();
+                    Log::info($menu);
+                    Log::info($menu->Roles->pluck('ROLE_NAMA')->toArray());
+                    if (count(array_intersect($userRoles, $menuRoles)) > 0) {
+                        if (!$event->menu->itemKeyExists($menu->MENU_GROUP)) {
+                            $event->menu->add([
+                                'key' => $menu->MENU_GROUP,
+                                'header' => Str::upper($menu->MENU_GROUP),
+                                // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+                                // 'can' => array_intersect($userRoles, $menu->Roles->pluck('ROLE_NAMA')->toArray()),
 
-                        ]);
-                    }
-
-                    // Log::info('Menu item: ' . $menu->MENU_SUBMENU . ' - Roles: ' . implode(', ', $menu->Roles->pluck('ROLE_NAMA')->toArray()));
-                    if ($menu->MENU_SUBMENU == "") {
-                        $key = Str::lower(Str::replace(" ", "_", $menu->MENU_GROUP . "_" . $menu->MENU_SUBGROUP));
-
-                        $temp = [
-                            'key' => $key,
-                            'text' => $menu->MENU_SUBGROUP,
-                            'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
-                        ];
-
-                        if (Str::contains($menu->MENU_ICON, "fas")) {
-                            $temp['icon'] = $menu->MENU_ICON;
-                        } else {
-                            $temp['icon_color'] = $menu->MENU_ICON;
+                            ]);
                         }
 
-                        if ($menu->MENU_URL !== "") {
+                        // Log::info('Menu item: ' . $menu->MENU_SUBMENU . ' - Roles: ' . implode(', ', $menu->Roles->pluck('ROLE_NAMA')->toArray()));
+                        if ($menu->MENU_SUBMENU == "") {
+                            $key = Str::lower(Str::replace(" ", "_", $menu->MENU_GROUP . "_" . $menu->MENU_SUBGROUP));
+
+                            $temp = [
+                                'key' => $key,
+                                'text' => $menu->MENU_SUBGROUP,
+                                // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+                                // 'can' => array_intersect($userRoles, $menu->Roles->pluck('ROLE_NAMA')->toArray()),
+
+                            ];
+
+                            if (Str::contains($menu->MENU_ICON, "fas")) {
+                                $temp['icon'] = $menu->MENU_ICON;
+                            } else {
+                                $temp['icon_color'] = $menu->MENU_ICON;
+                            }
+
+                            if ($menu->MENU_URL !== "") {
+                                $temp['url'] = $menu->MENU_URL;
+                            } else {
+                                $temp['submenu'] = [];
+                            }
+                            $event->menu->add($temp);
+                        } else {
+                            $keyParent = Str::lower(Str::replace(" ", "_", $menu->MENU_GROUP . "_" . $menu->MENU_SUBGROUP));
+
+                            $key = Str::lower(Str::replace(" ", "_", $keyParent . "_" . $menu->submenu));
+
+                            $temp = [
+                                'key' => $key,
+                                'text' => $menu->MENU_SUBMENU,
+                                // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+                                // 'can' => array_intersect($userRoles, $menu->Roles->pluck('ROLE_NAMA')->toArray()),
+
+                            ];
+
+                            if (Str::contains($menu->MENU_ICON, "fas")) {
+                                $temp['icon'] = $menu->MENU_ICON;
+                            } else {
+                                $temp['icon_color'] = $menu->MENU_ICON;
+                            }
+
                             $temp['url'] = $menu->MENU_URL;
-                        } else {
-                            $temp['submenu'] = [];
+
+                            $event->menu->addIn($keyParent, $temp);
                         }
-                        $event->menu->add($temp);
-                    } else {
-                        $keyParent = Str::lower(Str::replace(" ", "_", $menu->MENU_GROUP . "_" . $menu->MENU_SUBGROUP));
-
-                        $key = Str::lower(Str::replace(" ", "_", $keyParent . "_" . $menu->submenu));
-
-                        $temp = [
-                            'key' => $key,
-                            'text' => $menu->MENU_SUBMENU,
-                            'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
-                        ];
-
-                        if (Str::contains($menu->MENU_ICON, "fas")) {
-                            $temp['icon'] = $menu->MENU_ICON;
-                        } else {
-                            $temp['icon_color'] = $menu->MENU_ICON;
-                        }
-
-                        $temp['url'] = $menu->MENU_URL;
-
-                        $event->menu->addIn($keyParent,$temp);
                     }
+
                 }
             } else {
                 // Tindakan yang diambil jika pengguna tidak diotentikasi
             }
         });
-
-
-
     }
 
     /**

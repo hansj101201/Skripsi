@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 
 @section('content_header')
-    <h1>Selamat Datang {{ auth()->user()->NAMA }}</h1>
+    <h1>Selamat Datang {{ auth()->user()->NAMA }} {{ auth()->user()->rolenya }}</h1>
     <h6>Transaksi Tanggal {{ date('d-m-Y', strtotime($tanggalAwal)) }} s/d
         {{ date('d-m-Y', strtotime($tanggalAkhir)) }}</h6>
 @endsection
