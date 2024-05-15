@@ -50,8 +50,8 @@
                     </div>
                 </div>
                 <div class="col">
-                    <a href="#" onclick="generatePDF('pdf/pdfCustomer')" class="btn btn-primary">PDF Customer</a>
-                    <a href="#" onclick="generatePDF('pdf/pdfSalesman')" class="btn btn-primary">PDF Salesman</a>
+                    <a href="#" onclick="generatePDF('pdf/pdfCustomer')" class="btn btn-primary">Customer</a>
+                    <a href="#" onclick="generatePDF('pdf/pdfSalesman')" class="btn btn-primary">Salesman</a>
                 </div>
             </div>
         </div>
