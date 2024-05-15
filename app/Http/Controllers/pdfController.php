@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Mail\pdfEmail;
 use App\Models\barang;
+use App\Models\depo;
 use App\Models\satuan;
 use App\Models\trnjadi;
 use App\Models\trnsales;
@@ -424,12 +425,19 @@ class pdfController extends Controller
 
     public function pdfCustomer($awal,$akhir)
     {
+        if(getIdDepo() == 000){
+            $depo = 'Semua';
+        } else {
+            $depo = depo::where('ID_DEPO',getIdDepo())
+            ->value('NAMA');
+        }
         $data = [
             "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
             "data" => $this->getPenjualanCustomer($awal,$akhir),
             "mode" => 'Customer',
             "awal" => $awal,
-            "akhir" => $akhir
+            "akhir" => $akhir,
+            "nama" => $depo
         ];
         $pdf = SnappyPdf::loadView('pdf.penjualan.pdfCustSales', $data)
             ->setPaper('a4')
@@ -443,19 +451,28 @@ class pdfController extends Controller
             ->setOption("footer-spacing", 5)
             ->setOption("enable-local-file-access", true)
             ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
-            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
+            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
+            ->setOption('footer-font-size', 8);
 
         return $pdf->inline('Penjualan per Customer '.$awal.' - '.$akhir.'.pdf');
     }
 
     public function pdfSalesman($awal,$akhir)
     {
+        if(getIdDepo() == 000){
+            $depo = 'Semua';
+        } else {
+            $depo = depo::where('ID_DEPO',getIdDepo())
+            ->value('NAMA');
+        }
+
         $data = [
             "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
             "data" => $this->getPenjualanSalesman($awal,$akhir),
             "mode" => 'Salesman',
             "awal" => $awal,
-            "akhir" => $akhir
+            "akhir" => $akhir,
+            "nama" => $depo
         ];
         $pdf = SnappyPdf::loadView('pdf.penjualan.pdfCustSales', $data)
             ->setPaper('a4')
@@ -469,7 +486,8 @@ class pdfController extends Controller
             ->setOption("footer-spacing", 5)
             ->setOption("enable-local-file-access", true)
             ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
-            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
+            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
+            ->setOption('footer-font-size', 8);
 
         return $pdf->inline('Penjualan per Salesman '.$awal.' - '.$akhir.'.pdf');
     }

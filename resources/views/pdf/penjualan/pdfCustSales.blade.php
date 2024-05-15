@@ -28,6 +28,7 @@
 </head>
 <body>
     <h2>Laporan Penjualan {{ $mode }}</h2>
+    <h3>Depo : {{ $nama }}</h3>
     <h3>Tanggal {{ $awal }} s/d {{ $akhir }}</h2>
     <table style="width: 100%;border-collapse:collapse;">
         <thead>

@@ -334,7 +334,7 @@ class laporanController extends Controller
             ->groupBy('trnsales.ID_CUSTOMER', 'customer.NAMA');
         } else {
             $trnsales = trnsales::where('trnsales.KDTRN', 12)
-            ->where('trnsales.ID_DEPO', getIdDepo())
+            ->where('trnsales.ID_DEPO', $idDepo)
             ->whereNotNull('trnsales.ID_CUSTOMER')
             ->where('trnsales.ID_CUSTOMER', '!=', '')
             ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
@@ -358,6 +358,7 @@ class laporanController extends Controller
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
         $idDepo = getIdDepo();
+        if($idDepo == 000){
         $trnsales = trnsales::where('KDTRN',12)
             ->whereNotNull('trnsales.ID_SALESMAN')
             ->where('trnsales.ID_SALESMAN', '!=', '')
@@ -365,6 +366,16 @@ class laporanController extends Controller
             ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
             ->select('trnsales.ID_SALESMAN', 'salesman.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
             ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA');
+        } else {
+            $trnsales = trnsales::where('KDTRN',12)
+            ->where('trnsales.ID_DEPO', $idDepo)
+            ->whereNotNull('trnsales.ID_SALESMAN')
+            ->where('trnsales.ID_SALESMAN', '!=', '')
+            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
+            ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
+            ->select('trnsales.ID_SALESMAN', 'salesman.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
+            ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA');
+        }
 
         return Datatables::of($trnsales)
             ->addColumn('action', function ($row) {
@@ -379,6 +390,8 @@ class laporanController extends Controller
     {
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
+        $idDepo = getIdDepo();
+        if($idDepo == 000){
         $trnjadi = trnjadi::where('KDTRN',12)
             ->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Tanggal harus berada di antara tanggal awal dan akhir
             ->join('barang', 'trnjadi.ID_BARANG', '=', 'barang.ID_BARANG')
@@ -387,6 +400,17 @@ class laporanController extends Controller
         DB::raw('SUM(trnjadi.POTONGAN) as total_potongan')
             ,DB::raw('SUM(trnjadi.JUMLAH) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
             ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA');
+        } else {
+            $trnjadi = trnjadi::where('KDTRN',12)
+            ->where('trnjadi.ID_DEPO', $idDepo)
+            ->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Tanggal harus berada di antara tanggal awal dan akhir
+            ->join('barang', 'trnjadi.ID_BARANG', '=', 'barang.ID_BARANG')
+            ->select('trnjadi.ID_BARANG', 'barang.NAMA',DB::raw('SUM(trnjadi.Qty) as total_qty'),
+            DB::raw('SUM(trnjadi.QTY * trnjadi.HARGA) as total_penjualan'), // Perkalian QTY dengan HARGA dan menjumlahkannya
+        DB::raw('SUM(trnjadi.POTONGAN) as total_potongan')
+            ,DB::raw('SUM(trnjadi.JUMLAH) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
+            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA');
+        }
         return Datatables::of($trnjadi)
             ->make(true);
     }
