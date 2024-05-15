@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 @if ($errors->has('ID_USER'))
-                    <div class="invalid-feedback">
+                    <div id="ID_USER-error" class="invalid-feedback">
                         <strong>{{ $errors->first('ID_USER') }}</strong>
                     </div>
                 @endif
@@ -35,7 +35,7 @@
                     </button>
                 </div>
                 @if ($errors->has('PASSWORD'))
-                    <div class="invalid-feedback">
+                    <div  id="PASSWORD-error" class="invalid-feedback">
                         <strong>{{ $errors->first('PASSWORD') }}</strong>
                     </div>
                 @endif
@@ -57,7 +57,12 @@
 
 @section('auth_footer')
     @if (Session::has('pesan'))
-        <div class="alert alert-danger">{{ Session::get('pesan') }}</div>
+        <div id="pesan" class="alert alert-danger">{{ Session::get('pesan') }}</div>
+        <script>
+            setTimeout(function() {
+                document.getElementById("pesan").style.display = "none";
+            }, 5000); // 5000 milliseconds = 5 seconds
+        </script>
     @endif
 @endsection
 
@@ -70,6 +75,20 @@
                 input.attr("type", "text");
             } else {
                 input.attr("type", "password");
+            }
+        });
+
+        $("input[name='ID_USER']").on("input", function () {
+            if ($(this).hasClass("is-invalid")) {
+                $(this).removeClass("is-invalid");
+                $("#ID_USER-error").text(""); // Clear the error message
+            }
+        });
+
+        $("input[name='PASSWORD']").on("input", function () {
+            if ($(this).hasClass("is-invalid")) {
+                $(this).removeClass("is-invalid");
+                $("#PASSWORD-error").text(""); // Clear the error message
             }
         });
     });

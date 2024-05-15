@@ -29,18 +29,10 @@ class laporanController extends Controller
         if(getIdDepo() != 000){
             $gudang = gudang::where('ACTIVE',1)
             ->where('ID_DEPO',getIdDepo())
-            ->whereNotIn('ID_GUDANG', function($query) {
-                $query->select('ID_GUDANG')
-                    ->from('salesman');
-            })
             ->select('gudang.ID_GUDANG','gudang.NAMA')
             ->get();
         } else {
             $gudang = gudang::where('ACTIVE',1)
-            ->whereNotIn('ID_GUDANG', function($query) {
-                $query->select('ID_GUDANG')
-                    ->from('salesman');
-            })
             ->select('gudang.ID_GUDANG','gudang.NAMA')
             ->get();
         }

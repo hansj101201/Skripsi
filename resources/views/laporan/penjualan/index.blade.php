@@ -65,15 +65,17 @@
                 <tbody>
                 </tbody>
             </table>
-            <b>
-                <p>Total: <span id="total"></span></p>
-            </b>
-            <b>
-                <p>Potongan: <span id="potongan"></span></p>
-            </b>
-            <b>
-                <p>Netto: <span id="netto"></span></p>
-            </b>
+            <div style="display: flex; flex-wrap: wrap;">
+                <b style="margin-right: 20px;">
+                    <p>Total: <span id="total"></span></p>
+                </b>
+                <b style="margin-right: 20px;">
+                    <p>Potongan: <span id="potongan"></span></p>
+                </b>
+                <b>
+                    <p>Netto: <span id="netto"></span></p>
+                </b>
+            </div>
         </div>
     </div>
 

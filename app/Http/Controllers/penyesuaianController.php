@@ -127,6 +127,7 @@ class penyesuaianController extends Controller
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
                     'NOMOR' => $nomor,
+                    'KET01' => 'Penyesuaian Stok'
                 ]);
                 $nomor++;
             }

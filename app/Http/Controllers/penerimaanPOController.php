@@ -136,7 +136,24 @@ class penerimaanPOController extends Controller
             ->whereRaw('QTYKIRIM < QTYORDER')
             ->get();
 
-        if($data->isEmpty()){
+            $items = DB::table('hansjrco_abc.dtlinvorder')
+            ->whereIn('BUKTI', function ($query) use ($nomorpo) {
+                $query->select('BUKTI')
+                    ->from('trninvorder')
+                    ->where('NOMORPO', $nomorpo);
+            })
+            ->get();
+
+        // Check if all quantities are zero
+        $allQuantitiesZero = $items->every(function ($item) {
+            return $item->QTYKIRIM == 0;
+        });
+
+        if ($allQuantitiesZero) {
+            DB::table('trninvorder')
+                ->where('NOMORPO', $nomorpo)
+                ->update(['STATUS' => 0]);
+        } elseif($data->isEmpty()){
             DB::table('trninvorder')
             ->where('NOMORPO',$nomorpo)
             ->update(['STATUS'=>2]);

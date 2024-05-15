@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Laporan Stok')
+@section('title', 'Display Stok')
 
 @section('plugins.Datatables', true)
 
@@ -14,7 +14,7 @@
     <div class="card mb-4">
         <div class="card-header" style="display: flex; flex-direction: column;">
             <div>
-                <h1 class="card-title">Laporan Stok</h1>
+                <h1 class="card-title">Display Stok</h1>
             </div>
         </div>
         <div class="card-header">
@@ -82,11 +82,19 @@
                 </div>
 
                 <div class="modal-body">
-                    <p>Id Barang: <span id="idBarang"></span></p>
-                    <p>Nama Barang: <span id="namaBarang"></span></p>
-                    <p>Saldo Awal: <span id="saldoAwal"></span></p>
-                    <p>Saldo Akhir: <span id="saldoAkhir"></span></p>
+                    <div class="row">
+                        <div class="col-auto">
+                            <p><span id="idBarang"></span> - <span id="namaBarang"></span></p>
+                        </div>
+                        <div class="col-auto">
+                            <p>Saldo Awal: <span id="saldoAwal"></span></p>
+                        </div>
+                        <div class="col-auto">
+                            <p>Saldo Akhir: <span id="saldoAkhir"></span></p>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="modal-body">
                     <!-- Table to display data from DataTable -->
                     <table class="table responsive table-stripped table-bordered myTable" id="tableData">
