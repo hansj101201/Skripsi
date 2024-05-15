@@ -589,26 +589,30 @@
             });
 
             $('#barang_qty').on('input', function() {
-                var qtyString = $(this).val().replace(/[^\d]/g, '');
-                var qty = parseFloat(qtyString);
+    var input = $(this).val();
 
-                if (isNaN(qty) || qtyString === '') {
-        qty = 0;
+    // Allow only one minus sign at the beginning
+    if (input.startsWith('-')) {
+        var cleanedInput = '-' + input.substring(1).replace(/-/g, '').replace(/[^\d]/g, '');
+    } else {
+        var cleanedInput = input.replace(/-/g, '').replace(/[^\d]/g, '');
     }
-                $(this).val(formatHarga(qty));
 
-                if(qty == 0){
-                    isSaveButtonActive = false;
-                } else {
-                    isSaveButtonActive = true;
-                }
+    // Handle the case when input is just a minus sign
+    var qty = cleanedInput === '-' ? 0 : parseFloat(cleanedInput);
 
-                if (isSaveButtonActive) {
-                    $('#saveButton').prop('disabled', false);
-                } else {
-                    $('#saveButton').prop('disabled', true);
-                }
-            });
+    // Set the input value formatted (assuming formatHarga is a function to format the number)
+    if (cleanedInput === '' || cleanedInput === '-') {
+        $(this).val(cleanedInput);
+    } else {
+        $(this).val(formatHarga(qty));
+    }
+
+    var isSaveButtonActive = qty !== 0;
+
+    $('#saveButton').prop('disabled', !isSaveButtonActive);
+});
+
 
             $(document).on('click', '#tanggal', function() {
                 $('#tanggal').removeClass('is-invalid');
