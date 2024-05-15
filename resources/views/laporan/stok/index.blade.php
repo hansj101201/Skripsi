@@ -87,6 +87,9 @@
                             <p><span id="idBarang"></span> - <span id="namaBarang"></span></p>
                         </div>
                         <div class="col-auto">
+                            <p>Satuan: <span id="satuan"></span></p>
+                        </div>
+                        <div class="col-auto">
                             <p>Saldo Awal: <span id="saldoAwal"></span></p>
                         </div>
                         <div class="col-auto">
@@ -334,9 +337,11 @@
                 var nama = button.data('nama');
                 var awal = button.data('awal');
                 var akhir = button.data('akhir');
+                var satuan = button.data('satuan');
 
                 $('#idBarang').text(kode);
                 $('#namaBarang').text(nama);
+                $('#satuan').text(satuan);
                 $('#saldoAwal').text(formatHarga(parseFloat(awal)));
                 $('#saldoAkhir').text(formatHarga(parseFloat(akhir)));
                 createDataTable1(periode, gudang, kode);

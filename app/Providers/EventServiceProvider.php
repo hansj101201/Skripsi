@@ -43,7 +43,7 @@ class EventServiceProvider extends ServiceProvider
                         $event->menu->add([
                             'key' => $menu->MENU_GROUP,
                             'header' => Str::upper($menu->MENU_GROUP),
-                            // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+                            'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
 
                         ]);
                     }
@@ -55,7 +55,7 @@ class EventServiceProvider extends ServiceProvider
                         $temp = [
                             'key' => $key,
                             'text' => $menu->MENU_SUBGROUP,
-                            // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+                            'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
                         ];
 
                         if (Str::contains($menu->MENU_ICON, "fas")) {
@@ -78,7 +78,7 @@ class EventServiceProvider extends ServiceProvider
                         $temp = [
                             'key' => $key,
                             'text' => $menu->MENU_SUBMENU,
-                            // 'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
+                            'can' => $menu->Roles->pluck('ROLE_NAMA')->toArray(),
                         ];
 
                         if (Str::contains($menu->MENU_ICON, "fas")) {

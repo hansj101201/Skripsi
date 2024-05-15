@@ -90,10 +90,11 @@ class laporanController extends Controller
             return (object) $item;
         });
 
+
         return DataTables::of($stokPerBarangObject)
         ->addColumn('action', function ($row) {
             $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal"
-            data-target="#DataModal" data-kode="'.$row->ID_BARANG.'" data-awal="'.$row->STOK_AWAL.'" data-akhir="'.$row->STOK_AKHIR.'"
+            data-target="#DataModal" data-kode="'.$row->ID_BARANG.'" data-satuan="'.$row->SATUAN.'" data-awal="'.$row->STOK_AWAL.'" data-akhir="'.$row->STOK_AKHIR.'"
             data-nama="'.$row->NAMA_BARANG.'" data-periode="'.$row->PERIODE.'" data-gudang="'.$row->GUDANG.'">
             <span class="fas fa-eye"></span></button> &nbsp';
             return $actionButtons;
@@ -230,8 +231,7 @@ class laporanController extends Controller
         return $totalTerima + $totalTerimaGdg;
     }
 
-    private function sumKeluar($idGudang, $idBarang, $tahun, $bulan)
-    {
+    private function sumKeluar($idGudang, $idBarang, $tahun, $bulan){
         $totalKeluar = 0;
         $totalKeluarGdg = 0;
 
@@ -252,8 +252,7 @@ class laporanController extends Controller
         return $totalKeluar + $totalKeluarGdg;
     }
 
-    private function sumAdjust($idGudang, $idBarang, $tahun, $bulan)
-    {
+    private function sumAdjust($idGudang, $idBarang, $tahun, $bulan){
         $totalAdjust = 0;
 
         // Sum Adjust untuk bulan tersebut
@@ -322,15 +321,27 @@ class laporanController extends Controller
 
     public function getPenjualanCustomer($awal, $akhir)
     {
+        $idDepo = getIdDepo();
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
-        $trnsales = trnsales::where('trnsales.KDTRN', 12) // Menentukan tabel sumber
-            ->whereNotNull('trnsales.ID_CUSTOMER') // Menentukan tabel sumber
-            ->where('trnsales.ID_CUSTOMER', '!=', '') // Menentukan tabel sumber
-            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Menentukan tabel sumber
-            ->join('customer', 'trnsales.ID_CUSTOMER', '=', 'customer.ID_CUSTOMER') // Menentukan tabel sumber
+        if($idDepo == 000){
+        $trnsales = trnsales::where('trnsales.KDTRN', 12)
+            ->whereNotNull('trnsales.ID_CUSTOMER')
+            ->where('trnsales.ID_CUSTOMER', '!=', '')
+            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
+            ->join('customer', 'trnsales.ID_CUSTOMER', '=', 'customer.ID_CUSTOMER')
             ->select('trnsales.ID_CUSTOMER', 'customer.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
-            ->groupBy('trnsales.ID_CUSTOMER', 'customer.NAMA'); // Menentukan tabel sumber
+            ->groupBy('trnsales.ID_CUSTOMER', 'customer.NAMA');
+        } else {
+            $trnsales = trnsales::where('trnsales.KDTRN', 12)
+            ->where('trnsales.ID_DEPO', getIdDepo())
+            ->whereNotNull('trnsales.ID_CUSTOMER')
+            ->where('trnsales.ID_CUSTOMER', '!=', '')
+            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
+            ->join('customer', 'trnsales.ID_CUSTOMER', '=', 'customer.ID_CUSTOMER')
+            ->select('trnsales.ID_CUSTOMER', 'customer.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
+            ->groupBy('trnsales.ID_CUSTOMER', 'customer.NAMA');
+        }
 
         return Datatables::of($trnsales)
         ->addColumn('action', function ($row) {
@@ -346,13 +357,14 @@ class laporanController extends Controller
     {
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
+        $idDepo = getIdDepo();
         $trnsales = trnsales::where('KDTRN',12)
-            ->whereNotNull('trnsales.ID_SALESMAN') // Menentukan tabel sumber
-            ->where('trnsales.ID_SALESMAN', '!=', '') // Menentukan tabel sumber
-            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Menentukan tabel sumber
-            ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES') // Menentukan tabel sumber
+            ->whereNotNull('trnsales.ID_SALESMAN')
+            ->where('trnsales.ID_SALESMAN', '!=', '')
+            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
+            ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
             ->select('trnsales.ID_SALESMAN', 'salesman.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
-            ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA'); // Menentukan tabel sumber
+            ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA');
 
         return Datatables::of($trnsales)
             ->addColumn('action', function ($row) {
@@ -369,7 +381,7 @@ class laporanController extends Controller
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
         $trnjadi = trnjadi::where('KDTRN',12)
             ->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Tanggal harus berada di antara tanggal awal dan akhir
-            ->join('barang', 'trnjadi.ID_BARANG', '=', 'barang.ID_BARANG') // Menentukan tabel sumber
+            ->join('barang', 'trnjadi.ID_BARANG', '=', 'barang.ID_BARANG')
             ->select('trnjadi.ID_BARANG', 'barang.NAMA',DB::raw('SUM(trnjadi.Qty) as total_qty'),
             DB::raw('SUM(trnjadi.QTY * trnjadi.HARGA) as total_penjualan'), // Perkalian QTY dengan HARGA dan menjumlahkannya
         DB::raw('SUM(trnjadi.POTONGAN) as total_potongan')
