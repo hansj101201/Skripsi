@@ -760,7 +760,7 @@ class pdfController extends Controller
             ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
 
         // Generate a temporary file path to store the PDF
-        $filePath = storage_path('app/example.pdf');
+        $filePath = storage_path('app/invoice'.$bukti.'.pdf');
         $pdf->save($filePath);
 
         // Send email with PDF attachment
