@@ -57,11 +57,4 @@ class pdfEmail extends Mailable
                 ->withMime("application/pdf"),
         ];
     }
-
-    public function __destruct()
-    {
-        if (file_exists($this->filePath)) {
-            unlink($this->filePath);
-        }
-    }
 }
