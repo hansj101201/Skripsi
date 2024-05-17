@@ -48,7 +48,18 @@
                 $potongan = 0;
                 $jumlah = 0;
             @endphp
-            @foreach ($data as $d)
+            @foreach ($data as $detail)
+            <tr style="height: 10px;">
+                <td colspan="2" style="text-align: left;">
+                    <span style="color:#0000FF;font-weight: bold; margin-left: 10px">Depo: {{ $detail['ID_DEPO'] }} - {{ $detail['NAMADEPO'] }}</span>
+                </td>
+                <td></td>
+                <td></td>
+                <td style="color:#0000FF;font-weight: bold;text-align: right; margin-right: 10px;">{{ number_format($detail['TOTAL_PENJUALAN_ALL'], 0, ',', ',') }}</td>
+                <td style="color:#0000FF;font-weight: bold;text-align: right; margin-right: 10px;">{{ number_format($detail['TOTAL_POTONGAN_ALL'], 0, ',', ',') }}</td>
+                <td style="color:#0000FF;font-weight: bold;text-align: right; margin-right: 10px;">{{ number_format($detail['TOTAL_NETTO_ALL'], 0, ',', ',') }}</td>
+            </tr>
+            @foreach ($detail['PENJUALAN'] as $d)
             @php
                 $subtotal += $d['TOTAL_PENJUALAN'];
                 $potongan += $d['TOTAL_POTONGAN'];
@@ -57,9 +68,9 @@
                 <tr style="height: 10px;">
                     <td colspan="2" style="text-align: left;">
                         @if ($mode == 'Customer')
-                            <span style="color:#990000;font-weight: bold; margin-left: 10px">Customer: {{ $d['ID_CUSTOMER'] }} - {{ $d['NAMA'] }}</span>
+                            <span style="color:#990000;font-weight: bold; margin-left: 20px">Customer: {{ $d['ID_CUSTOMER'] }} - {{ $d['NAMA'] }}</span>
                         @elseif ($mode == 'Salesman')
-                            <span style="color:#990000;font-weight: bold; margin-left: 10px">Salesman: {{ $d['ID_SALESMAN'] }} - {{ $d['NAMA'] }}</span>
+                            <span style="color:#990000;font-weight: bold; margin-left: 20px">Salesman: {{ $d['ID_SALESMAN'] }} - {{ $d['NAMA'] }}</span>
                         @endif
                     </td>
                     <td></td>
@@ -68,17 +79,18 @@
                     <td style="color:#990000;font-weight: bold;text-align: right; margin-right: 10px;">{{ number_format($d['TOTAL_POTONGAN'], 0, ',', ',') }}</td>
                     <td style="color:#990000;font-weight: bold;text-align: right; margin-right: 10px;">{{ number_format($d['TOTAL_NETTO'], 0, ',', ',') }}</td>
                 </tr>
-                @foreach ($d['DETAIL_PENJUALAN'] as $detail)
+                @foreach ($d['DETAIL_PENJUALAN'] as $detailPenjualan)
                     <tr style="height: 10px;">
-                        <td style="text-align: left; padding-left: 20px;">{{ $detail['ID_BARANG'] }}</td>
-                        <td style="text-align: left; padding-left: 10px;">{{ $detail['nama_barang'] }}</td>
-                        <td style="text-align: left; padding-left: 10px;">{{ $detail['nama_satuan'] }}</td>
-                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detail['total'], 0, ',', ',') }}</td>
-                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detail['subtotal'], 0, ',', ',') }}</td>
-                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detail['potongan'], 0, ',', ',') }}</td>
-                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detail['jumlah'], 0, ',', ',') }}</td>
+                        <td style="text-align: left; padding-left: 30px;">{{ $detailPenjualan['ID_BARANG'] }}</td>
+                        <td style="text-align: left; padding-left: 10px;">{{ $detailPenjualan['nama_barang'] }}</td>
+                        <td style="text-align: left; padding-left: 10px;">{{ $detailPenjualan['nama_satuan'] }}</td>
+                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detailPenjualan['total'], 0, ',', ',') }}</td>
+                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detailPenjualan['subtotal'], 0, ',', ',') }}</td>
+                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detailPenjualan['potongan'], 0, ',', ',') }}</td>
+                        <td style="text-align: right; padding-right: 10px;">{{ number_format($detailPenjualan['jumlah'], 0, ',', ',') }}</td>
                     </tr>
                 @endforeach
+            @endforeach
             @endforeach
             <tr> <!-- Baris tambahan untuk subtotal, potongan, dan jumlah -->
                 <td colspan="4"> <strong>Total</strong></td>

@@ -23,6 +23,12 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="nama" class="col-sm-3 col-form-label">Email</label>
+                        <div class="col-sm-9">
+                            <input type="email" class="form-control" id="email" name="EMAIL" maxlength="45">
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="active" class="col-sm-3 col-form-label">Aktif</label>
                         <div class="col-sm-9">
                             <label class="switch">
@@ -176,6 +182,7 @@
         // Lakukan validasi di sini
         var kode_customer = formData.get('ID_CUSTOMER');
         var nama = formData.get('NAMA');
+        var email = formData.get('EMAIL');
         var idSales = $('#sales').val();
         if (kode_customer.trim() === '') {
             toastr.error('Kode Barang harus diisi');
@@ -187,6 +194,13 @@
             toastr.error('Nama harus diisi');
             $('#nama').addClass('is-invalid');
             return false; // Mengembalikan false jika validasi gagal
+        }
+
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            toastr.error('Email tidak valid');
+            $('#email_salesman').addClass('is-invalid');
+            return false;
         }
 
         if (idSales == '' || idSales == null){
@@ -202,6 +216,7 @@
         $('#alamat').val('');
         $('#kota').val('');
         $('#kode_pos').val('');
+        $('#email').val('');
         $('#telepon').val('');
         $('#pic').val('');
         $('#nomor_hp').val('');
@@ -253,6 +268,7 @@
                         // Isi nilai input field sesuai dengan data yang akan diedit
                         $('#kode_customer').val(data[0].ID_CUSTOMER);
                         $('#nama').val(data[0].NAMA);
+                        $('#email').val(data[0].EMAIL);
                         $('#alamat').val(data[0].ALAMAT);
                         $('#kota').val(data[0].KOTA);
                         $('#kode_pos').val(data[0].KODEPOS);
@@ -352,6 +368,10 @@
 
         $(document).on('click', '#nama', function(){
             $('#nama').removeClass('is-invalid');
+        })
+
+        $(document).on('click', '#email', function(){
+            $('#email').removeClass('is-invalid');
         })
 
         $('#kode_pos').on('input', function () {

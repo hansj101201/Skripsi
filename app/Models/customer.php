@@ -15,7 +15,7 @@ class customer extends Model
     public $incrementing = false;
     public $timestamps = false;
     protected $table = 'customer';
-    protected $fillable = ['ID_CUSTOMER', 'NAMA', 'NAMACUST', 'ALAMAT', 'KOTA', 'KODEPOS','TELEPON', 'PIC', 'NOMOR_HP', 'ALAMAT_KIRIM', 'KOTA_KIRIM', 'KODEPOS_KIRIM','TELEPON_KIRIM', 'PIC_KIRIM', 'NOMOR_HP_KIRIM', 'ACTIVE', 'ID_SALES','TITIK_GPS',
+    protected $fillable = ['ID_CUSTOMER', 'NAMA', 'EMAIL', 'ALAMAT', 'KOTA', 'KODEPOS','TELEPON', 'PIC', 'NOMOR_HP', 'ALAMAT_KIRIM', 'KOTA_KIRIM', 'KODEPOS_KIRIM','TELEPON_KIRIM', 'PIC_KIRIM', 'NOMOR_HP_KIRIM', 'ACTIVE', 'ID_SALES','TITIK_GPS',
     'TGLEDIT', 'TGLENTRY', 'USEREDIT', 'USERENTRY'];
     protected $casts = [
         'TGLENTRY' => 'datetime',

@@ -53,6 +53,7 @@ class customerController extends Controller
             $validatedData = $request->validate([
                 'ID_CUSTOMER' => 'required',
                 'NAMA' => 'required',
+                'EMAIL' => 'required',
                 'ALAMAT' => 'sometimes',
                 'KOTA' => 'sometimes',
                 'KODEPOS' => 'sometimes',
@@ -89,6 +90,7 @@ class customerController extends Controller
             $validatedData = $request->validate([
                 'ID_CUSTOMER' => 'required',
                 'NAMA' => 'required',
+                'EMAIL' => 'required',
                 'ALAMAT' => 'sometimes',
                 'KOTA' => 'sometimes',
                 'KODEPOS' => 'sometimes',

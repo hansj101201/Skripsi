@@ -34,14 +34,14 @@ use App\Http\Controllers\transferGudangController;
 
 
 
-Route::controller(Layout::class)->middleware(['Login'])->group(function (){
+Route::controller(Layout::class)->middleware(['auth'])->group(function (){
     Route::get('dashboard', 'index')->name('dashboard');
     Route::get('/','index');
     Route::get('getRole', 'getRole')->name('getRole');
 });
 
-Route::prefix('setup')->middleware(['Login'])->group(function () {
-    Route::prefix('barang')->middleware(['Login'])->group(function () {
+Route::prefix('setup')->middleware(['Login:SuperAdmin,Admin Depo,Pembelian'])->group(function () {
+    Route::prefix('barang')->middleware(['Login:SuperAdmin'])->group(function () {
         Route::controller(barangController::class)->group(function (){
             Route::get('index','index')->name('barang.index');
             Route::post('store','store')->name('barang.store');
@@ -54,7 +54,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('gudang')->middleware(['Login'])->group(function () {
+    Route::prefix('gudang')->middleware(['Login:SuperAdmin,Admin Depo'])->group(function () {
         Route::controller(gudangController::class)->group(function (){
             Route::get('index','index')->name('gudang.index');
             Route::post('store','store')->name('gudang.store');
@@ -70,7 +70,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('depo')->middleware(['Login'])->group(function () {
+    Route::prefix('depo')->middleware(['Login:SuperAdmin'])->group(function () {
         Route::controller(depoController::class)->group(function (){
             Route::get('index','index')->name('depo.index');
             Route::post('store','store')->name('depo.store');
@@ -85,7 +85,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('salesman')->middleware(['Login'])->group(function () {
+    Route::prefix('salesman')->middleware(['Login:SuperAdmin,Admin Depo'])->group(function () {
         Route::controller(salesmanController::class)->group(function (){
             Route::get('index','index')->name('salesman.index');
             Route::post('store','store')->name('salesman.store');
@@ -96,7 +96,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('harga')->middleware(['Login'])->group(function () {
+    Route::prefix('harga')->middleware(['Login:SuperAdmin'])->group(function () {
         Route::controller(hargaController::class)->group(function (){
             Route::get('index','index')->name('harga.index');
             Route::post('store','store')->name('harga.store');
@@ -108,7 +108,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('satuan')->middleware(['Login'])->group(function () {
+    Route::prefix('satuan')->middleware(['Login:SuperAdmin'])->group(function () {
         Route::controller(satuanController::class)->group(function (){
             Route::get('index','index')->name('satuan.index');
             Route::post('store','store')->name('satuan.store');
@@ -119,7 +119,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('supplier')->middleware(['Login'])->group(function () {
+    Route::prefix('supplier')->middleware(['Login:SuperAdmin,Pembelian'])->group(function () {
         Route::controller(supplierController::class)->group(function (){
             Route::get('index','index')->name('supplier.index');
             Route::post('store','store')->name('supplier.store');
@@ -130,7 +130,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('customer')->middleware(['Login'])->group(function () {
+    Route::prefix('customer')->middleware(['Login:SuperAdmin,Admin Depo'])->group(function () {
         Route::controller(customerController::class)->group(function (){
             Route::get('index','index')->name('customer.index');
             Route::post('store','store')->name('customer.store');
@@ -143,7 +143,7 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('user')->middleware(['Login'])->group(function () {
+    Route::prefix('user')->middleware(['Login:SuperAdmin,Admin Depo'])->group(function () {
         Route::controller(AuthController::class)->group(function (){
             Route::get('index','index')->name('user.index');
             Route::post('store','register')->name('user.store');
@@ -155,11 +155,11 @@ Route::prefix('setup')->middleware(['Login'])->group(function () {
     });
 });
 
-Route::prefix('transaksi')->middleware(['Login'])->group(function () {
+Route::prefix('transaksi')->middleware(['Login:Pembelian,Admin Depo'])->group(function () {
     Route::controller(stkjadiController::class)->group(function () {
         Route::get('getSaldoBarang', 'getSaldoBarang')->name('getSaldoBarang');
     });
-    Route::prefix('gudang')->middleware(['Login'])->group(function (){
+    Route::prefix('gudang')->middleware(['Login:Admin Depo'])->group(function (){
         Route::controller(penerimaanPOController::class)->group(function () {
             Route::get('index', 'index')->name('gudang.terimaPO');
             Route::get('fetch-data/{id}', 'fetchDataById')->where('id', '.*');
@@ -175,7 +175,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('pengeluaran')->middleware(['Login'])->group(function (){
+    Route::prefix('pengeluaran')->middleware(['Login:Admin Depo'])->group(function (){
         Route::controller(pengeluaranBarangKanvasController::class)->group(function () {
             Route::get('getPermintaanActive','getPermintaanActive');
             Route::get('getPermintaanAll','getPermintaanAll');
@@ -190,7 +190,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('transfergudang')->middleware(['Login'])->group(function(){
+    Route::prefix('transfergudang')->middleware(['Login:Admin Depo'])->group(function(){
         Route::controller(transferGudangController::class)->group(function () {
             Route::get('index', 'index');
             Route::get('datatable', 'datatable')->name('transfer.datatable');
@@ -213,7 +213,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('pembelian')->middleware(['Login'])->group(function(){
+    Route::prefix('pembelian')->middleware(['Login:Pembelian'])->group(function(){
         Route::controller(pembelianController::class)->group(function () {
             Route::get('index', 'index');
             Route::get('datatable', 'datatable')->name('pembelian.datatable');
@@ -227,7 +227,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
         });
     });
 
-    Route::prefix('penyesuaian')->middleware(['Login'])->group(function(){
+    Route::prefix('penyesuaian')->middleware(['Login:Admin Depo'])->group(function(){
         Route::controller(penyesuaianController::class)->group(function () {
             Route::get('index', 'index');
             Route::get('datatable', 'datatable')->name('penyesuaian.datatable');
@@ -240,7 +240,7 @@ Route::prefix('transaksi')->middleware(['Login'])->group(function () {
     });
 });
 
-Route::prefix('laporan')->middleware(['Login'])->group(function(){
+Route::prefix('laporan')->middleware(['Login:SuperAdmin,Admin Depo'])->group(function(){
     Route::controller(laporanController::class)->group(function () {
         Route::get('penjualan', 'penjualan');
         Route::get('stok', 'stok');
@@ -254,22 +254,19 @@ Route::prefix('laporan')->middleware(['Login'])->group(function(){
     });
 });
 
-Route::prefix('pdf')->group(function(){
+Route::prefix('pdf')->middleware(['Login:SuperAdmin,Admin Depo'])->group(function(){
     Route::controller(pdfController::class)->group(function () {
         Route::get('index', 'index');
         Route::get('getStok/{periode}/{id}','getStok');
-        Route::get('getPenjualanCustomer/{awal}/{akhir}','getPenjualanCustomer');
         Route::get('getPenjualanBarang/{awal}/{akhir}','getPenjualanBarang');
-        Route::get('getPenjualanSalesman/{awal}/{akhir}','getPenjualanSalesman');
-        Route::get('getPenjualanPerSalesman/{bukti}/{tahun}','getPenjualanPerSalesman');
 
-        Route::get('pdfCustomer/{periode}/{id}', 'pdfCustomer');
-        Route::get('pdfSalesman/{periode}/{id}', 'pdfSalesman');
+        Route::get('pdfCustomer/{periode}/{id}/{depo}', 'pdfCustomer');
+        Route::get('pdfSalesman/{periode}/{id}/{depo}', 'pdfSalesman');
     });
 });
 
 Route::controller(AuthController::class)->group(function () {
-    Route::get('login','login');
+    Route::get('login','login')->name('login');
     Route::post('doLogin','doLogin')->name('user.login');
     Route::get('logout','logout')->name('logout');
 });
