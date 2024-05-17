@@ -734,7 +734,6 @@ class pdfController extends Controller
             ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
             ->select('customer.EMAIL')
             ->first();
-            dump($emailCustomer);
 
         $emailSalesman = trnsales::where('KDTRN',12)
             ->where('trnsales.BUKTI', $bukti)
@@ -742,7 +741,6 @@ class pdfController extends Controller
             ->join('salesman', 'trnsales.ID_SALESMAN', 'salesman.ID_SALES')
             ->select('salesman.EMAIL')
             ->first();
-            dump($emailSalesman);
         $data = [
             "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
             "salesman" => $this->getPenjualanPerSalesman($bukti,$tahun)
@@ -774,7 +772,9 @@ class pdfController extends Controller
         // ->cc($emailSalesman)
         // ->queue(new pdfEmail($filePath));
 
-        return response()->json(['message'=>'success'],200);
+        // return response()->json(['message'=>'success'],200);
+
+        return response()->json(['emailcustomer'=>$emailCustomer, 'emailsalesman'=>$emailSalesman]);
     }
 
 }
