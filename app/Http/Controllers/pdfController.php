@@ -737,9 +737,13 @@ class pdfController extends Controller
         if ($sendEmail) {
             $filePath = storage_path('app/example.pdf');
             $pdf->save($filePath);
+            // Mail::to($emailCustomer)
+            // ->cc($emailSalesman)
+            // ->send(new pdfEmail($filePath));
+
             Mail::to($emailCustomer)
             ->cc($emailSalesman)
-            ->send(new pdfEmail($filePath));
+            ->queue(new pdfEmail($filePath));
 
             return response()->json(['message'=>'success'],200);
         } else {
@@ -816,13 +820,13 @@ class pdfController extends Controller
         $pdf->save($filePath);
 
         // Send email with PDF attachment
-        Mail::to($emailCustomer)
-        ->cc($emailSalesman)
-        ->send(new pdfEmail($filePath));
-
         // Mail::to($emailCustomer)
         // ->cc($emailSalesman)
-        // ->queue(new pdfEmail($filePath));
+        // ->send(new pdfEmail($filePath));
+
+        Mail::to($emailCustomer)
+        ->cc($emailSalesman)
+        ->queue(new pdfEmail($filePath));
 
         return response()->json(['message'=>'success'],200);
     }
