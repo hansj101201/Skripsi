@@ -764,17 +764,17 @@ class pdfController extends Controller
         $pdf->save($filePath);
 
         // Send email with PDF attachment
-        Mail::to($emailCustomer)
-        ->cc($emailSalesman)
+        Mail::to($emailCustomer->EMAIL)
+        ->cc($emailSalesman->EMAIL)
         ->send(new pdfEmail($filePath));
 
-        // Mail::to($emailCustomer)
-        // ->cc($emailSalesman)
+        // Mail::to($emailCustomer->EMAIL)
+        // ->cc($emailSalesman->EMAIL)
         // ->queue(new pdfEmail($filePath));
 
-        // return response()->json(['message'=>'success'],200);
+        return response()->json(['message'=>'success'],200);
 
-        return response()->json(['emailcustomer'=>$emailCustomer, 'emailsalesman'=>$emailSalesman]);
+
     }
 
 }
