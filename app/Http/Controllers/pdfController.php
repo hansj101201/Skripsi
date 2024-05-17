@@ -697,62 +697,6 @@ class pdfController extends Controller
         return $trnsales;
     }
 
-    public function generateAndSendPdf(Request $request)
-    {
-        $bukti = $request->BUKTI;
-        $tahun = $request->TAHUN;
-        $sendEmail = $request->sendEmail;
-
-        $emailCustomer = trnsales::where('KDTRN',12)
-            ->where('trnsales.BUKTI', $bukti)
-            ->whereRaw("LEFT(trnsales.PERIODE, 4) = '$tahun'")
-            ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
-            ->select('customer.EMAIL')
-            ->first();
-
-        $emailSalesman = trnsales::where('KDTRN',12)
-            ->where('trnsales.BUKTI', $bukti)
-            ->whereRaw("LEFT(trnsales.PERIODE, 4) = '$tahun'")
-            ->join('salesman', 'trnsales.ID_SALESMAN', 'salesman.ID_SALES')
-            ->select('salesman.EMAIL')
-            ->first();
-        $data = [
-            "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
-            "salesman" => $this->getPenjualanPerSalesman($bukti,$tahun)
-        ];
-        $pdf = SnappyPdf::loadView('pdf.penjualan.pdfInvoiceKanvas', $data)
-            ->setPaper('a4')
-            ->setOrientation('portrait')
-            ->setOption('margin-left', 5)
-            ->setOption('margin-right', 5)
-            ->setOption('margin-top', 30)
-            ->setOption('margin-bottom', 20)
-            ->setOption("footer-right", "Halaman [page] dari [topage]")
-            ->setOption("header-spacing", 5)
-            ->setOption("footer-spacing", 5)
-            ->setOption("enable-local-file-access", true)
-            ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
-            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]));
-
-        if ($sendEmail) {
-            $filePath = storage_path('app/example.pdf');
-            $pdf->save($filePath);
-            Mail::to($emailCustomer)
-            ->cc($emailSalesman)
-            ->send(new pdfEmail($filePath));
-
-            // Mail::to($emailCustomer)
-            // ->cc($emailSalesman)
-            // ->queue(new pdfEmail($filePath));
-
-            return response()->json(['message'=>'success'],200);
-        } else {
-            // Directly download the PDF
-            return $pdf->download($bukti.'.pdf');
-        }
-    }
-
-
     public function generatePdf(Request $request)
     {
         $bukti = $request->BUKTI;
@@ -790,6 +734,7 @@ class pdfController extends Controller
             ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
             ->select('customer.EMAIL')
             ->first();
+            dump($emailCustomer);
 
         $emailSalesman = trnsales::where('KDTRN',12)
             ->where('trnsales.BUKTI', $bukti)
@@ -797,6 +742,7 @@ class pdfController extends Controller
             ->join('salesman', 'trnsales.ID_SALESMAN', 'salesman.ID_SALES')
             ->select('salesman.EMAIL')
             ->first();
+            dump($emailSalesman);
         $data = [
             "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
             "salesman" => $this->getPenjualanPerSalesman($bukti,$tahun)
