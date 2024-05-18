@@ -50,13 +50,14 @@ class laporanController extends Controller
 
         // Mendapatkan daftar barang yang ada di gudang
         $daftarBarang = DB::table('stkjadi')
-            ->select('ID_BARANG')
+            ->join('barang','barang.ID_BARANG','stkjadi.ID_BARANG')
+            ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
+            ->select('stkjadi.ID_BARANG','satuan.NAMA AS namasatuan','barang.NAMA AS namabarang')
             ->where('ID_GUDANG', $idGudang)
-            ->groupBy('ID_BARANG')
+            ->groupBy('stkjadi.ID_BARANG','barang.NAMA','satuan.NAMA')
             ->get();
         // Array untuk menyimpan informasi stok per barang
         $stokPerBarang = array();
-
         foreach ($daftarBarang as $barang) {
 
             $stokAwal = $this->hitungStokAwalPerBarang($idGudang, $barang->ID_BARANG, $tahun, $bulan);
@@ -65,15 +66,11 @@ class laporanController extends Controller
             $totalKeluar = $this->sumKeluar($idGudang, $barang->ID_BARANG, $tahun, $bulan);
             $totalAdjust = $this->sumAdjust($idGudang, $barang->ID_BARANG, $tahun, $bulan);
 
-            // Mendapatkan informasi barang dan satuan
-            $barangInfo = barang::where('ID_BARANG', $barang->ID_BARANG)->first();
-            $satuanInfo = satuan::where('ID_SATUAN', $barangInfo->ID_SATUAN)->first();
-
             // Menyimpan informasi stok per barang ke dalam array
             $newItem = [
-                'ID_BARANG' => $barangInfo->ID_BARANG,
-                'NAMA_BARANG' => $barangInfo->NAMA,
-                'SATUAN' => $satuanInfo->NAMA,
+                'ID_BARANG' => $barang->ID_BARANG,
+                'NAMA_BARANG' => $barang->namabarang,
+                'SATUAN' => $barang->namasatuan,
                 'ADJUST' => $totalAdjust,
                 'TOTAL_TERIMA' => $totalTerima,
                 'TOTAL_KELUAR' => $totalKeluar,
@@ -91,7 +88,6 @@ class laporanController extends Controller
         $stokPerBarangObject = $stokPerBarangCollection->map(function ($item) {
             return (object) $item;
         });
-
 
         return DataTables::of($stokPerBarangObject)
             ->addColumn('action', function ($row) {

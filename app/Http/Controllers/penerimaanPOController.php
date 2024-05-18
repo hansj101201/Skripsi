@@ -9,6 +9,7 @@ use App\Models\supplier;
 use App\Models\trninvorder;
 use App\Models\trnjadi;
 use App\Models\trnsales;
+use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -31,9 +32,9 @@ class penerimaanPOController extends Controller
     {
         $idDepo = trim(getIdDepo());
         if ($idDepo != '000') {
-            $trnorder = trninvorder::where('STATUS', '!=', 2)->where('ID_DEPO',getIdDepo())->get();
+            $trnorder = trninvorder::where('STATUS', '!=', 2)->where('ID_DEPO',getIdDepo())->whereDate('TANGGAL', '<=', Carbon::now())->get();
         } else {
-            $trnorder = trninvorder::where('STATUS', '!=', 2)->get();
+            $trnorder = trninvorder::where('STATUS', '!=', 2)->whereDate('TANGGAL', '<=', Carbon::now())->get();
         }
 
         return response()->json($trnorder);

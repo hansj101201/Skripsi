@@ -15,9 +15,9 @@ class customerController extends Controller
 
     public function index(){
         if(getIdDepo()=='000'){
-            $sales = salesman::all();
+            $sales = salesman::where('ACTIVE',1)->get();
         } else {
-            $sales = salesman::where('ID_DEPO',getIdDepo())->get();
+            $sales = salesman::where('ID_DEPO',getIdDepo())->where('ACTIVE',1)->get();
         }
         return view('layout.setup.customer.index', compact('sales'));
     }

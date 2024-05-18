@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\gudang;
 use App\Models\trnjadi;
 use App\Models\trnsales;
+use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -275,12 +276,12 @@ class pengeluaranBarangKanvasController extends Controller
     }
 
     public function getPermintaanActive(){
-        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->where('STATUS',0)->get();
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->where('STATUS',0)->whereDate('TANGGAL', '<=', Carbon::now())->get();
         return response()->json($trnsales);
     }
 
     public function getPermintaanAll(){
-        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->get();
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->whereDate('TANGGAL', '<=', Carbon::now())->get();
         return response()->json($trnsales);
     }
 }

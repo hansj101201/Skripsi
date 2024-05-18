@@ -129,6 +129,38 @@ function updateSupplierOptions(urlPass, callback) {
     });
 }
 
+function updateSalesOptions(urlPass, callback) {
+    var url = urlPass;
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function(data) {
+            console.log(data);
+            // Kosongkan dulu opsi gudang yang ada
+            $('#sales').empty();
+
+            // Tambahkan opsi pertama dengan nilai kosong
+            $('#sales').append($('<option>', {
+                value: '',
+                text: 'Pilih'
+            }));
+            // Tambahkan opsi sales berdasarkan data yang diterima dari server
+            data.forEach(function(sales) {
+                $('#sales').append($('<option>', {
+                    value: sales.ID_SALES,
+                    text: sales.NAMA
+                }));
+            });
+            if (typeof callback === 'function') {
+                callback();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
+        }
+    });
+}
+
 function updateCustomerOptions(urlPass, callback) {
     var url = urlPass
     $.ajax({

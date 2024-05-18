@@ -122,22 +122,22 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="saldo" name="SALDO" maxlength="6"
-                                readonly>
+                            <input type="text" class="form-control" id="saldo" name="SALDO"
+                                readonly style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Qty Order</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="qtyorder" name="QTYORDER"
-                                maxlength="6" readonly>
+                                readonly style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Qty</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="qtykirim" name="QTYKIRIM"
-                                maxlength="6">
+                                style="text-align: right;">
                         </div>
                     </div>
                 </div>
@@ -228,7 +228,7 @@
             arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(4)').text();
+                var qtyKirim = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
                 if(qtyKirim > 0){
                     arrBarang.push([idBarang, qtyKirim]);
                 }
@@ -279,15 +279,15 @@
             var kode = $('#kode_barang').val();
             var nama = $('#nama_barang').val();
             var satuan = $('#satuan').val();
-            var saldo = $('#saldo').val();
-            var qtyorder = parseFloat($('#qtyorder').val()); // Parse as float
-            var qty = parseFloat($('#qtykirim').val()); // Parse as float
+            var saldo = $('#saldo').val().replace(/[^\d]/g, '');
+            var qtyorder = parseFloat($('#qtyorder').val().replace(/[^\d]/g, '')); // Parse as float
+            var qty = parseFloat($('#qtykirim').val().replace(/[^\d]/g, '')); // Parse as float
 
             var $existingRow = $('#' + kode);
             $existingRow.find('td:eq(1)').text(nama);
             $existingRow.find('td:eq(2)').text(satuan);
-            $existingRow.find('td:eq(3)').text(qtyorder);
-            $existingRow.find('td:eq(4)').text(qty);
+            $existingRow.find('td:eq(3)').text(formatHarga(qtyorder));
+            $existingRow.find('td:eq(4)').text(formatHarga(qty));
 
             // Update the data attributes of the edit button
             var $editButton = $existingRow.find('.edit-button');
@@ -336,7 +336,7 @@
                                         <td class="text-left" style="padding-left: 10px;">${detailData[i].ID_BARANG}</td>
                                         <td class="text-left" style="padding-left: 10px;">${detailData[i].nama_barang}</td>
                                         <td class="text-left" style="padding-left: 10px;">${detailData[i].nama_satuan}</td>
-                                        <td class="text-right" style="padding-right: 10px;">${qty}</td>
+                                        <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                                         <td class="text-right" style="padding-right: 10px;">0</td>
                                         <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                                             data-kode="${detailData[i].ID_BARANG}"
@@ -417,8 +417,8 @@
                                                         <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
                                                         <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                                         <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
-                                                        <td class="text-right" style="padding-right: 10px;">${dataArray[i].QTYMINTA}</td>
-                                                        <td class="text-right" style="padding-right: 10px;">${qty}</td>`
+                                                        <td class="text-right" style="padding-right: 10px;">${formatHarga(dataArray[i].QTYMINTA)}</td>
+                                                        <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>`
                                         if (tanggalTransaksi > tanggalPenutupan) {
                                             createTable += `<td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                                                             data-kode="${data[i].ID_BARANG}"
@@ -453,7 +453,7 @@
             arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(4)').text();
+                var qtyKirim = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
                 arrBarang.push([idBarang, qtyKirim]);
             });
             console.log(arrBarang);
@@ -529,7 +529,7 @@
                         },
                         success: function(data) {
                             console.log(data);
-                            $('#saldo').val(parseFloat(data).toFixed(0));
+                            $('#saldo').val(formatHarga(parseFloat(data).toFixed(0)));
                             if (typeof callback === "function") {
                                 callback();
                             }
@@ -541,6 +541,11 @@
                     // Handle the error if necessary
                 }
             });
+        }
+
+        function validateNumberInput(input) {
+            // Menghapus karakter selain angka menggunakan regular expression
+            input.value = input.value.replace(/\D/g, '');
         }
 
         $(document).ready(function() {
@@ -738,9 +743,11 @@
             })
 
             $('#qtykirim').on('input', function() {
-                var qtyminta = parseFloat($('#qtyorder').val());
-                var qty = parseFloat($(this).val());
-                var saldo = parseFloat($('#saldo').val());
+                validateNumberInput(this)
+                var qtyminta = parseFloat($('#qtyorder').val()).replace(/[^\d]/g, '');
+                var qtyString = $(this).val().replace(/[^\d]/g, '');
+                var qty = parseFloat(qtyString);
+                var saldo = parseFloat($('#saldo').val().replace(/[^\d]/g, ''));
                 var stok = parseFloat($('#stok_lama').val());
                 console.log("qty" + qty);
                 console.log("stok" + stok);
@@ -751,15 +758,19 @@
                         if (qty > stok) {
                             if (qty - stok > saldo) {
                                 toastr.error('Barang tidak boleh melebihi stok');
+                                $(this).val(formatHarga(parseFloat(qty)));
                                 isSaveButtonActive = false;
                             } else {
+                                $(this).val(formatHarga(parseFloat(qty)));
                                 isSaveButtonActive = true;
                             }
                         } else {
+                            $(this).val(formatHarga(parseFloat(qty)));
                             isSaveButtonActive = true;
                         }
                     } else {
                         toastr.error('Barang tidak boleh melebihi permintaan');
+                        $(this).val(formatHarga(parseFloat(qty)));
                         isSaveButtonActive = false;
                     }
                 }

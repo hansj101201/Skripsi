@@ -142,6 +142,7 @@
                                 <label for="titik_gps" class="col-sm-3 col-form-label">Titik GPS</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="titik_gps" name="TITIK_GPS" maxlength="100">
+                                    <button type="button" onclick="openMapModal()">Select Location</button>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -166,13 +167,113 @@
     </div>
 </div>
 
+<div id="mapModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeMapModal()">&times;</span>
+        <input type="text" id="addressInput" placeholder="Enter address here">
+        <button type="button" onclick="geocodeAddress()">Find Location</button>
+        <div id="map"></div>
+        <button type="button" onclick="selectLocation()">Select this location</button>
+    </div>
+</div>
+
+
 @push('css')
+<style>
+    #map {
+        height: 500px;
+        width: 100%;
+    }
+</style>
     <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
 @endpush
 
 @push('js')
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSaSZNd8RPSWMlPsu1qXN6F9r1aMxY2Kg&callback=initMap&libraries=places,marker" async defer></script>
 <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
+<script>
+    var map;
+    var marker;
+    var selectedLocation;
+    var geocoder;
+
+    function initMap() {
+        var initialLocation = { lat: -6.200000, lng: 106.816666 };
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 8,
+            center: initialLocation
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        map.addListener('click', function(event) {
+            placeMarker(event.latLng);
+        });
+
+        // Check if titik_gps has a value and place the marker at that location
+        var titikGPSValue = document.getElementById('titik_gps').value;
+        if (titikGPSValue) {
+            var coords = titikGPSValue.split(',').map(Number);
+            var gpsLocation = { lat: coords[0], lng: coords[1] };
+            placeMarker(gpsLocation);
+            map.setCenter(gpsLocation);
+        }
+    }
+
+    function placeMarker(location) {
+        if (marker) {
+            marker.setPosition(location);
+        } else {
+            marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+        selectedLocation = location;
+    }
+
+    function openMapModal() {
+        document.getElementById('mapModal').style.display = "block";
+        google.maps.event.trigger(map, 'resize');
+
+        // Reset the map center and marker position when the modal is opened
+        var titikGPSValue = document.getElementById('titik_gps').value;
+        if (titikGPSValue) {
+            var coords = titikGPSValue.split(',').map(Number);
+            var gpsLocation = { lat: coords[0], lng: coords[1] };
+            map.setCenter(gpsLocation);
+            placeMarker(gpsLocation);
+        } else {
+            map.setCenter({ lat: -6.200000, lng: 106.816666 });
+        }
+    }
+
+    function closeMapModal() {
+        document.getElementById('mapModal').style.display = "none";
+    }
+
+    function selectLocation() {
+        if (selectedLocation) {
+            document.getElementById('titik_gps').value = selectedLocation.lat() + ', ' + selectedLocation.lng();
+            closeMapModal();
+        } else {
+            alert('Please select a location on the map.');
+        }
+    }
+
+    function geocodeAddress() {
+        var address = document.getElementById('addressInput').value;
+        geocoder.geocode({ 'address': address }, function(results, status) {
+            if (status === 'OK') {
+                map.setCenter(results[0].geometry.location);
+                placeMarker(results[0].geometry.location);
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+</script>
 <script>
     function validateNumberInput(input) {
         // Menghapus karakter selain angka menggunakan regular expression

@@ -138,7 +138,7 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly>
+                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -563,7 +563,7 @@
                         },
                         success: function(data) {
                             console.log(data);
-                            $('#barang_saldo').val(parseFloat(data).toFixed(0));
+                            $('#barang_saldo').val(formatHarga(parseFloat(data).toFixed(0)));
                         }
                     });
                 },
@@ -572,6 +572,11 @@
                     // Handle the error if necessary
                 }
             });
+        }
+
+        function validateNumberInput(input) {
+            // Menghapus karakter selain angka menggunakan regular expression
+            input.value = input.value.replace(/\D/g, '');
         }
 
         $(document).ready(function() {
@@ -723,9 +728,10 @@
             });
 
             $('#diskon').on('input', function() {
+                validateNumberInput(this);
                 var subtotalString = $('#subtotal').val().replace(/[^\d]/g, '');
                 var subtotal = parseFloat(subtotalString);
-                var discountString = $(this).val().trim();
+                var discountString = $(this).val();
                 var discount = discountString !== '' ? parseFloat(discountString.replace(/[^\d]/g, '')) : 0;
 
                 // Pastikan qty dan harga merupakan angka yang valid
@@ -750,11 +756,12 @@
             });
 
             $('#barang_potongan').on('input', function() {
+                validateNumberInput(this);
                 var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
                 var qty = parseFloat(qtyString);
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
                 var harga = parseFloat(hargaString);
-                var potonganString = $(this).val().trim();
+                var potonganString = $(this).val();
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
 
                 // Pastikan qty dan harga merupakan angka yang valid
@@ -782,24 +789,34 @@
             });
 
             $('#barang_qty').on('input', function() {
+                validateNumberInput(this)
                 var qtyString = $(this).val().replace(/[^\d]/g, '');
                 var qty = parseFloat(qtyString);
-                var saldo = parseFloat($('#barang_saldo').val());
+                var saldo = parseFloat($('#barang_saldo').val().replace(/[^\d]/g, ''));
                 var stok = parseFloat($('#stok_lama').val());
-                var potonganString = $('#barang_potongan').val().trim();
+                var potonganString = $('#barang_potongan').val();
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
                 var harga = parseFloat(hargaString);
                 if (!isNaN(qty) && !isNaN(harga)) {
                     if (qty > stok) {
                         if (qty - stok > saldo) {
-                            toastr.error('Barang tidak boleh melebihi stok');
-                            return;
-                        } else {}
+                            isSaveButtonActive = false;
+                        } else {
+                            isSaveButtonActive = true;
+                        }
                     }
                     var jumlah = qty * harga - potongan;
                     $('#barang_jumlah').val(formatHarga(parseFloat(jumlah)));
                     $(this).val(formatHarga(qty));
+                } else {
+                    isSaveButtonActive = false;
+                }
+
+                if (isSaveButtonActive) {
+                    $('#saveButton').prop('disabled', false);
+                } else {
+                    $('#saveButton').prop('disabled', true);
                 }
             });
 
