@@ -34,6 +34,7 @@ class stkjadiController extends Controller
             ->where('stkjadi.ID_GUDANG', $idGudang)
             ->join('barang', 'stkjadi.ID_BARANG', '=', 'barang.ID_BARANG')
             ->where('barang.ACTIVE',1)
+            ->where('stkjadi.SALDO','!=','0')
             ->join('satuan', 'barang.ID_SATUAN', 'satuan.ID_SATUAN')
             ->select('barang.*', 'stkjadi.SALDO AS saldo', 'satuan.NAMA AS nama_satuan')
             ->get();
@@ -53,6 +54,7 @@ class stkjadiController extends Controller
             ->where('stkjadi.ID_GUDANG', $idGudang)
             ->join('barang', 'stkjadi.ID_BARANG', '=', 'barang.ID_BARANG')
             ->where('barang.ACTIVE', 1)
+            ->where('stkjadi.SALDO','!=','0')
             ->join('satuan', 'barang.ID_SATUAN', 'satuan.ID_SATUAN')
             ->join('harga', function ($join) use ($tanggalFormatted) {
                 $join->on('barang.ID_BARANG', '=', 'harga.ID_BARANG')
