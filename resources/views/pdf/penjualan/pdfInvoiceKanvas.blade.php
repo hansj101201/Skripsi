@@ -40,21 +40,19 @@
             text-align: left;
         }
         .invoice-total {
-            display: flex;
-            justify-content: space-between;
             margin-top: 20px;
-        }
-        .total-label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .total-value {
-            text-align: right;
         }
         .total-item {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
+            padding: 5px 0;
+            font-weight: bold;
+        }
+        .total-label {
+            text-align: left;
+        }
+        .total-value {
+            text-align: right;
         }
     </style>
 </head>
