@@ -71,6 +71,7 @@
             <div class="col">
                 <a href="#" onclick="generatePDF('pdf/pdfCustomer')" class="btn btn-primary">Customer</a>
                 <a href="#" onclick="generatePDF('pdf/pdfSalesman')" class="btn btn-primary">Salesman</a>
+                <a href="#" onclick="generatePDF('pdf/pdfBarang')" class="btn btn-primary">Barang</a>
             </div>
         </div>
 

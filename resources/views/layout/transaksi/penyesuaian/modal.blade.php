@@ -547,6 +547,7 @@
                 var getBarangActiveUrl = "{{ url('setup/barang/getBarangActive') }}";
                 var getBarangAllUrl = "{{ url('setup/barang/getBarangAll') }}";
 
+                console.log(getBarangActiveUrl);
                 if (!tanggal) {
                     // e.preventDefault();
                     $('#tanggal').addClass('is-invalid')

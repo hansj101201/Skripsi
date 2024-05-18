@@ -53,7 +53,7 @@ class pdfEmail extends Mailable
     {
         return [
             Attachment::fromPath($this->filePath)
-                ->as('nama_file.pdf')
+                ->as('invoice.pdf')
                 ->withMime("application/pdf"),
         ];
     }

@@ -40,17 +40,17 @@ Route::controller(Layout::class)->middleware(['auth'])->group(function (){
     Route::get('getRole', 'getRole')->name('getRole');
 });
 
-Route::prefix('setup')->middleware(['Login:SuperAdmin,Admin Depo,Pembelian'])->group(function () {
-    Route::prefix('barang')->middleware(['Login:SuperAdmin'])->group(function () {
+Route::prefix('setup')->middleware(['Login:SuperAdmin,Admin Depo,Pembelian,Penjualan'])->group(function () {
+    Route::prefix('barang')->middleware(['Login:SuperAdmin,Admin Depo,Admin Gudang,Pembelian'])->group(function () {
         Route::controller(barangController::class)->group(function (){
-            Route::get('index','index')->name('barang.index');
-            Route::post('store','store')->name('barang.store');
-            Route::put('update','update')->name('barang.update');
-            Route::delete('/{ID}','destroy');
-            Route::get('getDetailBarang', 'getDetailBarang')->name('getDetailBarang');
-            Route::get('datatable', 'datatable')->name('barang.datatable');
-            Route::get('getBarangActive', 'getBarangActive');
-            Route::get('getBarangAll', 'getBarangAll');
+            Route::get('index','index')->middleware(['Login:SuperAdmin'])->name('barang.index');
+            Route::post('store','store')->middleware(['Login:SuperAdmin'])->name('barang.store');
+            Route::put('update','update')->middleware(['Login:SuperAdmin'])->name('barang.update');
+            Route::delete('/{ID}','destroy')->middleware(['Login:SuperAdmin']);
+            Route::get('getDetailBarang', 'getDetailBarang')->middleware(['Login:Admin Depo,Admin Gudang,Pembelian,Penjualan'])->name('getDetailBarang');
+            Route::get('datatable', 'datatable')->middleware(['Login:SuperAdmin'])->name('barang.datatable');
+            Route::get('getBarangActive', 'getBarangActive')->middleware(['Login:Admin Depo']);
+            Route::get('getBarangAll', 'getBarangAll')->middleware(['Login:Admin Depo']);
         });
     });
 
@@ -262,6 +262,7 @@ Route::prefix('pdf')->middleware(['Login:SuperAdmin,Admin Depo'])->group(functio
 
         Route::get('pdfCustomer/{periode}/{id}/{depo}', 'pdfCustomer');
         Route::get('pdfSalesman/{periode}/{id}/{depo}', 'pdfSalesman');
+        Route::get('pdfBarang/{periode}/{id}/{depo}', 'pdfBarang');
     });
 });
 

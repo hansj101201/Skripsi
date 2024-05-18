@@ -303,13 +303,16 @@ class pdfController extends Controller
         $trnsales = trnsales::where('trnsales.KDTRN', 12)
             ->whereNotNull('trnsales.ID_CUSTOMER')
             ->where('trnsales.ID_CUSTOMER', '!=', '')
-            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
             ->join('depo', 'trnsales.ID_DEPO', 'depo.ID_DEPO')
             ->select('depo.NAMA', 'trnsales.ID_DEPO', DB::raw('SUM(trnsales.JUMLAH) as TOTAL_PENJUALAN'), DB::raw('SUM(trnsales.DISCOUNT) as TOTAL_POTONGAN'), DB::raw('SUM(trnsales.NETTO) as TOTAL_NETTO'))
             ->groupBy('trnsales.ID_DEPO', 'depo.NAMA')
             ->get();
 
-
+            if ($TanggalAwal == $TanggalAkhir) {
+                $trnsales->whereDate('TANGGAL', $TanggalAwal);
+            } else {
+                $trnsales->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]);
+            }
         $penjualanCustomer = [];
 
         foreach ($trnsales as $penjualan) {
@@ -332,14 +335,18 @@ class pdfController extends Controller
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
         $trnsales = trnsales::where('KDTRN', 12)
-            ->whereNotNull('trnsales.ID_SALESMAN') // Menentukan tabel sumber
-            ->where('trnsales.ID_SALESMAN', '!=', '') // Menentukan tabel sumber
-            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Menentukan tabel sumber
-            ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES') // Menentukan tabel sumber
-            ->select('trnsales.ID_SALESMAN', 'salesman.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
-            ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA') // Menentukan tabel sumber
+            ->whereNotNull('trnsales.ID_SALESMAN')
+            ->where('trnsales.ID_SALESMAN', '!=', '')
+            ->join('depo', 'trnsales.ID_DEPO', 'depo.ID_DEPO')
+            ->select('depo.NAMA', 'trnsales.ID_DEPO', DB::raw('SUM(trnsales.JUMLAH) as TOTAL_PENJUALAN'), DB::raw('SUM(trnsales.DISCOUNT) as TOTAL_POTONGAN'), DB::raw('SUM(trnsales.NETTO) as TOTAL_NETTO'))
+            ->groupBy('trnsales.ID_DEPO', 'depo.NAMA')
             ->get();
 
+            if ($TanggalAwal == $TanggalAkhir) {
+                $trnsales->whereDate('TANGGAL', $TanggalAwal);
+            } else {
+                $trnsales->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]);
+            }
         $penjualanSalesman = [];
 
         foreach ($trnsales as $penjualan) {
@@ -357,6 +364,42 @@ class pdfController extends Controller
         return $penjualanSalesman;
     }
 
+    public function getAllPenjualanBarang($awal, $akhir)
+    {
+        $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
+        $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
+        $trnjadi = trnjadi::where('KDTRN', 12)
+            ->join('depo', 'trnjadi.ID_DEPO', 'depo.ID_DEPO')
+            ->select('depo.NAMA', 'trnjadi.ID_DEPO',DB::raw('SUM(trnjadi.HARGA*trnjadi.QTY) as total_penjualan'),
+            DB::raw('SUM(trnjadi.POTONGAN) as total_potongan'),
+            DB::raw('SUM(trnjadi.JUMLAH) as total_netto'),
+            DB::raw('SUM(trnjadi.QTY) as total_qty'))
+            ->groupBy('trnjadi.ID_DEPO', 'depo.NAMA')
+            ->get();
+
+            if ($TanggalAwal == $TanggalAkhir) {
+                $trnjadi->whereDate('TANGGAL', $TanggalAwal);
+            } else {
+                $trnjadi->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]);
+            }
+        $penjualanBarang = [];
+
+        foreach ($trnjadi as $penjualan) {
+            $penjualanDetail = $this->getPenjualanBarang($awal, $akhir, $penjualan->ID_DEPO);
+
+            $penjualanBarang[] = [
+                'ID_DEPO' => $penjualan->ID_DEPO,
+                'NAMADEPO' => $penjualan->NAMA,
+                'TOTAL_PENJUALAN_ALL' => $penjualan->total_penjualan,
+                'TOTAL_POTONGAN_ALL' => $penjualan->total_potongan,
+                'TOTAL_NETTO_ALL' => $penjualan->total_netto,
+                'TOTAL_QTY_ALL' => $penjualan->total_qty,
+                'PENJUALAN' => $penjualanDetail
+            ];
+        }
+        return $penjualanBarang;
+    }
+
     public function getPenjualanCustomer($awal, $akhir, $depo)
     {
 
@@ -366,7 +409,6 @@ class pdfController extends Controller
             $trnsales = trnsales::where('trnsales.KDTRN', 12)
                 ->whereNotNull('trnsales.ID_CUSTOMER')
                 ->where('trnsales.ID_CUSTOMER', '!=', '')
-                ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
                 ->join('customer', 'trnsales.ID_CUSTOMER', '=', 'customer.ID_CUSTOMER')
                 ->join('depo', 'trnsales.ID_DEPO', 'depo.ID_DEPO')
                 ->select('depo.NAMA as namaDepo', 'trnsales.ID_DEPO', 'trnsales.ID_CUSTOMER', 'customer.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto'))
@@ -377,11 +419,16 @@ class pdfController extends Controller
                 ->where('trnsales.ID_DEPO', $depo)
                 ->whereNotNull('trnsales.ID_CUSTOMER')
                 ->where('trnsales.ID_CUSTOMER', '!=', '')
-                ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
                 ->join('customer', 'trnsales.ID_CUSTOMER', '=', 'customer.ID_CUSTOMER')
                 ->select('trnsales.ID_CUSTOMER', 'customer.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto'))
                 ->groupBy('trnsales.ID_CUSTOMER', 'customer.NAMA')
                 ->get();
+        }
+
+        if ($TanggalAwal == $TanggalAkhir) {
+            $trnsales->whereDate('TANGGAL', $TanggalAwal);
+        } else {
+            $trnsales->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]);
         }
 
         $penjualanCustomer = [];
@@ -408,25 +455,28 @@ class pdfController extends Controller
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
         if ($depo == 000) {
             $trnsales = trnsales::where('KDTRN', 12)
-                ->whereNotNull('trnsales.ID_SALESMAN') // Menentukan tabel sumber
-                ->where('trnsales.ID_SALESMAN', '!=', '') // Menentukan tabel sumber
-                ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Menentukan tabel sumber
-                ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES') // Menentukan tabel sumber
+                ->whereNotNull('trnsales.ID_SALESMAN')
+                ->where('trnsales.ID_SALESMAN', '!=', '')
+                ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
                 ->select('trnsales.ID_SALESMAN', 'salesman.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
-                ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA') // Menentukan tabel sumber
+                ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA')
                 ->get();
         } else {
             $trnsales = trnsales::where('KDTRN', 12)
                 ->where('trnsales.ID_DEPO', $depo)
-                ->whereNotNull('trnsales.ID_SALESMAN') // Menentukan tabel sumber
-                ->where('trnsales.ID_SALESMAN', '!=', '') // Menentukan tabel sumber
-                ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Menentukan tabel sumber
-                ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES') // Menentukan tabel sumber
+                ->whereNotNull('trnsales.ID_SALESMAN')
+                ->where('trnsales.ID_SALESMAN', '!=', '')
+                ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
                 ->select('trnsales.ID_SALESMAN', 'salesman.NAMA', DB::raw('SUM(trnsales.JUMLAH) as total_penjualan'), DB::raw('SUM(trnsales.DISCOUNT) as total_potongan'), DB::raw('SUM(trnsales.NETTO) as total_netto')) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
-                ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA') // Menentukan tabel sumber
+                ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA')
                 ->get();
         }
 
+        if ($TanggalAwal == $TanggalAkhir) {
+            $trnsales->whereDate('TANGGAL', $TanggalAwal);
+        } else {
+            $trnsales->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]);
+        }
         $penjualanBarang = [];
 
         foreach ($trnsales as $penjualan) {
@@ -446,22 +496,32 @@ class pdfController extends Controller
         return $penjualanBarang;
     }
 
-    public function getPenjualanBarang($awal, $akhir)
+    public function getPenjualanBarang($awal, $akhir,$depo)
     {
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
         $trnjadi = trnjadi::where('KDTRN', 12)
-            ->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]) // Tanggal harus berada di antara tanggal awal dan akhir
-            ->join('barang', 'trnjadi.ID_BARANG', '=', 'barang.ID_BARANG') // Menentukan tabel sumber
+            ->where('ID_DEPO',$depo)
+            ->join('barang', 'trnjadi.ID_BARANG', '=', 'barang.ID_BARANG')
+            ->join('satuan', 'satuan.ID_SATUAN', 'barang.ID_SATUAN')
             ->select(
                 'trnjadi.ID_BARANG',
                 'barang.NAMA',
-                DB::raw('SUM(trnjadi.HARGA) as total_penjualan'),
+                'satuan.NAMA AS nama_satuan',
+                DB::raw('SUM(trnjadi.HARGA*trnjadi.QTY) as total_penjualan'),
                 DB::raw('SUM(trnjadi.POTONGAN) as total_potongan'),
-                DB::raw('SUM(trnjadi.JUMLAH) as total_netto')
+                DB::raw('SUM(trnjadi.JUMLAH) as total_netto'),
+                DB::raw('SUM(trnjadi.QTY) as total_qty')
             ) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
-            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA') // Menentukan tabel sumber
+            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA', 'satuan.NAMA')
             ->get();
+            if ($TanggalAwal == $TanggalAkhir) {
+                $trnjadi->whereDate('TANGGAL', $TanggalAwal);
+            } else {
+                $trnjadi->whereBetween('TANGGAL', [$TanggalAwal, $TanggalAkhir]);
+            }
+
+            return $trnjadi;
     }
 
     public function getDetailPenjualanCustomer($idCustomer, $awal, $akhir, $depo)
@@ -627,7 +687,7 @@ class pdfController extends Controller
         } else {
             $nama = depo::where('ID_DEPO', $depo)
                 ->value('NAMA');
-            $data = $this->getPenjualanSales($awal, $akhir, $depo);
+            $data = $this->getPenjualanSalesman($awal, $akhir, $depo);
             $view = 'pdf.penjualan.pdfCustSales';
         }
 
@@ -637,7 +697,7 @@ class pdfController extends Controller
             "mode" => 'Salesman',
             "awal" => $awal,
             "akhir" => $akhir,
-            "nama" => $depo
+            "nama" => $nama
         ];
         $pdf = SnappyPdf::loadView($view, $data)
             ->setPaper('a4')
@@ -657,12 +717,50 @@ class pdfController extends Controller
         return $pdf->inline('Penjualan per Salesman ' . $awal . ' - ' . $akhir . '.pdf');
     }
 
+    public function pdfBarang($awal, $akhir, $depo)
+    {
+        if ($depo == 000) {
+            $nama = 'Semua';
+            $data = $this->getAllPenjualanBarang($awal, $akhir);
+            $view = 'pdf.penjualan.pdfBarangAll';
+        } else {
+            $nama = depo::where('ID_DEPO', $depo)
+                ->value('NAMA');
+            $data = $this->getPenjualanBarang($awal, $akhir, $depo);
+            $view = 'pdf.penjualan.pdfBarang';
+        }
 
+        // dd($data);
+
+        $data = [
+            "printed_at" => Carbon::now()->isoFormat('D MMMM Y'),
+            "data" => $data,
+            "awal" => $awal,
+            "akhir" => $akhir,
+            "nama" => $nama
+        ];
+        $pdf = SnappyPdf::loadView($view, $data)
+            ->setPaper('a4')
+            ->setOrientation('portrait')
+            ->setOption('margin-left', 5)
+            ->setOption('margin-right', 5)
+            ->setOption('margin-top', 30)
+            ->setOption('margin-bottom', 20)
+            ->setOption("footer-right", "Halaman [page] dari [topage]")
+            ->setOption("header-spacing", 5)
+            ->setOption("footer-spacing", 5)
+            ->setOption("enable-local-file-access", true)
+            ->setOption('header-html', view('pdf.penjualan.header', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
+            ->setOption('footer-html', view('pdf.penjualan.footer', ["printed_at" => Carbon::now()->isoFormat('D MMMM Y HH:mm:ss')]))
+            ->setOption('footer-font-size', 8);
+
+        return $pdf->inline('Penjualan per Salesman ' . $awal . ' - ' . $akhir . '.pdf');
+    }
     public function getPenjualanPerSalesman($bukti, $tahun)
     {
         $trnsales = trnsales::where('KDTRN', 12)
-            ->where('trnsales.BUKTI', $bukti) // Menentukan tabel sumber
-            ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES') // Menentukan tabel sumber
+            ->where('trnsales.BUKTI', $bukti)
+            ->join('salesman', 'trnsales.ID_SALESMAN', '=', 'salesman.ID_SALES')
             ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
             ->select(
                 'trnsales.ID_SALESMAN',
@@ -676,7 +774,7 @@ class pdfController extends Controller
                 'trnsales.BUKTI'
             ) // Menggunakan fungsi SUM() untuk menjumlahkan penjualan
             ->whereRaw("LEFT(trnsales.PERIODE, 4) = '$tahun'")
-            ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA', 'trnsales.ID_CUSTOMER', 'customer.NAMA', 'trnsales.TANGGAL', 'trnsales.BUKTI') // Menentukan tabel sumber
+            ->groupBy('trnsales.ID_SALESMAN', 'salesman.NAMA', 'trnsales.ID_CUSTOMER', 'customer.NAMA', 'trnsales.TANGGAL', 'trnsales.BUKTI')
             ->get();
 
         $penjualanBarang = [];
@@ -802,7 +900,6 @@ class pdfController extends Controller
             Mail::to($emailCustomer->EMAIL)
                 ->cc($emailSalesman->EMAIL)
                 ->queue(new pdfEmail($filePath));
-
 
             return response()->json(['message' => 'success'], 200);
         } catch (\Exception $e) {

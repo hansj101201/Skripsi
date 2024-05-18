@@ -39,20 +39,23 @@
             padding: 8px;
             text-align: left;
         }
-        /* .invoice-total {
+        .invoice-total {
             display: flex;
             justify-content: space-between;
-        } */
-
-        /* .total-label {
-            flex: 1;
-            text-align: left;
+            margin-top: 20px;
         }
-
+        .total-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
         .total-value {
-            flex: 1;
             text-align: right;
-        } */
+        }
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -61,11 +64,10 @@
             <h1 class="invoice-title">Invoice</h1>
             <p>Bukti: {{ $salesman[0]['BUKTI'] }}</p>
             <p>Tanggal: {{ date('d-m-Y', strtotime($salesman[0]['TANGGAL'])) }}</p>
-
         </div>
         <div class="invoice-details">
-            <p><strong>Customer : </strong>{{ $salesman[0]['NAMACUST'] }}</p>
-            <p><strong>Salesman : </strong>{{ $salesman[0]['NAMA'] }}</p>
+            <p><strong>Customer: </strong>{{ $salesman[0]['NAMACUST'] }}</p>
+            <p><strong>Salesman: </strong>{{ $salesman[0]['NAMA'] }}</p>
         </div>
         <table class="invoice-table">
             <thead>
@@ -90,20 +92,18 @@
             </tbody>
         </table>
         <div class="invoice-total">
-            <div class="col-sm">
+            <div class="total-item">
                 <div class="total-label">Jumlah:</div>
-            </div>
-            <div class="col-sm">
                 <div class="total-value">{{ number_format($salesman[0]['TOTAL_PENJUALAN'], 0, ',', ',') }}</div>
             </div>
-        </div>
-        <div class="invoice-total">
-            <div class="total-label"><strong>Potongan:</strong></div>
-            <div class="total-value">{{ number_format($salesman[0]['TOTAL_POTONGAN'], 0, ',', ',') }}</div>
-        </div>
-        <div class="invoice-total">
-            <div class="total-label"><strong>Netto:</strong></div>
-            <div class="total-value">{{ number_format($salesman[0]['TOTAL_NETTO'], 0, ',', ',') }}</div>
+            <div class="total-item">
+                <div class="total-label">Potongan:</div>
+                <div class="total-value">{{ number_format($salesman[0]['TOTAL_POTONGAN'], 0, ',', ',') }}</div>
+            </div>
+            <div class="total-item">
+                <div class="total-label">Netto:</div>
+                <div class="total-value">{{ number_format($salesman[0]['TOTAL_NETTO'], 0, ',', ',') }}</div>
+            </div>
         </div>
     </div>
 </body>
