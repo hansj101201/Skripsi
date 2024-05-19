@@ -40,6 +40,15 @@ Route::controller(Layout::class)->middleware(['auth'])->group(function (){
     Route::get('getRole', 'getRole')->name('getRole');
 });
 
+Route::controller(AuthController::class)->group(function(){
+    Route::get('changePassword', 'changePasswordView')->name('change-password');
+    Route::get('resetPassword', 'showLink')->name('password.request');
+    Route::post('resetPassword/email', 'sendResetEmail')->name('password.email');
+    Route::get('resetPassword/{token}', 'showForm')->name('password.reset');
+    Route::post('password/reset', 'resetPassword')->name('password.update');
+    Route::post('password/change','changePassword')->name('password.change');
+});
+
 Route::prefix('setup')->middleware(['Login:SuperAdmin,Admin Depo,Admin Gudang,Pembelian,Admin Penjualan'])->group(function () {
     Route::prefix('barang')->middleware(['Login:SuperAdmin,Admin Depo,Admin Gudang,Pembelian,Admin Penjualan'])->group(function () {
         Route::controller(barangController::class)->group(function (){

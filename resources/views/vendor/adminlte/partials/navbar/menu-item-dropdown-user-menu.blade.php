@@ -68,6 +68,10 @@
                     {{ __('adminlte::menu.profile') }}
                 </a>
             @endif
+            <a href="{{ route('change-password') }}" class="nav-link btn btn-default btn-flat d-inline-block">
+                <i class="fa fa-fw fa-lock text-warning"></i>
+                {{ __('Change Password') }}
+            </a>
             <a class="btn btn-default btn-flat float-right @if(!$profile_url) btn-block @endif"
                href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fa fa-fw fa-power-off text-red"></i>

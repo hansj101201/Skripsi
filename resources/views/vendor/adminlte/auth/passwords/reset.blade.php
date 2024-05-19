@@ -18,7 +18,7 @@
         <input type="hidden" name="token" value="{{ $token }}">
 
         {{-- Email field --}}
-        <div class="input-group mb-3">
+        {{-- <div class="input-group mb-3">
             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                    value="{{ old('email') }}" placeholder="{{ __('adminlte::adminlte.email') }}" autofocus>
 
@@ -33,19 +33,24 @@
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
-        </div>
+        </div> --}}
 
         {{-- Password field --}}
         <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
+            <input type="password" name="password" id="password" class="form-control password-toggle @error('password') is-invalid @enderror"
                    placeholder="{{ __('adminlte::adminlte.password') }}">
 
-            <div class="input-group-append">
+            {{-- <div class="input-group-append">
                 <div class="input-group-text">
                     <span class="fas fa-lock {{ config('adminlte.classes_auth_icon', '') }}"></span>
                 </div>
-            </div>
+            </div> --}}
 
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                    <span class="fas fa-eye"></span>
+                </button>
+            </div>
             @error('password')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -55,14 +60,19 @@
 
         {{-- Password confirmation field --}}
         <div class="input-group mb-3">
-            <input type="password" name="password_confirmation"
-                   class="form-control @error('password_confirmation') is-invalid @enderror"
+            <input type="password" name="password_confirmation" id="password_confirmation"
+                   class="form-control password-toggle @error('password_confirmation') is-invalid @enderror"
                    placeholder="{{ trans('adminlte::adminlte.retype_password') }}">
-
+{{--
             <div class="input-group-append">
                 <div class="input-group-text">
                     <span class="fas fa-lock {{ config('adminlte.classes_auth_icon', '') }}"></span>
                 </div>
+            </div> --}}
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary toggle-password1" type="button">
+                    <span class="fas fa-eye"></span>
+                </button>
             </div>
 
             @error('password_confirmation')
@@ -80,3 +90,5 @@
 
     </form>
 @stop
+
+

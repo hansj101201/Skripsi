@@ -42,9 +42,11 @@
             </div>
 
             <div class="row">
-                <div class="col-7"></div>
+                <div class="col-7">
+                    <a href="{{ route('password.request') }}" class="btn btn-link p-0">{{ __('Forgot Your Password?') }}</a>
+                </div>
                 <div class="col-5">
-                    <button type=submit
+                    <button type="submit"
                         class="btn btn-block {{ config('adminlte.classes_auth_btn', 'btn-flat btn-primary') }}">
                         <span class="fas fa-sign-in-alt"></span>
                         {{ __('adminlte::adminlte.sign_in') }}
