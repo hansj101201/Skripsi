@@ -905,7 +905,7 @@ class pdfController extends Controller
             $pdf->save($filePath);
             Mail::to($emailCustomer->EMAIL)
                 ->cc($emailSalesman->EMAIL)
-                ->queue(new pdfEmail($filePath));
+                ->queue(new pdfEmail($filePath, $bukti, $tahun));
 
             return response()->json(['message' => 'success'], 200);
         } catch (\Exception $e) {

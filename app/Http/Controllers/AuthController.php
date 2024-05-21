@@ -70,12 +70,17 @@ class AuthController extends Controller
 
     public function sendResetEmail(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate(['email' => 'required|email',
+        'iduser' => 'required',], [
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Email tidak valid',
+            'iduser.required' => 'ID Pengguna harus diisi.',
+        ]);
 
-        $user = DB::table('user')->where('EMAIL', $request->email)->first();
+        $user = DB::table('user')->where('EMAIL', $request->email)->where('ID_USER',$request->iduser)->first();
 
         if (!$user) {
-            return back()->withErrors(['email' => 'Email tidak ditemukan']);
+            return back()->withErrors(['email' => 'Id User dengan email tersebut tidak ditemukan','iduser' => 'Id User dengan email tersebut tidak ditemuka']);
         }
 
         $token = Str::random(60);
@@ -122,6 +127,9 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required',
             'password' => 'required|confirmed|min:8',
+        ], [
+            'password.required' => 'Password harus diisi.',
+            'password.min:8'=> 'Password harus minimum 8 character'
         ]);
         $resetEntries = DB::table('password_resets')->get();
 
@@ -157,6 +165,10 @@ class AuthController extends Controller
         $request->validate([
             'current_password' => 'required',
             'password' => 'required|min:8|confirmed',
+        ], [
+            'current_password.required' => 'Password sekarang harus diisi.',
+            'password.required' => 'Password harus diisi.',
+            'password.min:8'=> 'Password harus minimum 8 character'
         ]);
 
         // Memeriksa apakah kata sandi saat ini sesuai

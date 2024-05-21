@@ -19,9 +19,13 @@ class pdfEmail extends Mailable
      */
 
     protected $filePath;
-    public function __construct($filePath)
+    protected $bukti;
+    protected $tahun;
+    public function __construct($filePath, $bukti, $tahun)
     {
         $this->filePath = $filePath;
+        $this->bukti = $bukti;
+        $this->tahun = $tahun;
     }
 
     /**
@@ -30,7 +34,7 @@ class pdfEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pdf Email',
+            subject: 'Invoice '+ $this->bukti + '-' + $this->tahun,
         );
     }
 
@@ -53,7 +57,7 @@ class pdfEmail extends Mailable
     {
         return [
             Attachment::fromPath($this->filePath)
-                ->as('invoice.pdf')
+                ->as('Invoice '+ $this->bukti + '-' + $this->tahun+'.pdf')
                 ->withMime("application/pdf"),
         ];
     }
