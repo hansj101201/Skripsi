@@ -64,14 +64,14 @@
     <script>
         $(document).ready(function () {
 
-            $("input[name='iduser']").on("input", function () {
+            $("input[name='iduser']").on("click", function () {
             if ($(this).hasClass("is-invalid")) {
                 $(this).removeClass("is-invalid");
                 $("#idusererror").text(""); // Clear the error message
             }
         });
 
-        $("input[name='email']").on("input", function () {
+        $("input[name='email']").on("click", function () {
             if ($(this).hasClass("is-invalid")) {
                 $(this).removeClass("is-invalid");
                 $("#emailerror").text(""); // Clear the error message
