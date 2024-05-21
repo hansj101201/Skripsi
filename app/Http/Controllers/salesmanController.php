@@ -102,7 +102,7 @@ class salesmanController extends Controller
             // dd($salesman);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
         } else {
-            return response()->json(['success' => false,'error' => 'Data dengan KDJADI tersebut tidak ditemukan'], 404);
+            return response()->json(['success' => false,'error' => 'Data tidak ditemukan'], 404);
         }
     }
 
@@ -152,9 +152,9 @@ class salesmanController extends Controller
         $cek = salesman::where('EMAIL',$email)->get();
 
         if($cek->isEmpty()){
-            return response()->json(['message' => 'email tidak ditemukan'],404);
+            return response()->json(['message' => 'Email tidak ditemukan'],404);
         } else {
-            return response()->json(['message' => 'data ditemukan'],200);
+            return response()->json(['message' => 'Data ditemukan'],200);
         }
     }
 

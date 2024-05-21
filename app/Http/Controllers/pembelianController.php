@@ -206,7 +206,7 @@ class pembelianController extends Controller
                 return response()->json(['success' => true, 'message' => 'Update Data Berhasil']);
             } catch (\Exception $e) {
                 DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Error occurred while updating data'], 500);
+                return response()->json(['success' => false, 'message' => 'Error saat update Data'], 500);
             }
         } else {
             return response()->json(['success' => false, 'message' => 'Tanggal sudah diclosing']);
@@ -237,7 +237,7 @@ class pembelianController extends Controller
                 return response()->json(['success' => true, 'message' => 'Data Berhasil Dihapus']);
             } catch (\Exception $e) {
                 DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
+                return response()->json(['success' => false, 'message' => 'Error saat hapus data'], 500);
             }
         } else {
             return response()->json(['success' => false, 'message' => 'Tanggal sudah diclosing']);

@@ -138,7 +138,8 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly style="text-align: right;">
+                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly
+                                style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -609,8 +610,6 @@
                 if (mode === 'viewDetail') {
                     updateCustomerOptions(getCustomerAllUrl, function() {
                         updateGudangOptions(getGudangAllUrl, function() {
-
-
                             modal.find('.modal-title').text('View Detail');
                             $("#tanggal").datepicker('destroy');
                             $('#gudang').prop('disabled', true);
@@ -628,19 +627,22 @@
                         });
                     });
                 } else {
-                    updateCustomerOptions(getCustomerActiveUrl);
-                    updateGudangOptions(getGudangActiveUrl);
-                    var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                    $('#tanggal').val(
-                    today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
-                    $('#tambahDataButton').show();
-                    $('#diskon').val(0);
-                    modal.find('.modal-title').text('Entry Penjualan');
-                    enableDatepicker();
-                    $('#keterangan').attr('readonly', false);
-                    $('#diskon').attr('readonly', false);
-                    $('#saveBtn').show();
-                    $('#saveBtn').attr('onclick', 'simpanData()');
+                    updateCustomerOptions(getCustomerActiveUrl, function() {
+                        updateGudangOptions(getGudangActiveUrl, function() {
+                            var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                            $('#tanggal').val(
+                                today
+                                ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                            $('#tambahDataButton').show();
+                            $('#diskon').val(0);
+                            modal.find('.modal-title').text('Entry Penjualan');
+                            enableDatepicker();
+                            $('#keterangan').attr('readonly', false);
+                            $('#diskon').attr('readonly', false);
+                            $('#saveBtn').show();
+                            $('#saveBtn').attr('onclick', 'simpanData()');
+                        });
+                    });
                 }
             });
 

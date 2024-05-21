@@ -122,15 +122,15 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="saldo" name="SALDO"
-                                readonly style="text-align: right;">
+                            <input type="text" class="form-control" id="saldo" name="SALDO" readonly
+                                style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Qty Order</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="qtyorder" name="QTYORDER"
-                                readonly style="text-align: right;">
+                            <input type="text" class="form-control" id="qtyorder" name="QTYORDER" readonly
+                                style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -229,7 +229,7 @@
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
                 var qtyKirim = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
-                if(qtyKirim > 0){
+                if (qtyKirim > 0) {
                     arrBarang.push([idBarang, qtyKirim]);
                 }
             });
@@ -581,47 +581,62 @@
                 }
                 if (mode === 'viewDetail') {
                     addMode = false;
-                    updateNomorPo(urlNoPoAll);
-                    updateGudangOptions(urlGudangAsalAll);
-                    updateGudangTujuanOptions(urlGudangTujuanAll);
-                    $('#gudang_tujuan').prop('disabled', true);
-                    modal.find('.modal-title').text('View Detail');
-                    $("#tanggal").datepicker('destroy');
-                    $('#gudang').prop('disabled', true);
-                    $('#nomorpermintaan').prop('disabled', true);
-                    $('#datepicker').off('click');
-                    editMode = false;
-                    var bukti = button.data('bukti');
-                    var periode = button.data('periode');
-                    console.log(bukti);
-                    fetchData(bukti, periode);
-                    $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
+                    updateNomorPo(urlNoPoAll, function() {
+                        updateGudangOptions(urlGudangAsalAll, function() {
+                            updateGudangTujuanOptions(urlGudangTujuanAll, function() {
+                                $('#gudang_tujuan').prop('disabled', true);
+                                modal.find('.modal-title').text('View Detail');
+                                $("#tanggal").datepicker('destroy');
+                                $('#gudang').prop('disabled', true);
+                                $('#nomorpermintaan').prop('disabled', true);
+                                $('#datepicker').off('click');
+                                editMode = false;
+                                var bukti = button.data('bukti');
+                                var periode = button.data('periode');
+                                console.log(bukti);
+                                fetchData(bukti, periode);
+                                $('#saveBtn').attr('onclick',
+                                'simpanDataTrnJadi()');
+                            });
+
+                        });
+
+                    });
+
 
                 } else {
-                    addMode = true;
-                    editMode = true;
-                    var today = moment().tz('Asia/Jakarta').format(
-                        'DD-MM-YYYY');
-                    $('#tanggal').val(
-                        today
-                    ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
-                    $('#tanggal').datepicker({
-                        format: 'dd-mm-yyyy', // Set your desired date format
-                        minDate: 0,
-                        defaultDate: 'now', // Set default date to 'now'
-                        autoclose: true // Close the datepicker when a date is selected
+                    updateNomorPo(urlNoPoActive, function() {
+                        updateGudangOptions(urlGudangAsalActive, function() {
+                            updateGudangTujuanOptions(urlGudangTujuanAll, function() {
+                                addMode = true;
+                                editMode = true;
+                                var today = moment().tz('Asia/Jakarta').format(
+                                    'DD-MM-YYYY');
+                                $('#tanggal').val(
+                                    today
+                                ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                                $('#tanggal').datepicker({
+                                    format: 'dd-mm-yyyy', // Set your desired date format
+                                    minDate: 0,
+                                    defaultDate: 'now', // Set default date to 'now'
+                                    autoclose: true // Close the datepicker when a date is selected
+                                });
+                                $('.date, #datepicker').on('click', function() {
+                                    $('#tanggal').datepicker('show');
+                                    addMode = true;
+                                    editMode = true;
+                                });
+                                modal.find('.modal-title').text(
+                                    'Tambah Pengeluaran ke Kanvas');
+
+                                $('#gudang_tujuan').prop('disabled', true);
+                                $('#saveBtn').attr('onclick', 'simpanData()');
+                            });
+
+                        });
+
                     });
-                    $('.date, #datepicker').on('click', function() {
-                        $('#tanggal').datepicker('show');
-                        addMode = true;
-                        editMode = true;
-                    });
-                    modal.find('.modal-title').text('Tambah Pengeluaran ke Kanvas');
-                    updateNomorPo(urlNoPoActive);
-                    updateGudangOptions(urlGudangAsalActive);
-                    updateGudangTujuanOptions(urlGudangTujuanAll);
-                    $('#gudang_tujuan').prop('disabled', true);
-                    $('#saveBtn').attr('onclick', 'simpanData()');
+
                 };
             });
 
@@ -716,8 +731,9 @@
                         $('#kode_barang').val(kode);
                         getData(kode, tanggal, gudang, function() {
                             $('#editMode').val('add');
-                            if (qtykirim > parseFloat($('#saldo').val())) {
-                                $('#qtykirim').val(parseFloat($('#saldo').val()));
+                            if (qtykirim > parseFloat($('#saldo').val().replace(/[^\d]/g, ''))) {
+                                $('#qtykirim').val(formatHarga(parseFloat($('#saldo').val().replace(
+                                    /[^\d]/g, ''))));
                             } else {
                                 $('#qtykirim').val(qtykirim);
                             }
@@ -744,11 +760,11 @@
 
             $('#qtykirim').on('input', function() {
                 validateNumberInput(this)
-                var qtyminta = parseFloat($('#qtyorder').val()).replace(/[^\d]/g, '');
+                var qtyminta = parseFloat($('#qtyorder').val().replace(/[^\d]/g, ''));
                 var qtyString = $(this).val().replace(/[^\d]/g, '');
                 var qty = parseFloat(qtyString);
                 var saldo = parseFloat($('#saldo').val().replace(/[^\d]/g, ''));
-                var stok = parseFloat($('#stok_lama').val());
+                var stok = parseFloat($('#stok_lama').val().replace(/[^\d]/g, ''));
                 console.log("qty" + qty);
                 console.log("stok" + stok);
                 console.log("saldo" + saldo);

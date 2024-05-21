@@ -75,7 +75,7 @@ class AuthController extends Controller
         $user = DB::table('user')->where('EMAIL', $request->email)->first();
 
         if (!$user) {
-            return back()->withErrors(['email' => 'Email not found']);
+            return back()->withErrors(['email' => 'Email tidak ditemukan']);
         }
 
         $token = Str::random(60);
@@ -140,7 +140,7 @@ class AuthController extends Controller
         }
         DB::table('user')->where('EMAIL', $email)->update(['PASSWORD' => Hash::make($request->password)]);
         DB::table('password_resets')->where('email', $email)->delete();
-        return redirect()->route('login')->with('status', 'Password has been reset!')->withHeaders([
+        return redirect()->route('login')->with('status', 'Password berhasil direset!')->withHeaders([
             'Pragma' => 'no-cache',
             'Cache-Control' => 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
@@ -161,13 +161,13 @@ class AuthController extends Controller
 
         // Memeriksa apakah kata sandi saat ini sesuai
         if (!Hash::check($request->current_password, Auth::user()->PASSWORD)) {
-            return redirect()->back()->withErrors(['current_password' => 'The current password is incorrect.']);
+            return redirect()->back()->withErrors(['current_password' => 'Password sekarang salah.']);
         }
 
         // Mengubah kata sandi
         DB::table('user')->where('ID_USER', Auth::user()->ID_USER)->update(['PASSWORD' => Hash::make($request->password)]);
 
-        return redirect()->back()->with('success', 'Password changed successfully.');
+        return redirect()->back()->with('success', 'Password berhasil diubah.');
     }
     public function doLogin(Request $request)
     {

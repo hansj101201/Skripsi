@@ -442,7 +442,6 @@ class laporanController extends Controller
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
         $trnsales = trnsales::where('trnsales.KDTRN', 12)
-            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
             ->where('trnsales.ID_CUSTOMER', $idCustomer)
             ->join('trnjadi', function ($join) {
                 $join->on('trnsales.BUKTI', '=', 'trnjadi.BUKTI')
@@ -455,16 +454,20 @@ class laporanController extends Controller
                 'trnjadi.ID_BARANG',
                 'barang.NAMA AS nama_barang',
                 'satuan.NAMA AS nama_satuan',
+                'trnjadi.TANGGAL',
                 DB::raw('SUM(trnjadi.QTY) as total'),
                 DB::raw('SUM(trnjadi.QTY * trnjadi.HARGA) as subtotal'),
                 DB::raw('SUM(trnjadi.POTONGAN) as potongan'),
                 DB::raw('SUM(trnjadi.JUMLAH) as jumlah')
             )
-            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA', 'satuan.NAMA')
+            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA','trnjadi.TANGGAL', 'satuan.NAMA')
             ->orderBy('trnjadi.ID_BARANG');
-        // ->get();
 
-        // return response($trnsales);
+            if ($TanggalAwal == $TanggalAkhir) {
+                $trnsales->whereDate('trnjadi.TANGGAL', $TanggalAwal);
+            } else {
+                $trnsales->whereBetween('trnjadi.TANGGAL', [$TanggalAwal, $TanggalAkhir]);
+            }
         return Datatables::of($trnsales)
             ->make(true);
     }
@@ -474,7 +477,6 @@ class laporanController extends Controller
         $TanggalAwal = DateTime::createFromFormat('d-m-Y', $awal);
         $TanggalAkhir = DateTime::createFromFormat('d-m-Y', $akhir);
         $trnsales = trnsales::where('trnsales.KDTRN', 12)
-            ->whereBetween('trnsales.TANGGAL', [$TanggalAwal, $TanggalAkhir])
             ->where('trnsales.ID_SALESMAN', $idSales)
             ->join('trnjadi', function ($join) {
                 $join->on('trnsales.BUKTI', '=', 'trnjadi.BUKTI')
@@ -487,17 +489,20 @@ class laporanController extends Controller
                 'trnjadi.ID_BARANG',
                 'barang.NAMA AS nama_barang',
                 'satuan.NAMA AS nama_satuan',
+                'trnjadi.TANGGAL',
                 DB::raw('SUM(trnjadi.QTY) as total'),
                 DB::raw('SUM(trnjadi.QTY * trnjadi.HARGA) as subtotal'),
                 DB::raw('SUM(trnjadi.POTONGAN) as potongan'),
                 DB::raw('SUM(trnjadi.JUMLAH) as jumlah')
             )
-            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA', 'satuan.NAMA')
+            ->groupBy('trnjadi.ID_BARANG', 'barang.NAMA','trnjadi.TANGGAL', 'satuan.NAMA')
             ->orderBy('trnjadi.ID_BARANG');
-        // ->get();
+            if ($TanggalAwal == $TanggalAkhir) {
+                $trnsales->whereDate('trnjadi.TANGGAL', $TanggalAwal);
+            } else {
+                $trnsales->whereBetween('trnjadi.TANGGAL', [$TanggalAwal, $TanggalAkhir]);
+            }
         return Datatables::of($trnsales)
             ->make(true);
-
-        // return response()->json($trnsales);
     }
 }

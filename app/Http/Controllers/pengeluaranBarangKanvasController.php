@@ -206,7 +206,7 @@ class pengeluaranBarangKanvasController extends Controller
             return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan dengan No Bukti '. $bukti, 'bukti' => $bukti], 200);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error saat menyimpan data'], 500);
         }
     }
 
@@ -236,10 +236,10 @@ class pengeluaranBarangKanvasController extends Controller
                 ]);
             }
             DB::commit();
-            return response()->json(['success'=>true,'message' => 'Update successful']);
+            return response()->json(['success'=>true,'message' => 'Data berhasil diperbarui']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success'=>false,'message' => 'Error occurred while updating data'], 500);
+            return response()->json(['success'=>false,'message' => 'Error saat update data'], 500);
         }
     }
 
@@ -268,10 +268,10 @@ class pengeluaranBarangKanvasController extends Controller
                 ->delete();
             $this->reverseTrnsalesStatus($nopermintaan);
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Records deleted successfully']);
+            return response()->json(['success' => true, 'message' => 'Data berhasil dihapus']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error occurred while deleting records'], 500);
+            return response()->json(['success' => false, 'message' => 'Error saat hapus data'], 500);
         }
     }
 

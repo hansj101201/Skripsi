@@ -22,7 +22,7 @@
 
         <button type="submit" class="btn btn-block btn-flat btn-primary">
             <span class="fas fa-paper-plane"></span>
-            {{ __('Send Password Reset Link') }}
+            {{ __('Email link reset password') }}
         </button>
     </form>
 
@@ -41,7 +41,7 @@
 @section('auth_footer')
     <p class="my-0">
         <a href="{{ route('login') }}">
-            {{ __('Return to login') }}
+            {{ __('Kembali ke login') }}
         </a>
     </p>
 @endsection

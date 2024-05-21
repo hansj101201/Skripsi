@@ -193,7 +193,7 @@ function updateCustomerOptions(urlPass, callback) {
     });
 }
 
-function getNomorPO(urlPass) {
+function getNomorPO(urlPass, callback) {
     var url = urlPass;
     $.ajax({
         url: url,
@@ -215,6 +215,9 @@ function getNomorPO(urlPass) {
                     text: nomor.NOMORPO
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
@@ -222,7 +225,7 @@ function getNomorPO(urlPass) {
     });
 }
 
-function updateGudangTujuanOptions(urlPass) {
+function updateGudangTujuanOptions(urlPass,callback) {
     var url = urlPass;
     $.ajax({
         url: url,
@@ -244,6 +247,9 @@ function updateGudangTujuanOptions(urlPass) {
                     text: gudang.NAMA
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);
@@ -251,7 +257,7 @@ function updateGudangTujuanOptions(urlPass) {
     });
 }
 
-function updateNomorPo(urlPass) {
+function updateNomorPo(urlPass,callback) {
     var url = urlPass;
     $.ajax({
         url: url,
@@ -273,6 +279,9 @@ function updateNomorPo(urlPass) {
                     text: nomorpermintaan.NOPERMINTAAN
                 }));
             });
+            if (typeof callback === 'function') {
+                callback();
+            }
         },
         error: function(xhr, status, error) {
             console.error('Terjadi kesalahan saat mengambil opsi gudang:', error);

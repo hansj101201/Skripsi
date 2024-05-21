@@ -84,7 +84,7 @@ class barangController extends Controller
             $barang->update($validatedData);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
         } else {
-            return response()->json(['success' => false,'error' => 'Data dengan KDJADI tersebut tidak ditemukan'], 404);
+            return response()->json(['success' => false,'error' => 'Data dengan Id tersebut tidak ditemukan'], 404);
         }
     }
 

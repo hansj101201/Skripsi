@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-            <!-- Input field for user to input ID -->
+                <!-- Input field for user to input ID -->
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" id ="_token">
                 <div class="form-group row">
@@ -17,10 +17,12 @@
                     </div>
                     <div class="col-sm-6"> <!-- Combine both input and button in the same column -->
                         <div class="input-group"> <!-- Use input-group for better alignment -->
-                            <input type="text" class="form-control datepicker" id="tanggal" name="TANGGAL" readonly>
+                            <input type="text" class="form-control datepicker" id="tanggal" name="TANGGAL"
+                                readonly>
                             <div class="input-group-append">
                                 <span class="input-group-text">
-                                    <i class="fas fa-calendar-alt" id="datepicker"></i> <!-- Font Awesome calendar icon -->
+                                    <i class="fas fa-calendar-alt" id="datepicker"></i>
+                                    <!-- Font Awesome calendar icon -->
                                 </span>
                             </div>
                         </div>
@@ -41,7 +43,8 @@
                         <label for="supplier" class="col-form-label">Supplier</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="supplier" name="ID_SUPPLIER" maxlength="40" readonly>
+                        <input type="text" class="form-control" id="supplier" name="ID_SUPPLIER" maxlength="40"
+                            readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -49,7 +52,8 @@
                         <label for="bukti" class="col-form-label">Bukti</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="bukti" name="BUKTI" maxlength="40" readonly>
+                        <input type="text" class="form-control" id="bukti" name="BUKTI" maxlength="40"
+                            readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -57,7 +61,8 @@
                         <label for="gudang" class="col-form-label">GUDANG</label>
                     </div>
                     <div class="col-sm-6">
-                        <select class="form-control" id="gudang" name="ID_GUDANG"> <!-- Remove 'col-sm-9' class here -->
+                        <select class="form-control" id="gudang" name="ID_GUDANG">
+                            <!-- Remove 'col-sm-9' class here -->
                         </select>
                     </div>
                 </div>
@@ -79,7 +84,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -89,7 +95,7 @@
                 </button>
             </div>
             <div class="modal-body">
-            <!-- Input field for user to input ID -->
+                <!-- Input field for user to input ID -->
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" id ="_token">
                 <input type="hidden" id="detailjumlah">
@@ -100,7 +106,8 @@
                         <label for="bukti" class="col-form-label">Bukti</label>
                     </div>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="detailbukti" name="BUKTI" maxlength="40" readonly>
+                        <input type="text" class="form-control" id="detailbukti" name="BUKTI" maxlength="40"
+                            readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -117,20 +124,23 @@
                         <label for="nomor_po" class="col-form-label"> No PO</label>
                     </div>
                     <div class="col-sm-6"> <!-- Combine both input and button in the same column -->
-                        <input type="text" id="detailnomorpo" class="form-control" placeholder="Enter ID" readonly>
+                        <input type="text" id="detailnomorpo" class="form-control" placeholder="Enter ID"
+                            readonly>
                     </div>
                 </div>
                 <div id="detailTrnJadi">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onClick="simpanDataTrnJadi()" id="simpanButton" style="display: none;">Simpan</button>
+                <button type="button" class="btn btn-primary" onClick="simpanDataTrnJadi()" id="simpanButton"
+                    style="display: none;">Simpan</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal" id="editDataModal" tabindex="-1" role="dialog" aria-labelledby="editDataModalLabel" aria-hidden="true">
+<div class="modal" id="editDataModal" tabindex="-1" role="dialog" aria-labelledby="editDataModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -145,37 +155,43 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="kode_barang" name="ID_BARANG" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="kode_barang" name="ID_BARANG"
+                                maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Nama Barang</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nama_barang" name="NAMA_BARANG" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="nama_barang" name="NAMA_BARANG"
+                                maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="satuan" name="SATUAN" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="satuan" name="SATUAN" maxlength="6"
+                                readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY ORDER</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control text-right" id="qtyorder" name="QTYORDER" maxlength="6" readonly>
+                            <input type="text" class="form-control text-right" id="qtyorder" name="QTYORDER"
+                                maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">SUDAH TERIMA</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control text-right" id="qtyterima" maxlength="6" readonly>
+                            <input type="text" class="form-control text-right" id="qtyterima" maxlength="6"
+                                readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control text-right" id="qtykirim" name="QTYKIRIM" maxlength="6" >
+                            <input type="text" class="form-control text-right" id="qtykirim" name="QTYKIRIM"
+                                maxlength="6">
                         </div>
                     </div>
                 </div>
@@ -188,7 +204,8 @@
     </div>
 </div>
 
-<div class="modal" id="editDetailModal" tabindex="-1" role="dialog" aria-labelledby="editDetailModalLabel" aria-hidden="true">
+<div class="modal" id="editDetailModal" tabindex="-1" role="dialog" aria-labelledby="editDetailModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -202,25 +219,29 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Kode Barang</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_kode_barang" name="ID_BARANG" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="detail_kode_barang" name="ID_BARANG"
+                                maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Nama Barang</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_nama_barang" name="NAMA_BARANG" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="detail_nama_barang" name="NAMA_BARANG"
+                                maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">SATUAN</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="detail_satuan" name="SATUAN" maxlength="6" readonly>
+                            <input type="text" class="form-control" id="detail_satuan" name="SATUAN"
+                                maxlength="6" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">QTY</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control text-right" id="detail_qty" name="QTY" maxlength="6" >
+                            <input type="text" class="form-control text-right" id="detail_qty" name="QTY"
+                                maxlength="6">
                         </div>
                     </div>
                 </div>
@@ -233,7 +254,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="deleteDataModal" tabindex="-1" role="dialog" aria-labelledby="deleteDataModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteDataModal" tabindex="-1" role="dialog" aria-labelledby="deleteDataModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -257,18 +279,17 @@
         }
     </style>
     <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 @endpush
 
 @push('js')
     <script src="{{ asset('bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('/js/format.js') }}"></script>
     <script src="{{ asset('/js/updateOptions.js') }}"></script>
-    <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.36/moment-timezone-with-data.min.js"></script>
     <script>
-
         let idEdit = '';
         let arrBarang = [];
 
@@ -280,6 +301,7 @@
             $('#detailBarang').empty();
             $('#keterangan').empty();
         }
+
         function clearDetail() {
             $('#detailjumlah').val("");
             $('#detailperiode').val("");
@@ -289,22 +311,22 @@
             $('#detailtrnjadi').empty();
         }
 
-        function cekData(){
+        function cekData() {
             var tanggal = $('#tanggal').val();
             var nomorpo = $('#nomorpo').val();
             var gudang = $('#gudang').val();
 
-            if(!tanggal){
+            if (!tanggal) {
                 toastr.error('Tanggal harus diisi');
                 $('#tanggal').addClass('is-invalid');
                 return false;
             }
-            if(!nomorpo){
+            if (!nomorpo) {
                 toastr.error('Nomor PO harus diisi');
                 $('#nomorpo').addClass('is-invalid');
                 return false;
             }
-            if(!gudang){
+            if (!gudang) {
                 toastr.error('Gudang harus diisi');
                 $('#gudang').addClass('is-invalid');
                 return false;
@@ -313,9 +335,9 @@
             return true;
         }
 
-        function simpanData(){
+        function simpanData() {
 
-            if(cekData()){
+            if (cekData()) {
                 arrBarang = [];
 
                 var _token = $('meta[name="csrf-token"]').attr('content');
@@ -333,18 +355,18 @@
                 $.ajax({
                     url: "{{ route('postTrnJadi') }}",
                     method: 'POST',
-                    data : {
+                    data: {
                         _token: _token,
-                        data : arrBarang,
-                        tanggal : $('#tanggal').val(),
-                        gudang : $('#gudang').val(),
-                        nomorpo : $('#nomorpo').val(),
-                        periode : getPeriode($('#tanggal').val()),
-                        supplier : $('#supplier').val().split('-')[0].trim(),
-                        keterangan : $('#keterangan').val(),
+                        data: arrBarang,
+                        tanggal: $('#tanggal').val(),
+                        gudang: $('#gudang').val(),
+                        nomorpo: $('#nomorpo').val(),
+                        periode: getPeriode($('#tanggal').val()),
+                        supplier: $('#supplier').val().split('-')[0].trim(),
+                        keterangan: $('#keterangan').val(),
                     },
 
-                    success: function(response){
+                    success: function(response) {
                         if (response.success) {
                             $('.modal-backdrop').remove();
                             $('#addDataModal').modal('hide');
@@ -359,7 +381,8 @@
 
             }
         }
-        function editTableBarang(){
+
+        function editTableBarang() {
             var kode = $('#kode_barang').val();
             var nama = $('#nama_barang').val();
             var satuan = $('#satuan').val();
@@ -367,15 +390,15 @@
             var qtykirim = parseFloat($('#qtyterima').val().replace(/[^\d]/g, '')); // Parse as float
             var qty = parseFloat($('#qtykirim').val().replace(/[^\d]/g, '')); // Parse as float
 
-            if(qty > (qtyorder - qtykirim)){
+            if (qty > (qtyorder - qtykirim)) {
                 toastr.error("qty kirim tidak boleh lebih besar");
                 console.log(qtyorder);
-            console.log(qtykirim);
+                console.log(qtykirim);
             } else {
-                $('#'+idEdit).empty();
-            let createRow ='';
-            createRow +=
-            `
+                $('#' + idEdit).empty();
+                let createRow = '';
+                createRow +=
+                    `
                 <td class="text-left" style="padding-left: 10px;">${kode}</td>
                 <td class="text-left" style="padding-left: 10px;">${nama}</td>
                 <td class="text-left" style="padding-left: 10px;">${satuan}</td>
@@ -390,23 +413,24 @@
                     ><i class="fas fa-pencil-alt"></i></button></td>
             `;
 
-            $('#'+idEdit).append(createRow);
+                $('#' + idEdit).append(createRow);
 
-            $('#editDataModal').hide();
-            $('.modal-backdrop').remove();
+                $('#editDataModal').hide();
+                $('.modal-backdrop').remove();
             }
         }
-        function editDetailTableBarang(){
+
+        function editDetailTableBarang() {
             var kode = $('#detail_kode_barang').val();
             var nama = $('#detail_nama_barang').val();
             var satuan = $('#detail_satuan').val();
             var qty = parseFloat($('#detail_qty').val()); // Parse as float
             var stok = parseFloat($('#stok_lama').val());
 
-                $('#'+idEdit).empty();
-            let createRow ='';
+            $('#' + idEdit).empty();
+            let createRow = '';
             createRow +=
-            `
+                `
                 <td class="text-left" style="padding-left: 10px;">${kode}</td>
                 <td class="text-left" style="padding-left: 10px;">${nama}</td>
                 <td class="text-left" style="padding-left: 10px;">${satuan}</td>
@@ -421,26 +445,28 @@
                     ><i class="fas fa-pencil-alt"></i></button></td>
             `;
 
-            $('#'+idEdit).append(createRow);
+            $('#' + idEdit).append(createRow);
 
             $('#editDetailModal').hide();
             $('.modal-backdrop').remove();
         }
+
         function fetchDataById(id) {
             $.ajax({
-                url: "{{ url('transaksi/gudang/fetch-data') }}/" + id ,
+                url: "{{ url('transaksi/gudang/fetch-data') }}/" + id,
                 method: 'GET',
-                success: function (data) {
+                success: function(data) {
                     console.log(data[0]);
                     // $('#kode_barang').val(data[0].NOMORPO);
-                    $('#supplier').val(data[0].ID_SUPPLIER+' - '+data[0].supplier.NAMA);
+                    $('#supplier').val(data[0].ID_SUPPLIER + ' - ' + data[0].supplier.NAMA);
                     $.ajax({
-                        url: "{{ url('transaksi/gudang/fetch-detail') }}/" +data[0].BUKTI+'/'+data[0].PERIODE,
+                        url: "{{ url('transaksi/gudang/fetch-detail') }}/" + data[0].BUKTI + '/' +
+                            data[0].PERIODE,
                         method: 'GET',
 
-                        success: function (data) {
-                            console.log (data);
-                            console.log (data.length);
+                        success: function(data) {
+                            console.log(data);
+                            console.log(data.length);
                             $('#detailBarang').empty();
                             $('#tableData').empty();
                             let createTable = "";
@@ -455,12 +481,14 @@
                                     <th class="text-center"> Aksi </th>
                                 </thead>
                                 <tbody>`;
-                                    while(i < data.length){
-                                        let qtyOrder = parseFloat(data[i].QTYORDER).toFixed(0); // Round to 0 decimal places
-                                        let qtyKirim = parseFloat(data[i].QTYKIRIM).toFixed(0); // Round to 0 decimal places
-                                        // console.log(data[i]);
-                                        createTable +=
-                                            `<tr id="${data[i].ID_BARANG}">
+                            while (i < data.length) {
+                                let qtyOrder = parseFloat(data[i].QTYORDER).toFixed(
+                                    0); // Round to 0 decimal places
+                                let qtyKirim = parseFloat(data[i].QTYKIRIM).toFixed(
+                                    0); // Round to 0 decimal places
+                                // console.log(data[i]);
+                                createTable +=
+                                    `<tr id="${data[i].ID_BARANG}">
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
@@ -476,26 +504,27 @@
                                                     data-idsatuan="${data[i].ID_SATUAN}"
                                                     ><i class="fas fa-pencil-alt"></i></button></td>
                                             </tr>`;
-                                        i++;
-                                        }
-                                    createTable +=`</tbody>
+                                i++;
+                            }
+                            createTable += `</tbody>
                                 </table>`;
                             $('#detailBarang').append(createTable);
                         }
                     })
                 },
-                error: function () {
+                error: function() {
                     console.error('Error fetching data');
                     toastr.error('Data tidak ditemukan');
                 }
             });
         }
-        function fetchDetail(bukti,periode){
+
+        function fetchDetail(bukti, periode) {
             var tanggalPenutupanCompact = "{{ $tglClosing }}";
             $.ajax({
-                url: "{{ url('transaksi/gudang/getDetail') }}/"+bukti+"/"+periode,
+                url: "{{ url('transaksi/gudang/getDetail') }}/" + bukti + "/" + periode,
                 method: "GET",
-                success: function (data) {
+                success: function(data) {
                     $('#detailTrnJadi').empty();
                     $('#tableData').empty();
                     let createTable = "";
@@ -512,62 +541,63 @@
 
                             <tbody>
                                 `;
-                                while(i < data.length){
-                                    var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+                    while (i < data.length) {
+                        var tanggalPenutupan = new Date(tanggalPenutupanCompact);
 
-                                    // Convert data[i].TANGGAL menjadi objek Date
-                                    var tanggalTransaksi = new Date(data[i].TANGGAL);
-                                    let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
-                                    let stok = parseFloat(data[i].QTY).toFixed(0);
-                                    // console.log(data[i]);
-                                    createTable +=
-                                        `<tr id="${data[i].ID_BARANG}">
+                        // Convert data[i].TANGGAL menjadi objek Date
+                        var tanggalTransaksi = new Date(data[i].TANGGAL);
+                        let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
+                        let stok = parseFloat(data[i].QTY).toFixed(0);
+                        // console.log(data[i]);
+                        createTable +=
+                            `<tr id="${data[i].ID_BARANG}">
                                             <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
                                             <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                             <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
                                             <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                                             <td class="hide">${formatHarga(stok)}</td>`
 
-                                            if(tanggalTransaksi > tanggalPenutupan){
-                                                if($('#detailjumlah').val()==0){
-                                                    createTable+= ` <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
+                        if (tanggalTransaksi > tanggalPenutupan) {
+                            if ($('#detailjumlah').val() == 0) {
+                                createTable += ` <td class="text-center"><button class="btn btn-primary btn-sm edit-detail-button" id="edit-detail-button" data-toggle="modal" data-target="#editDetailModal"
                                                     data-kode="${data[i].ID_BARANG}"
                                                     data-nama="${data[i].nama_barang}"
                                                     data-satuan="${data[i].nama_satuan}"
                                                     data-qty="${qty}"
                                                     data-stok="${stok}"
                                                     ><i class="fas fa-pencil-alt"></i></button></td>`
-                                                } else {
-                                                    createTable+= `<td></td>`;
-                                                }
-                                            } else {
-                                                createTable+= `<td></td>`;
-                                            }
-                                        createTable+= `</tr>`;
-                                    i++;
-
-                                }
-                                createTable +=`</tbody>
-                        </table>`;
-                        $('#detailTrnJadi').append(createTable);
-                        if(tanggalTransaksi > tanggalPenutupan){
-                            if ($('#detailjumlah').val() == 0) {
-                                // Jika tidak, sembunyikan tombol Simpan
-                                $('#simpanButton').show();
-
                             } else {
-                                // Jika iya, tampilkan tombol Simpan
-                                $('#simpanButton').hide();
+                                createTable += `<td></td>`;
                             }
                         } else {
-                                // Jika iya, tampilkan tombol Simpan
+                            createTable += `<td></td>`;
+                        }
+                        createTable += `</tr>`;
+                        i++;
+
+                    }
+                    createTable += `</tbody>
+                        </table>`;
+                    $('#detailTrnJadi').append(createTable);
+                    if (tanggalTransaksi > tanggalPenutupan) {
+                        if ($('#detailjumlah').val() == 0) {
+                            // Jika tidak, sembunyikan tombol Simpan
+                            $('#simpanButton').show();
+
+                        } else {
+                            // Jika iya, tampilkan tombol Simpan
                             $('#simpanButton').hide();
                         }
+                    } else {
+                        // Jika iya, tampilkan tombol Simpan
+                        $('#simpanButton').hide();
+                    }
 
                 }
             });
         }
-        function simpanDataTrnJadi(){
+
+        function simpanDataTrnJadi() {
             arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
@@ -583,15 +613,15 @@
             $.ajax({
                 url: "{{ route('postDetailTrnJadi') }}",
                 method: 'PUT',
-                data : {
+                data: {
                     _token: _token,
-                    data : arrBarang,
-                    bukti : $('#detailbukti').val(),
-                    periode : $('#detailperiode').val(),
-                    nomorpo : $('#detailnomorpo').val(),
+                    data: arrBarang,
+                    bukti: $('#detailbukti').val(),
+                    periode: $('#detailperiode').val(),
+                    nomorpo: $('#detailnomorpo').val(),
                 },
 
-                success: function(response){
+                success: function(response) {
                     if (response.success) {
                         $('.modal-backdrop').remove();
                         $('#detailModal').modal('hide');
@@ -604,17 +634,20 @@
             })
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
 
-            $('#addDataModal').on('show.bs.modal', function (event) {
+            $('#addDataModal').on('show.bs.modal', function(event) {
                 var urlGudang = "{{ url('setup/gudang/getGudangActive') }}";
                 var urlPo = "{{ url('transaksi/gudang/getNomorPo') }}";
-                var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                $('#tanggal').val(today);
-                updateGudangOptions(urlGudang);
-                getNomorPO(urlPo);
+                updateGudangOptions(urlGudang, function() {
+                    getNomorPO(urlPo, function() {
+
+                        var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                        $('#tanggal').val(today);
+                    });
+                });
             });
-            $('#addDataModal').on('hide.bs.modal', function (event) {
+            $('#addDataModal').on('hide.bs.modal', function(event) {
                 clearModal();
             });
 
@@ -629,20 +662,21 @@
                 allowClear: true
             });
 
-            $(document).on('click', '#tanggal', function(){
+            $(document).on('click', '#tanggal', function() {
                 $('#tanggal').removeClass('is-invalid');
             })
-            $(document).on('click', '#gudang', function(){
+            $(document).on('click', '#gudang', function() {
                 $('#gudang').removeClass('is-invalid');
             })
-            $(document).on('click', '#nomorpo', function(){
+            $(document).on('click', '#nomorpo', function() {
                 $('#nomorpo').removeClass('is-invalid');
             })
 
             var tanggalPenutupanCompact = "{{ $tglClosing }}";
             var tanggalPenutupan = new Date(tanggalPenutupanCompact);
             tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
-            var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+            var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan
+                .getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
             $('.datepicker').datepicker({
                 format: 'dd-mm-yyyy',
                 startDate: tanggalMulai,
@@ -658,11 +692,11 @@
                 event.preventDefault();
                 editTableBarang();
             });
-            $('#editDetailModal').on('click', '.btn-primary', function () {
+            $('#editDetailModal').on('click', '.btn-primary', function() {
                 event.preventDefault();
                 editDetailTableBarang();
             })
-            $(document).on('click', '.view-detail', function (e) {
+            $(document).on('click', '.view-detail', function(e) {
                 e.preventDefault();
 
                 var nomorpo = $(this).data('nomorpo');
@@ -671,7 +705,7 @@
                 var periode = $(this).data('periode');
                 var jumlah = $(this).data('jumlah');
 
-                console.log("Nomor PO"+nomorpo);
+                console.log("Nomor PO" + nomorpo);
 
 
                 $('#detailbukti').val(bukti);
@@ -681,9 +715,9 @@
                 $('#detailjumlah').val(jumlah);
 
                 console.log($('#detailjumlah').val());
-                fetchDetail(bukti,periode);
+                fetchDetail(bukti, periode);
             });
-            $(document).on('click', '.edit-button', function () {
+            $(document).on('click', '.edit-button', function() {
                 var kode = $(this).data('kode');
                 console.log(kode);
                 var nama = $(this).data('nama');
@@ -696,12 +730,12 @@
                 $('#satuan').val(satuan);
                 $('#qtyorder').val(formatHarga(qtyorder));
                 $('#qtyterima').val(formatHarga(qtykirim));
-                $('#qtykirim').val(formatHarga(qtyorder-qtykirim));
+                $('#qtykirim').val(formatHarga(qtyorder - qtykirim));
                 idEdit = kode;
-                $('#btnSimpanData').prop('disabled',false);
+                $('#btnSimpanData').prop('disabled', false);
             });
 
-            $('#qtykirim').on('input', function(){
+            $('#qtykirim').on('input', function() {
                 var qtykirimInput = $(this).val().replace(/[^\d]/g, '');
                 var qtykirim = parseFloat(qtykirimInput === '' ? 0 : qtykirimInput);
                 var qtyterima = parseFloat($('#qtyterima').val().replace(/[^\d]/g, ''));
@@ -711,15 +745,15 @@
                 console.log(hasil);
                 console.log(qtyorder);
                 $(this).val(formatHarga(qtykirim));
-                if (hasil > qtyorder || qtykirim == 0){
+                if (hasil > qtyorder || qtykirim == 0) {
                     console.log('aaa');
-                    $('#btnSimpanData').prop('disabled',true);
+                    $('#btnSimpanData').prop('disabled', true);
                 } else {
                     console.log('bbb');
-                    $('#btnSimpanData').prop('disabled',false);
+                    $('#btnSimpanData').prop('disabled', false);
                 }
             })
-            $(document).on('click', '.edit-detail-button', function () {
+            $(document).on('click', '.edit-detail-button', function() {
                 var kode = $(this).data('kode');
                 console.log(kode);
                 var nama = $(this).data('nama');
@@ -735,7 +769,7 @@
                 console.log(stok);
                 idEdit = kode;
             });
-            $('#nomorpo').change(function () {
+            $('#nomorpo').change(function() {
                 var id = $(this).val();
                 console.log(id);
                 if (id) {
@@ -752,25 +786,25 @@
                     $(this).val(formatHarga(qty));
                 }
             });
-            $(document).on('click', '.delete-button', function () {
+            $(document).on('click', '.delete-button', function() {
                 bukti = $(this).data('bukti');
                 periode = $(this).data('periode');
                 console.log("kode " + bukti);
             });
-            $('#confirmDeleteButton').on('click', function () {
+            $('#confirmDeleteButton').on('click', function() {
                 $.ajax({
                     method: 'DELETE',
-                    url: "{{ url('transaksi/gudang/delete') }}/" + bukti+"/"+periode,
+                    url: "{{ url('transaksi/gudang/delete') }}/" + bukti + "/" + periode,
                     data: {
                         '_token': '{{ csrf_token() }}',
                     },
-                    success: function (response) {
+                    success: function(response) {
                         $('#deleteDataModal').modal('hide'); // Correct the selector here
                         $('.modal-backdrop').remove();
                         toastr.success(response.message);
                         table.draw();
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         // Handle errors, for example, display error messages
                         console.error(response.message);
                     }

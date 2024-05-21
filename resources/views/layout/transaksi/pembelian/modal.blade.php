@@ -297,7 +297,7 @@
                                             data-potongan="${data[i].DISCOUNT}"
                                             data-harga="${data[i].HARGA}"
                                             data-jumlah="${data[i].JUMLAH}"
-                                            ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${data[i].ID_BARANG}')"><i class="fas fa-trash"></i></button></td>'</td>
+                                            ><i class="fas fa-pencil-alt"></i></button></td>
                                         </tr>`
                             } else {
                                 createTable += `<td></td></tr>`
@@ -702,19 +702,21 @@
                     }
 
                 } else {
-                    var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                    $('#tanggal').val(
-                        today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                    updateSupplierOptions(getSupplierActiveUrl, function(){
+                        updateDepoOptions(getDepoActiveUrl, function(){
+                            var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                            $('#tanggal').val(
+                                today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
 
-                    enableDatepicker();
-                    console.log($('#tanggal').val());
-                    $('#tambahDataButton').show();
-                    $('#diskon').val(0);
-                    updateSupplierOptions(getSupplierActiveUrl);
-                    updateDepoOptions(getDepoActiveUrl);
-                    modal.find('.modal-title').text('Tambah Order');
+                            enableDatepicker();
+                            console.log($('#tanggal').val());
+                            $('#tambahDataButton').show();
+                            $('#diskon').val(0);
+                            modal.find('.modal-title').text('Tambah Order');
 
-                    $('#saveBtn').attr('onclick', 'simpanData()');
+                            $('#saveBtn').attr('onclick', 'simpanData()');
+                        });
+                    });
                 }
             });
 

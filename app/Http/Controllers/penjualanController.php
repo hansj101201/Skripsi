@@ -145,7 +145,7 @@ class penjualanController extends Controller
             return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan dengan No Bukti '. $bukti, 'bukti' => $bukti], 200);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error saat menyimpan data'], 500);
         }
     }
 }

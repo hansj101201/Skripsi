@@ -43,7 +43,7 @@
 
             <div class="row">
                 <div class="col-7">
-                    <a href="{{ route('password.request') }}" class="btn btn-link p-0">{{ __('Forgot Your Password?') }}</a>
+                    <a href="{{ route('password.request') }}" class="btn btn-link p-0">{{ __('Lupa Password') }}</a>
                 </div>
                 <div class="col-5">
                     <button type="submit"

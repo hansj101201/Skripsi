@@ -89,7 +89,7 @@ class supplierController extends Controller
             // dd($barang);
             return response()->json(['success' => true,'message' => 'Data berhasil diperbarui'], 200);
         } else {
-            return response()->json(['success' => false,'error' => 'Data dengan KDJADI tersebut tidak ditemukan'], 404);
+            return response()->json(['success' => false,'error' => 'Data tidak ditemukan'], 404);
         }
     }
 

@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addDataModalLabel">Add Data</h5>
+                <h5 class="modal-title" id="addDataModalLabel"></h5>
                 <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="btn-custom-close">&times;</span>
                 </button>
@@ -110,13 +110,15 @@
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Stok</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly style="text-align: right;">
+                            <input type="text" class="form-control" id="barang_saldo" name="SALDO" readonly
+                                style="text-align: right;">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="kode_barang" class="col-sm-3 col-form-label">Qty</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="barang_qty" name="QTY" style="text-align: right;">
+                            <input type="text" class="form-control" id="barang_qty" name="QTY"
+                                style="text-align: right;">
                         </div>
                     </div>
                 </div>
@@ -223,7 +225,7 @@
 
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(3)').text();
+                var qtyKirim = $(row).find('td:eq(3)').text().replace(/[^\d]/g, '');
 
                 arrBarang.push([idBarang, qtyKirim]);
             });
@@ -307,7 +309,7 @@
                                         data-nama="${data[i].nama_barang}"
                                         data-satuan="${data[i].nama_satuan}"
                                         data-qty="${qty}"
-                                        ><i class="fas fa-pencil-alt"></i></button> &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${data[i].ID_BARANG}')"><i class="fas fa-trash"></i></button></td>`
+                                        ><i class="fas fa-pencil-alt"></i></button></td>`
                         } else {
                             createTable += `<td></td>`
                         }
@@ -424,7 +426,7 @@
             arrBarang = [];
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(3)').text();
+                var qtyKirim = $(row).find('td:eq(3)').text().replace(/[^\d]/g, '');
                 arrBarang.push([idBarang, qtyKirim]);
             });
             console.log(arrBarang);
@@ -486,47 +488,54 @@
                 }
 
                 if (mode === 'viewDetail') {
-                    updateGudangOptions(getGudangAllUrl);
-                    modal.find('.modal-title').text('View Detail');
-                    $("#tanggal").datepicker('destroy');
-                    $('#gudang').prop('disabled', true);
-                    $('#tambahDataButton').hide();
-                    $('#datepicker').off('click');
-                    var bukti = button.data('bukti');
-                    var periode = button.data('periode');
-                    console.log(bukti);
-                    fetchData(bukti, periode);
-                    fetchDetail(bukti, periode);
-                    $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
+                    updateGudangOptions(getGudangAllUrl, function() {
+                        modal.find('.modal-title').text('View Detail');
+                        $("#tanggal").datepicker('destroy');
+                        $('#gudang').prop('disabled', true);
+                        $('#tambahDataButton').hide();
+                        $('#datepicker').off('click');
+                        var bukti = button.data('bukti');
+                        var periode = button.data('periode');
+                        console.log(bukti);
+                        fetchData(bukti, periode);
+                        fetchDetail(bukti, periode);
+                        $('#saveBtn').attr('onclick', 'simpanDataTrnJadi()');
+                    });
+
                 } else {
-                    updateGudangOptions(getGudangActiveUrl);
-                    var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                    $('#tanggal').val(
-                        today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
-                    $('#tambahDataButton').show();
-                    modal.find('.modal-title').text('Add Data');
-                    var tanggalPenutupanCompact = "{{ $tglClosing }}";
+                    updateGudangOptions(getGudangActiveUrl, function() {
+                        var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                        $('#tanggal').val(
+                            today
+                            ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                        $('#tambahDataButton').show();
+                        modal.find('.modal-title').text('Add Data');
+                        var tanggalPenutupanCompact = "{{ $tglClosing }}";
 
-                    var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+                        var tanggalPenutupan = new Date(tanggalPenutupanCompact);
 
-                    // Menambahkan satu hari ke tanggal penutupan
-                    tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+                        // Menambahkan satu hari ke tanggal penutupan
+                        tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
 
-                    // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
-                    var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (
-                            tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan
-                        .getFullYear();
+                        // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
+                        var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + (
+                                "0" + (
+                                    tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" +
+                            tanggalPenutupan
+                            .getFullYear();
 
-                    $('#tanggal').datepicker({
-                        format: 'dd-mm-yyyy', // Set your desired date format
-                        startDate: tanggalMulai,
-                        defaultDate: 'now', // Set default date to 'now'
-                        autoclose: true // Close the datepicker when a date is selected
+                        $('#tanggal').datepicker({
+                            format: 'dd-mm-yyyy', // Set your desired date format
+                            startDate: tanggalMulai,
+                            defaultDate: 'now', // Set default date to 'now'
+                            autoclose: true // Close the datepicker when a date is selected
+                        });
+                        $('#datepicker').on('click', function() {
+                            $('#tanggal').datepicker('show');
+                        });
+                        $('#saveBtn').attr('onclick', 'simpanData()');
                     });
-                    $('#datepicker').on('click', function() {
-                        $('#tanggal').datepicker('show');
-                    });
-                    $('#saveBtn').attr('onclick', 'simpanData()');
+
                 }
             });
 
@@ -590,29 +599,29 @@
             });
 
             $('#barang_qty').on('input', function() {
-    var input = $(this).val();
+                var input = $(this).val();
 
-    // Allow only one minus sign at the beginning
-    if (input.startsWith('-')) {
-        var cleanedInput = '-' + input.substring(1).replace(/-/g, '').replace(/[^\d]/g, '');
-    } else {
-        var cleanedInput = input.replace(/-/g, '').replace(/[^\d]/g, '');
-    }
+                // Allow only one minus sign at the beginning
+                if (input.startsWith('-')) {
+                    var cleanedInput = '-' + input.substring(1).replace(/-/g, '').replace(/[^\d]/g, '');
+                } else {
+                    var cleanedInput = input.replace(/-/g, '').replace(/[^\d]/g, '');
+                }
 
-    // Handle the case when input is just a minus sign
-    var qty = cleanedInput === '-' ? 0 : parseFloat(cleanedInput);
+                // Handle the case when input is just a minus sign
+                var qty = cleanedInput === '-' ? 0 : parseFloat(cleanedInput);
 
-    // Set the input value formatted (assuming formatHarga is a function to format the number)
-    if (cleanedInput === '' || cleanedInput === '-') {
-        $(this).val(cleanedInput);
-    } else {
-        $(this).val(formatHarga(qty));
-    }
+                // Set the input value formatted (assuming formatHarga is a function to format the number)
+                if (cleanedInput === '' || cleanedInput === '-') {
+                    $(this).val(cleanedInput);
+                } else {
+                    $(this).val(formatHarga(qty));
+                }
 
-    var isSaveButtonActive = qty !== 0;
+                var isSaveButtonActive = qty !== 0;
 
-    $('#saveButton').prop('disabled', !isSaveButtonActive);
-});
+                $('#saveButton').prop('disabled', !isSaveButtonActive);
+            });
 
 
             $(document).on('click', '#tanggal', function() {
