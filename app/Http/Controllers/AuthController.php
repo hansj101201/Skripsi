@@ -80,7 +80,7 @@ class AuthController extends Controller
         $user = DB::table('user')->where('EMAIL', $request->email)->where('ID_USER',$request->iduser)->first();
 
         if (!$user) {
-            return back()->withErrors(['email' => 'Id User dengan email tersebut tidak ditemukan','iduser' => 'Id User dengan email tersebut tidak ditemukan']);
+            return back()->withErrors(['email' => 'Kombinasi Id User dan Email salah','iduser'=>' ']);
         }
 
         $token = Str::random(60);
