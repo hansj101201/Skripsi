@@ -14,12 +14,13 @@ class customerController extends Controller
     //
 
     public function index(){
+        $apiKey = env('GOOGLE_MAPS_API_KEY');
         if(getIdDepo()=='000'){
             $sales = salesman::where('ACTIVE',1)->get();
         } else {
             $sales = salesman::where('ID_DEPO',getIdDepo())->where('ACTIVE',1)->get();
         }
-        return view('layout.setup.customer.index', compact('sales'));
+        return view('layout.setup.customer.index', compact('sales','apiKey'));
     }
 
     public function datatable(){
