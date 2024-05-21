@@ -356,32 +356,7 @@
 
                     });
                 } else {
-                    geocoder.geocode({
-                        'address': address
-                    }, function(results, status) {
-                        if (status === 'OK') {
-                            var locationList = document.getElementById('locationList');
-                            locationList.innerHTML = '';
-
-                            results.forEach(function(result) {
-                                // Check if the formatted address contains the searched text
-                                if (result.formatted_address.toLowerCase().includes(address
-                                        .toLowerCase())) {
-                                    var li = document.createElement('li');
-                                    li.textContent = result.formatted_address;
-                                    li.addEventListener('click', function() {
-                                        map.setCenter(result.geometry.location);
-                                        placeMarker(result.geometry.location);
-                                        locationList.innerHTML =
-                                            ''; // Clear the list after selecting a location
-                                    });
-                                    locationList.appendChild(li);
-                                }
-                            });
-                        } else {
-                            alert('Beri Alamat yang lebih detail');
-                        }
-                    });
+                    alert('Gagal Mencari Alamat');
                 }
             })
         }
