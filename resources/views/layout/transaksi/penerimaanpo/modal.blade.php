@@ -350,8 +350,8 @@
 
                     arrBarang.push([idBarang, qtyKirim, idSatuan]);
                 });
-                console.log(arrBarang);
-                console.log($('#tanggal').val());
+                //console.log(arrBarang);
+                //console.log($('#tanggal').val());
                 $.ajax({
                     url: "{{ route('postTrnJadi') }}",
                     method: 'POST',
@@ -392,8 +392,8 @@
 
             if (qty > (qtyorder - qtykirim)) {
                 toastr.error("qty kirim tidak boleh lebih besar");
-                console.log(qtyorder);
-                console.log(qtykirim);
+                //console.log(qtyorder);
+                //console.log(qtykirim);
             } else {
                 $('#' + idEdit).empty();
                 let createRow = '';
@@ -456,7 +456,7 @@
                 url: "{{ url('transaksi/gudang/fetch-data') }}/" + id,
                 method: 'GET',
                 success: function(data) {
-                    console.log(data[0]);
+                    //console.log(data[0]);
                     // $('#kode_barang').val(data[0].NOMORPO);
                     $('#supplier').val(data[0].ID_SUPPLIER + ' - ' + data[0].supplier.NAMA);
                     $.ajax({
@@ -465,8 +465,8 @@
                         method: 'GET',
 
                         success: function(data) {
-                            console.log(data);
-                            console.log(data.length);
+                            //console.log(data);
+                            //console.log(data.length);
                             $('#detailBarang').empty();
                             $('#tableData').empty();
                             let createTable = "";
@@ -486,7 +486,7 @@
                                     0); // Round to 0 decimal places
                                 let qtyKirim = parseFloat(data[i].QTYKIRIM).toFixed(
                                     0); // Round to 0 decimal places
-                                // console.log(data[i]);
+                                // //console.log(data[i]);
                                 createTable +=
                                     `<tr id="${data[i].ID_BARANG}">
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
@@ -548,7 +548,7 @@
                         var tanggalTransaksi = new Date(data[i].TANGGAL);
                         let qty = parseFloat(data[i].QTY).toFixed(0); // Round to 0 decimal places
                         let stok = parseFloat(data[i].QTY).toFixed(0);
-                        // console.log(data[i]);
+                        // //console.log(data[i]);
                         createTable +=
                             `<tr id="${data[i].ID_BARANG}">
                                             <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
@@ -605,8 +605,8 @@
                 var stok = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
                 arrBarang.push([idBarang, qtyKirim, stok]);
             });
-            console.log(arrBarang);
-            console.log($('#tanggal').val());
+            //console.log(arrBarang);
+            //console.log($('#tanggal').val());
 
             var _token = $('meta[name="csrf-token"]').attr('content');
 
@@ -705,7 +705,7 @@
                 var periode = $(this).data('periode');
                 var jumlah = $(this).data('jumlah');
 
-                console.log("Nomor PO" + nomorpo);
+                //console.log("Nomor PO" + nomorpo);
 
 
                 $('#detailbukti').val(bukti);
@@ -714,12 +714,12 @@
                 $('#detailperiode').val(periode);
                 $('#detailjumlah').val(jumlah);
 
-                console.log($('#detailjumlah').val());
+                //console.log($('#detailjumlah').val());
                 fetchDetail(bukti, periode);
             });
             $(document).on('click', '.edit-button', function() {
                 var kode = $(this).data('kode');
-                console.log(kode);
+                //console.log(kode);
                 var nama = $(this).data('nama');
                 var satuan = $(this).data('satuan');
                 var qtyorder = $(this).data('qtyorder');
@@ -742,20 +742,20 @@
                 var qtyorder = parseFloat($('#qtyorder').val().replace(/[^\d]/g, ''));
 
                 var hasil = qtykirim + qtyterima
-                console.log(hasil);
-                console.log(qtyorder);
+                //console.log(hasil);
+                //console.log(qtyorder);
                 $(this).val(formatHarga(qtykirim));
                 if (hasil > qtyorder || qtykirim == 0) {
-                    console.log('aaa');
+                    //console.log('aaa');
                     $('#btnSimpanData').prop('disabled', true);
                 } else {
-                    console.log('bbb');
+                    //console.log('bbb');
                     $('#btnSimpanData').prop('disabled', false);
                 }
             })
             $(document).on('click', '.edit-detail-button', function() {
                 var kode = $(this).data('kode');
-                console.log(kode);
+                //console.log(kode);
                 var nama = $(this).data('nama');
                 var satuan = $(this).data('satuan');
                 var qty = $(this).data('qty');
@@ -766,12 +766,12 @@
                 $('#detail_satuan').val(satuan);
                 $('#detail_qty').val(formatHarga(qty));
                 $('#stok_lama').val(stok);
-                console.log(stok);
+                //console.log(stok);
                 idEdit = kode;
             });
             $('#nomorpo').change(function() {
                 var id = $(this).val();
-                console.log(id);
+                //console.log(id);
                 if (id) {
                     fetchDataById(id);
                 }
@@ -789,7 +789,7 @@
             $(document).on('click', '.delete-button', function() {
                 bukti = $(this).data('bukti');
                 periode = $(this).data('periode');
-                console.log("kode " + bukti);
+                //console.log("kode " + bukti);
             });
             $('#confirmDeleteButton').on('click', function() {
                 $.ajax({

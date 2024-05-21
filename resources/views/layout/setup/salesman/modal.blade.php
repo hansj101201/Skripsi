@@ -158,8 +158,8 @@
             var depo = $('#depo').val();
             var gudang = formData.get('ID_GUDANG');
 
-            console.log(depo);
-            console.log(mode)
+            //console.log(depo);
+            //console.log(mode)
             if (kode_salesman.trim() === '') {
                 toastr.error('Kode salesman harus diisi');
                 $('#kode_salesman').addClass('is-invalid');
@@ -230,7 +230,7 @@
             $('#DataModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 mode = button.data('mode'); // Mengambil mode dari tombol
-                // console.log(mode);
+                // //console.log(mode);
                 var modal = $(this);
                 if (mode === 'add') {
                     modal.find('.modal-title').text('Tambah Salesman');
@@ -249,7 +249,7 @@
                     } else {
                         $('#depo').change(function() {
                             var selectedDepoId = $(this).val();
-                            console.log(selectedDepoId);
+                            //console.log(selectedDepoId);
                             updateGudangOptions('add',selectedDepoId);
                         });
                     }
@@ -304,7 +304,7 @@
                         toastr.success(response.message);
                         table.draw();
                     } else {
-                        console.log(response.message);
+                        //console.log(response.message);
                         toastr.error(response.message);
                         table.draw();
                     }
@@ -314,7 +314,7 @@
                     toastr.error(error.responseJSON.message);
                 };
                 // dd(formData);
-                console.log(formData);
+                //console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
                     formData.set('ID_DEPO', $('#depo').val());

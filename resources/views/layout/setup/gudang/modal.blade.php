@@ -82,7 +82,7 @@
                 url: url,
                 method: 'GET',
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     // Kosongkan dulu opsi gudang yang ada
                     $('#depo').empty();
 
@@ -120,7 +120,7 @@
         }
 
         function fetchDetail(id){
-            console.log('masuk fetch');
+            //console.log('masuk fetch');
             $.ajax({
                 type: "GET",
                 url: "{{ url('setup/gudang/getDetail') }}/"+id,
@@ -151,8 +151,8 @@
             var kode_gudang = formData.get('ID_GUDANG');
             var nama_gudang = formData.get('NAMA');
 
-            console.log(kode_gudang);
-            console.log(nama_gudang);
+            //console.log(kode_gudang);
+            //console.log(nama_gudang);
 
             if (kode_gudang.trim() === '') {
                 toastr.error('Kode Gudang harus diisi');
@@ -221,7 +221,7 @@
                         toastr.success(response.message);
                         table.draw();
                     } else {
-                        console.log(response.message);
+                        //console.log(response.message);
                         toastr.error(response.message);
                         table.draw();
                     }
@@ -231,7 +231,7 @@
                     toastr.error(error.responseJSON.message);
                 };
                 // dd(formData);
-                console.log(formData);
+                //console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
 

@@ -203,7 +203,7 @@
                 url: url,
                 method: 'GET',
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     // Kosongkan dulu opsi gudang yang ada
                     $('#depo').empty();
 
@@ -234,7 +234,7 @@
 
         function setDepoValue() {
             // Di sini Anda bisa menetapkan nilai depo sesuai kebutuhan
-            console.log('{{ getIdDepo() }}');
+            //console.log('{{ getIdDepo() }}');
             var idDepo = '{{ getIdDepo() }}';
             if (idDepo !== '000') {
                 $('#depo').val(idDepo).trigger('change');
@@ -339,7 +339,7 @@
                         toastr.success(response.message);
                         table.draw();
                     } else {
-                        console.log(response.message);
+                        //console.log(response.message);
                         if (response.existing_record && response.existing_record.length > 0) {
                             var depoInfo = response.existing_record[0].NAMA; // Ganti 'NAMA' dengan nama kolom yang sesuai
 
@@ -360,7 +360,7 @@
                     $('#addEditForm').removeData('mode');
                 };
                 // dd(formData);
-                console.log(formData);
+                //console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData,mode)) {
                     formData.set('ID_DEPO', $('#depo').val());

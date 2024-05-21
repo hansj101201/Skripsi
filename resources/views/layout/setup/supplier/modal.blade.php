@@ -196,7 +196,7 @@
                         toastr.success(response.message);
                         table.draw();
                     } else {
-                        console.log(response.message);
+                        //console.log(response.message);
                         toastr.error(response.message);
                         table.draw();
                     }
@@ -206,7 +206,7 @@
                     toastr.error(error.responseJSON.message);
                 };
                 // dd(formData);
-                console.log(formData);
+                //console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
 

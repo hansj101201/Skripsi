@@ -96,7 +96,7 @@
             var min_stok = parseFloat(formData.get('MIN_STOK').replace(/[^\d]/g, ''));
             var nama_singkat = formData.get('NAMASINGKAT');
 
-            console.log(min_stok);
+            //console.log(min_stok);
 
             if (kode_barang.trim() === '') {
                 toastr.error('Kode Barang harus diisi');
@@ -152,7 +152,7 @@
                 var button = $(event.relatedTarget); // Tombol yang memicu modal
                 var mode = button.data('mode'); // Mengambil mode dari tombol
 
-                console.log(mode);
+                //console.log(mode);
                 var modal = $(this);
                 if (mode === 'add') {
                     modal.find('.modal-title').text('Tambah Barang Jadi');
@@ -173,14 +173,14 @@
                             'id_barang' : kode,
                         },
                         success: function (data) {
-                            console.log(data);
+                            //console.log(data);
                             var nama = data.NAMA;
                             var satuan = data.ID_SATUAN;
                             var aktif = data.ACTIVE;
                             var singkat = data.NAMASINGKAT
                             var min = formatHarga(parseFloat(data.MIN_STOK).toFixed(0));
-                            console.log(nama);
-                            console.log(satuan);
+                            //console.log(nama);
+                            //console.log(satuan);
                             // Isi nilai input field sesuai dengan data yang akan diedit
                             $('#kode_barang').val(kode).attr('readonly', true); // Tambahkan atribut readonly
                             $('#nama_barang').val(nama); // Tambahkan atribut readonly
@@ -214,7 +214,7 @@
                         toastr.success(response.message);
                         table.draw();
                     } else {
-                        console.log(response.message);
+                        //console.log(response.message);
                         toastr.error(response.message);
                         table.draw();
                     }
@@ -224,7 +224,7 @@
                     toastr.error(error.responseJSON.message);
                 };
                 // dd(formData);
-                console.log(formData);
+                //console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
 

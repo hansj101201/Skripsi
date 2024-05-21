@@ -117,7 +117,7 @@
                         type: "GET",
                         url: "{{ url('setup/depo/getDetail') }}/"+kode,
                         success: function (data) {
-                            console.log(data);
+                            //console.log(data);
                             var nama = data[0].NAMA;
                             var lokasi = data[0].LOKASI;
                             var aktif = data[0].ACTIVE;
@@ -153,7 +153,7 @@
                         toastr.success(response.message);
                         table.draw();
                     } else {
-                        console.log(response.message);
+                        //console.log(response.message);
                         toastr.error(response.message);
                         table.draw();
                     }
@@ -163,7 +163,7 @@
                     toastr.error(error.responseJSON.message);
                 };
                 // dd(formData);
-                console.log(formData);
+                //console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
 

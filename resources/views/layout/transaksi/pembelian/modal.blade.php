@@ -238,7 +238,7 @@
                 type: "GET",
                 url: "{{ url('transaksi/pembelian/getData') }}/" + bukti + "/" + periode,
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     if (data.STATUS == 0) {
                         editData = true;
                     } else {
@@ -258,12 +258,12 @@
 
         function fetchDetail(bukti, periode) {
             var tanggalPenutupanCompact = "{{ $tglClosing }}";
-            console.log("tanggal" + tanggalPenutupanCompact);
+            //console.log("tanggal" + tanggalPenutupanCompact);
             $.ajax({
                 url: "{{ url('transaksi/pembelian/getDetail') }}/" + bukti + "/" + periode,
                 method: "GET",
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     $('#listBarang').empty();
                     let createTable = "";
                     let i = 0
@@ -278,7 +278,7 @@
                         // Convert data[i].TANGGAL menjadi objek Date
                         var tanggalTransaksi = new Date(data[i].TANGGAL);
 
-                        console.log("edit" + editData);
+                        //console.log("edit" + editData);
                         createTable +=
                             `<tr id="${data[i].ID_BARANG}">
                                 <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
@@ -347,7 +347,7 @@
                     jumlah = 0;
                 }
                 totalSum += jumlah;
-                console.log(jumlah);
+                //console.log(jumlah);
             });
             $('#subtotal').val(formatHarga(totalSum));
         }
@@ -375,7 +375,7 @@
 
                 arrBarang.push([idBarang, qty, harga, potongan, jumlah]);
             });
-            console.log(arrBarang);
+            //console.log(arrBarang);
 
             var _token = $('meta[name="csrf-token"]').attr('content');
 
@@ -513,7 +513,7 @@
             var discountString = $('#diskon').val().trim();
             var discount = discountString !== '' ? parseFloat(discountString.replace(/[^\d]/g, '')) : 0;
 
-            console.log('edit ' + editData);
+            //console.log('edit ' + editData);
             $('#' + idEdit).empty();
             let createRow = '';
             createRow +=
@@ -560,7 +560,7 @@
 
                 arrBarang.push([idBarang, qty, harga, potongan, jumlah]);
             });
-            console.log(arrBarang);
+            //console.log(arrBarang);
 
             var _token = $('meta[name="csrf-token"]').attr('content');
 
@@ -600,7 +600,7 @@
                     'id_barang': kode
                 },
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     $('#barang_id_satuan').val(data.ID_SATUAN);
                     $('#barang_nama').val(data.NAMA);
                     $('#barang_satuan').val(data.nama_satuan);
@@ -684,7 +684,7 @@
                             var bukti = button.data('bukti');
                             var periode = button.data('periode');
 
-                            console.log(bukti);
+                            //console.log(bukti);
                             fetchData(bukti, periode);
                             fetchDetail(bukti, periode);
                         });
@@ -709,7 +709,7 @@
                                 today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
 
                             enableDatepicker();
-                            console.log($('#tanggal').val());
+                            //console.log($('#tanggal').val());
                             $('#tambahDataButton').show();
                             $('#diskon').val(0);
                             modal.find('.modal-title').text('Tambah Order');
@@ -724,7 +724,7 @@
                 clearModalBarang();
                 var tanggal = $('#tanggal').val();
 
-                console.log(tanggal);
+                //console.log(tanggal);
                 var supplier = $('#supplier').val();
                 var depo = $('#depo').val();
                 var kode;
@@ -755,14 +755,14 @@
                     var button = $(event.relatedTarget); // Tombol yang memicu modal
                     var mode = button.data('mode'); // Mengambil mode dari tombol
 
-                    console.log(mode);
+                    //console.log(mode);
                     var modal = $(this);
                     if (mode === 'add') {
                         updateBarangOptions(getBarangActiveUrl, function() {
                             modal.find('.modal-title').text('Tambah Data');
                             $('#barang_id_barang').change(function() {
                                 kode = $(this).val();
-                                console.log(kode);
+                                //console.log(kode);
                                 editModeValue = "add";
                                 getData(kode, tanggal);
                             });
@@ -773,18 +773,18 @@
                         updateBarangOptions(getBarangAllUrl, function() {
                             modal.find('.modal-title').text('Edit Data');
                             kode = button.data('kode');
-                            console.log('kode' + kode);
+                            //console.log('kode' + kode);
                             idEdit = kode;
-                            console.log(tanggal);
-                            console.log(kode);
+                            //console.log(tanggal);
+                            //console.log(kode);
                             var qty = button.data('qty');
                             var harga = button.data('harga');
                             var jumlah = button.data('jumlah');
                             var potongan = button.data('potongan');
-                            console.log(qty);
-                            console.log(harga);
-                            console.log(jumlah);
-                            console.log(potongan);
+                            //console.log(qty);
+                            //console.log(harga);
+                            //console.log(jumlah);
+                            //console.log(potongan);
                             $('#barang_id_barang').val(kode).trigger('change');
                             $('#barang_id_barang').prop('disabled', true);
                             getData(kode, tanggal);
@@ -862,7 +862,7 @@
                 var harga = hargaString !== '' ? parseFloat(hargaString.replace(/[^\d]/g, '')) : 0;
                 var potonganString = $('#barang_potongan').val().trim();
                 var potongan = potonganString !== '' ? parseFloat(potonganString.replace(/[^\d]/g, '')) : 0;
-                console.log(qty + " " + harga + " " + potongan);
+                //console.log(qty + " " + harga + " " + potongan);
                 $(this).val(formatHarga(harga));
                 // Pastikan qty dan harga merupakan angka yang valid
                 if (!isNaN(potongan) && !isNaN(harga) && !isNaN(qty)) {
@@ -924,7 +924,7 @@
             $(document).on('click', '.delete-button', function() {
                 bukti = $(this).data('bukti');
                 periode = $(this).data('periode');
-                console.log("kode " + bukti);
+                //console.log("kode " + bukti);
             });
             $('#confirmDeleteButton').on('click', function() {
                 $.ajax({

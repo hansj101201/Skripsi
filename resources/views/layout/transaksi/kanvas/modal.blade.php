@@ -210,7 +210,7 @@
                 type: "GET",
                 url: "{{ url('transaksi/transfergudang/getData') }}/" + bukti + "/" + periode,
                 success: function(data) {
-                    console.log(data.NOPERMINTAAN);
+                    //console.log(data.NOPERMINTAAN);
                     $('#tanggal').val(dateFormat(data.TANGGAL));
                     $('#bukti').val(data.BUKTI);
                     $('#nomorpermintaan').val(data.NOPERMINTAAN).trigger('change');
@@ -233,8 +233,8 @@
                     arrBarang.push([idBarang, qtyKirim]);
                 }
             });
-            console.log(arrBarang);
-            console.log($('#tanggal').val());
+            //console.log(arrBarang);
+            //console.log($('#tanggal').val());
 
             if (arrBarang.length === 0) {
                 toastr.error('Qty harus diisi');
@@ -306,7 +306,7 @@
                 url: "{{ url('transaksi/pengeluaran/fetch-data') }}/" + id,
                 method: 'GET',
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     $('#gudang_tujuan').val(data[0].ID_GUDANG);
 
                     $.ajax({
@@ -314,8 +314,8 @@
                             data[0].PERIODE,
                         method: 'GET',
                         success: function(detailData) {
-                            console.log(detailData);
-                            console.log(detailData.length);
+                            //console.log(detailData);
+                            //console.log(detailData.length);
                             $('#detailBarang').empty();
                             let createTable = "";
                             let i = 0;
@@ -371,24 +371,24 @@
                             data[0].PERIODE,
                         method: 'GET',
                         success: function(data1) {
-                            // console.log(data1[0]);
+                            // //console.log(data1[0]);
                             data1.forEach(function(item) {
                                 // Extract the desired values from each item and push them into the dataArray
                                 var mappedItem = {
                                     ID: item.ID_BARANG,
                                     QTYMINTA: parseFloat(item.QTY).toFixed(0),
                                 };
-                                // console.log(mappedItem);
+                                // //console.log(mappedItem);
                                 dataArray.push(
                                     mappedItem); // Push the mapped item into the dataArray
                             });
-                            // console.log(dataArray);
+                            // //console.log(dataArray);
                             $.ajax({
                                 url: "{{ url('transaksi/transfergudang/getDetail') }}/" +
                                     bukti + "/" + periode,
                                 method: "GET",
                                 success: function(data) {
-                                    // console.log(dataArray);
+                                    // //console.log(dataArray);
                                     $('#detailBarang').empty();
                                     let createTable = "";
                                     let i = 0
@@ -411,7 +411,7 @@
                                         var tanggalTransaksi = new Date(data[i]
                                             .TANGGAL);
                                         let qty = parseFloat(data[i].QTY).toFixed(0);
-                                        console.log(dataArray[i].ID);
+                                        //console.log(dataArray[i].ID);
                                         createTable +=
                                             `<tr id="${data[i].ID_BARANG}">
                                                         <td class="text-left" style="padding-left: 10px;">${data[i].ID_BARANG}</td>
@@ -456,8 +456,8 @@
                 var qtyKirim = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
                 arrBarang.push([idBarang, qtyKirim]);
             });
-            console.log(arrBarang);
-            console.log($('#tanggal').val());
+            //console.log(arrBarang);
+            //console.log($('#tanggal').val());
 
             var _token = $('meta[name="csrf-token"]').attr('content');
 
@@ -516,7 +516,7 @@
                     'id_barang': kode
                 },
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     $('#nama_barang').val(data.NAMA); // Tambahkan atribut readonly
                     $('#satuan').val(data.nama_satuan);
                     $.ajax({
@@ -528,7 +528,7 @@
                             'gudang': gudang
                         },
                         success: function(data) {
-                            console.log(data);
+                            //console.log(data);
                             $('#saldo').val(formatHarga(parseFloat(data).toFixed(0)));
                             if (typeof callback === "function") {
                                 callback();
@@ -564,7 +564,7 @@
                 if (typeof mode === 'undefined') {
                     mode = button.data('mode');
                 }
-                console.log(mode);
+                //console.log(mode);
                 var modal = $(this);
 
                 var kode = button.data('kode');
@@ -593,7 +593,7 @@
                                 editMode = false;
                                 var bukti = button.data('bukti');
                                 var periode = button.data('periode');
-                                console.log(bukti);
+                                //console.log(bukti);
                                 fetchData(bukti, periode);
                                 $('#saveBtn').attr('onclick',
                                 'simpanDataTrnJadi()');
@@ -646,11 +646,11 @@
             });
 
             $('#nomorpermintaan').on('change', function() {
-                console.log(addMode);
-                console.log(editMode);
+                //console.log(addMode);
+                //console.log(editMode);
                 if (addMode && editMode) {
                     var id = $(this).val();
-                    console.log(id);
+                    //console.log(id);
                     if (id) {
                         fetchDataById(id);
                     }
@@ -744,7 +744,7 @@
                         modal.find('.modal-title').text('Edit Data');
                         kode = button.data('kode');
                         if (cekData()) {
-                            console.log('bisa masuk');
+                            //console.log('bisa masuk');
                             getData(kode, tanggal, gudang);
                             $('#kode_barang').val(kode);
                             $('#qtyorder').val(qtyminta);
@@ -765,10 +765,10 @@
                 var qty = parseFloat(qtyString);
                 var saldo = parseFloat($('#saldo').val().replace(/[^\d]/g, ''));
                 var stok = parseFloat($('#stok_lama').val().replace(/[^\d]/g, ''));
-                console.log("qty" + qty);
-                console.log("stok" + stok);
-                console.log("saldo" + saldo);
-                console.log(editModeValue);
+                //console.log("qty" + qty);
+                //console.log("stok" + stok);
+                //console.log("saldo" + saldo);
+                //console.log(editModeValue);
                 if (!isNaN(qty)) {
                     if (qty <= qtyminta) {
                         if (qty > stok) {
@@ -800,7 +800,7 @@
             $(document).on('click', '.delete-button', function() {
                 bukti = $(this).data('bukti');
                 periode = $(this).data('periode');
-                console.log("kode " + bukti);
+                //console.log("kode " + bukti);
             });
 
             $('#confirmDeleteButton').on('click', function() {

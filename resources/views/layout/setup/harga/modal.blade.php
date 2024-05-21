@@ -278,7 +278,7 @@
                     type: "GET",
                     url: "{{ url('/setup/harga/getDetail') }}/"+kode,
                     success: function (data) {
-                        console.log(data);
+                        //console.log(data);
                         $("#edit_mulai").datepicker('destroy');
                         $('#id').val(kode);
                         $('#edit_mulai').val(dateFormat(data[0].MULAI_BERLAKU));

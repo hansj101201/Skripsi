@@ -191,8 +191,7 @@
 <div id="mapModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeMapModal()">&times;</span>
-        <input type="text" id="addressInput" placeholder="Enter address here">
-        <button type="button" onclick="geocodeAddress()">Find Location</button>
+        <input type="text" id="addressInput" placeholder="Enter address here" oninput="geocodeAddress()">
         <ul id="locationList"></ul>
         <div id="map"></div>
         <button type="button" onclick="selectLocation()">Select this location</button>
@@ -296,6 +295,7 @@
                     lat: -6.200000,
                     lng: 106.816666
                 });
+                map.setZoom(15);
             }
         }
 
@@ -314,33 +314,82 @@
 
         function geocodeAddress() {
             var address = document.getElementById('addressInput').value;
-            geocoder.geocode({
-                'address': address
-            }, function(results, status) {
-                if (status === 'OK') {
-                    var locationList = document.getElementById('locationList');
-                    locationList.innerHTML = '';
+            const locationList = document.getElementById('locationList');
+            locationList.innerHTML = '';
+            var service = new google.maps.places.PlacesService(map);
+            var request = {
+                query: address,
+                fields: ['name', 'geometry'],
+            };
 
-                    results.forEach(function(result) {
-                        // Check if the formatted address contains the searched text
-                        if (result.formatted_address.toLowerCase().includes(address.toLowerCase())) {
-                            var li = document.createElement('li');
-                            li.textContent = result.formatted_address;
-                            li.addEventListener('click', function() {
-                                map.setCenter(result.geometry.location);
-                                placeMarker(result.geometry.location);
-                                document.getElementById('locationList').innerHTML = '';
-                            });
-                            locationList.appendChild(li);
-                        }
+            service.textSearch(request, function(results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    // console.log(results);
+                    results.sort((a, b) => {
+                        return b.rating - a.rating; // Sort in descending order based on rating
+                    });
+                    results.forEach((result) => {
+                        // console.log(result.formatted_address);
+                        const li = document.createElement('li');
+
+                        // Name on top
+                        const nameSpan = document.createElement('span');
+                        nameSpan.textContent = result.name;
+                        li.appendChild(nameSpan);
+
+                        // Line break for separation
+                        const br = document.createElement('br'); // Add a line break element
+                        li.appendChild(br);
+
+                        // Address below
+                        const addressSpan = document.createElement('span');
+                        addressSpan.textContent = result.formatted_address;
+                        li.appendChild(addressSpan);
+
+                        li.addEventListener('click', () => {
+                            map.setCenter(result.geometry.location);
+                            placeMarker(result.geometry.location);
+                            locationList.innerHTML = '';
+                        });
+
+                        locationList.appendChild(li);
+
                     });
                 } else {
-                    alert('Beri Alamat yang lebih detail');
+                    geocoder.geocode({
+                        'address': address
+                    }, function(results, status) {
+                        if (status === 'OK') {
+                            var locationList = document.getElementById('locationList');
+                            locationList.innerHTML = '';
+
+                            results.forEach(function(result) {
+                                // Check if the formatted address contains the searched text
+                                if (result.formatted_address.toLowerCase().includes(address
+                                        .toLowerCase())) {
+                                    var li = document.createElement('li');
+                                    li.textContent = result.formatted_address;
+                                    li.addEventListener('click', function() {
+                                        map.setCenter(result.geometry.location);
+                                        placeMarker(result.geometry.location);
+                                        locationList.innerHTML =
+                                            ''; // Clear the list after selecting a location
+                                    });
+                                    locationList.appendChild(li);
+                                }
+                            });
+                        } else {
+                            alert('Beri Alamat yang lebih detail');
+                        }
+                    });
                 }
-            });
+            })
         }
     </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ $apiKey }}&callback=initMap&libraries=places,marker"></script>
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ $apiKey }}&callback=initMap&libraries=places,marker">
+    </script>
     <script>
         function validateNumberInput(input) {
             // Menghapus karakter selain angka menggunakan regular expression
@@ -423,18 +472,18 @@
                     $('#editMode').val(0); // Set editMode ke 0 untuk operasi add
                     $('#kode_customer').removeAttr('readonly');
                     $('#addEditForm').attr('action',
-                    "{{ route('customer.store') }}"); // Set rute untuk operasi tambah
+                        "{{ route('customer.store') }}"); // Set rute untuk operasi tambah
                     $('#addEditForm').attr('method', 'POST');
                 } else if (mode === 'edit') {
                     modal.find('.modal-title').text('Edit Customer');
                     $('#editMode').val(1); // Set editMode ke 1 untuk operasi edit
                     var kode = button.data('kode');
-                    console.log(kode);
+                    // console.log(kode);
                     $.ajax({
                         type: "GET",
                         url: "{{ url('setup/customer/getDetail') }}/" + kode,
                         success: function(data) {
-                            console.log(data);
+                            // console.log(data);
                             // Isi nilai input field sesuai dengan data yang akan diedit
                             $('#kode_customer').val(data[0].ID_CUSTOMER);
                             $('#nama').val(data[0].NAMA);
@@ -460,11 +509,12 @@
                             $('#sales').val(data[0].ID_SALES).trigger('change');
 
                             $('#addEditForm').attr('action',
-                            "{{ route('customer.update') }}"); // Set rute untuk operasi edit
+                                "{{ route('customer.update') }}"
+                            ); // Set rute untuk operasi edit
                             $('#addEditForm').attr('method', 'POST');
                             $('#addEditForm').append(
                                 '<input type="hidden" name="_method" value="PUT">'
-                                ); // Tambahkan input tersembunyi untuk metode PUT
+                            ); // Tambahkan input tersembunyi untuk metode PUT
                         }
                     });
                 }
@@ -517,7 +567,7 @@
                         toastr.success(response.message);
                         table.draw();
                     } else {
-                        console.log(response.message);
+                        // console.log(response.message);
                         toastr.error(response.message);
                         table.draw();
                     }
@@ -527,7 +577,7 @@
                     toastr.error(error.responseJSON.message);
                 };
                 // dd(formData);
-                console.log(formData);
+                // console.log(formData);
                 // Memanggil fungsi cekData untuk memvalidasi data sebelum dikirim ke server
                 if (cekData(formData)) {
                     formData.set('ID_SALES', $('#sales').val());
