@@ -294,7 +294,7 @@
         let arrBarang = [];
 
         function clearModal() {
-            $('#nomorpo').val(null).trigger('change');
+            $('#nomorpo').val(null).trigger('change').empty();
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');
             $('#supplier').val("");
@@ -345,10 +345,11 @@
                 var tanggal = $('#tanggal').val();
                 $('#tableData tbody tr').each(function(index, row) {
                     var idBarang = $(row).find('td:eq(0)').text();
-                    var qtyKirim = $(row).find('td:eq(4)').text().replace(/[^\d]/g, '');
-                    var idSatuan = $(row).find('td:eq(5)').text(); // Index adjusted if needed
+                    var qtyKirim = $(row).find('td:eq(5)').text().replace(/[^\d]/g, '');
 
-                    arrBarang.push([idBarang, qtyKirim, idSatuan]);
+                    if(qtyKirim != 0){
+                        arrBarang.push([idBarang, qtyKirim]);
+                    }
                 });
                 //console.log(arrBarang);
                 //console.log($('#tanggal').val());
@@ -403,6 +404,7 @@
                 <td class="text-left" style="padding-left: 10px;">${nama}</td>
                 <td class="text-left" style="padding-left: 10px;">${satuan}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(qtyorder)}</td>
+                <td class="text-right" style="padding-right: 10px;">${formatHarga(qtykirim)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(qty)}</td>
                 <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
                     data-kode="${kode}"
@@ -477,6 +479,7 @@
                                     <th class="text-left" style="padding-left: 10px;"> Nama Barang </th>
                                     <th class="text-left" style="padding-left: 10px;"> Satuan </th>
                                     <th class="text-right" style="padding-right: 10px;"> Qty Order </th>
+                                    <th class="text-right" style="padding-right: 10px;"> Qty Terima </th>
                                     <th class="text-right" style="padding-right: 10px;"> Qty Kirim </th>
                                     <th class="text-center"> Aksi </th>
                                 </thead>
@@ -493,6 +496,7 @@
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].nama_barang}</td>
                                                 <td class="text-left" style="padding-left: 10px;">${data[i].nama_satuan}</td>
                                                 <td class="text-right" style="padding-right: 10px;">${formatHarga(qtyOrder)}</td>
+                                                <td class="text-right" style="padding-right: 10px;">${formatHarga(qtyKirim)}</td>
                                                 <td class="text-right" style="padding-right: 10px;">0</td>
                                                 <td class="hide">${data[i].ID_SATUAN}</td>
                                                 <td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#editDataModal"
