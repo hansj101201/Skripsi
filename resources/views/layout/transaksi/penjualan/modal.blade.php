@@ -759,6 +759,8 @@
 
             $('#barang_potongan').on('input', function() {
                 validateNumberInput(this);
+                var saldoString = $('#barang_saldo').val().replace(/[^\d]/g, '');
+                var saldo = parseFloat(saldoString);
                 var qtyString = $('#barang_qty').val().replace(/[^\d]/g, '');
                 var qty = parseFloat(qtyString);
                 var hargaString = $('#barang_harga').val().replace(/[^\d]/g, '');
@@ -771,9 +773,13 @@
                     // Hitung nilai jumlah
                     var hasil = qty * harga - potongan;
                     if (hasil > 0) {
+                        if(qty < saldo){
                         $('#barang_jumlah').val(formatHarga(parseFloat(hasil)));
                         $(this).val(formatHarga(parseFloat(potongan)));
                         isSaveButtonActive = true;
+                        } else {
+                            isSaveButtonActive = false;
+                        }
                     } else {
                         $('#barang_jumlah').val(formatHarga(0));
                         $(this).val(formatHarga(parseFloat(potongan)));
