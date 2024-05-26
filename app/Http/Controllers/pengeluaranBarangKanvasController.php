@@ -276,12 +276,12 @@ class pengeluaranBarangKanvasController extends Controller
     }
 
     public function getPermintaanActive(){
-        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->where('STATUS',0)->whereDate('TANGGAL', '<=', Carbon::now())->get();
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->where('STATUS',0)->whereDate('TANGGAL', '<=', Carbon::now('Asia/Jakarta'))->get();
         return response()->json($trnsales);
     }
 
     public function getPermintaanAll(){
-        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->whereDate('TANGGAL', '<=', Carbon::now())->get();
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->whereDate('TANGGAL', '<=', Carbon::now('Asia/Jakarta'))->get();
         return response()->json($trnsales);
     }
 }
