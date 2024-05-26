@@ -225,12 +225,10 @@
 
             $('#tableData tbody tr').each(function(index, row) {
                 var idBarang = $(row).find('td:eq(0)').text();
-                var qtyKirim = $(row).find('td:eq(3)').text().replace(/[^\d]/g, '');
+                var qtyKirim = $(row).find('td:eq(3)').text().replace(/[^\d-]/g, '');
 
                 arrBarang.push([idBarang, qtyKirim]);
             });
-            //console.log(arrBarang);
-            //console.log($('#tanggal').val());
 
             var _token = $('meta[name="csrf-token"]').attr('content');
 
