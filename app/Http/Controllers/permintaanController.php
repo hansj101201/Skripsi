@@ -53,11 +53,12 @@ class permintaanController extends Controller
 
         DB::beginTransaction();
         try {
-            // Generate BUKTI
 
             $bukti = $this->generateBukti($tanggal, $idSales);
-            $Tanggal = DateTime::createFromFormat('d-m-Y', $tanggal);
-            $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
+            $Tanggal = DateTime::createFromFormat('d-m-Y', $tanggal, new DateTimeZone('Asia/Jakarta'));
+            if (!$Tanggal) {
+                throw new \Exception("Invalid date format.");
+            }
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $nomor = 1; // Initialize the nomor counter
             $nopermintaan = $bukti.'-'.$request->PERIODE;
