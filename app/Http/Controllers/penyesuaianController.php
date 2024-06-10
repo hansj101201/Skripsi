@@ -99,8 +99,7 @@ class penyesuaianController extends Controller
         DB::beginTransaction();
         try {
             $bukti = $this->generateBukti($request->tanggal);
-            $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
-            $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
+            $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal, new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
             $nomor = 1;

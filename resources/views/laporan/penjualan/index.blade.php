@@ -127,9 +127,9 @@
         $(function() {
             var today = new Date(); // Dapatkan tanggal hari ini
             var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(),
-            1); // Buat objek tanggal dengan tanggal 1 dari bulan saat ini
+                1); // Buat objek tanggal dengan tanggal 1 dari bulan saat ini
             var formattedFirstDay = moment(firstDayOfMonth).format(
-            'DD-MM-YYYY'); // Format tanggal sebagai string 'DD-MM-YYYY'
+                'DD-MM-YYYY'); // Format tanggal sebagai string 'DD-MM-YYYY'
 
             $('#tanggal_awal').val(formattedFirstDay); // Set nilai tanggal awal ke tanggal pertama bulan ini
             var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
@@ -165,13 +165,16 @@
                         dataSrc: function(json) {
                             // Hitung total pada sisi klien dengan menjumlahkan nilai pada kolom keempat
                             var total = json.data.reduce(function(prev, curr) {
-                                return prev + parseFloat(curr.total_penjualan);
+                                return prev + (parseFloat(curr.total_penjualan) ||
+                                0); // Ubah menjadi 0 jika null, NaN, atau string kosong
                             }, 0);
                             var potongan = json.data.reduce(function(prev, curr) {
-                                return prev + parseFloat(curr.total_potongan);
+                                return prev + (parseFloat(curr.total_potongan) ||
+                                0); // Ubah menjadi 0 jika null, NaN, atau string kosong
                             }, 0);
                             var netto = json.data.reduce(function(prev, curr) {
-                                return prev + parseFloat(curr.total_netto);
+                                return prev + (parseFloat(curr.total_netto) ||
+                                0); // Ubah menjadi 0 jika null, NaN, atau string kosong
                             }, 0);
 
                             // Tampilkan total di luar tabel
@@ -181,6 +184,7 @@
 
                             return json.data;
                         }
+
                     },
                     order: [
                         [0, "desc"]
@@ -200,7 +204,7 @@
                             // Set alignment based on column index or other criteria as needed
                             if (index === 2 || index === 3 || index === 4) {
                                 className =
-                                'text-right'; // For example, set alignment of column index 4 to right
+                                    'text-right'; // For example, set alignment of column index 4 to right
                             }
                             if (index === 5) {
                                 className = 'text-center';
@@ -311,7 +315,7 @@
                             // Set alignment based on column index or other criteria as needed
                             if (index === 2 || index === 3 || index === 4) {
                                 className =
-                                'text-right'; // For example, set alignment of column index 4 to right
+                                    'text-right'; // For example, set alignment of column index 4 to right
                             }
                             if (index === 5) {
                                 className = 'text-center';
@@ -421,7 +425,7 @@
                             // Set alignment based on column index or other criteria as needed
                             if (index === 2 || index === 3 || index === 4) {
                                 className =
-                                'text-right'; // For example, set alignment of column index 4 to right
+                                    'text-right'; // For example, set alignment of column index 4 to right
                             }
                             // Add the class to the header cell
                             $(api.column(index).header()).addClass(className);
@@ -493,7 +497,7 @@
                             // Set alignment based on column index or other criteria as needed
                             if (index === 3 || index === 4 || index === 5 || index === 6) {
                                 className =
-                                'text-right'; // For example, set alignment of column index 4 to right
+                                    'text-right'; // For example, set alignment of column index 4 to right
                             }
                             // Add the class to the header cell
                             $(api.column(index).header()).addClass(className);
@@ -602,7 +606,7 @@
                     headers = ['Id Salesman', 'Nama Salesman', 'Jumlah', 'Potongan', 'Netto', 'Aksi'];
                 } else if (buttonId === 'button3') {
                     url = url = `{{ url('laporan/getPenjualanBarang/${tanggal_awal}/${tanggal_akhir}') }}`;
-                    headers = ['Id Barang', 'Nama Barang','Qty', 'Netto'];
+                    headers = ['Id Barang', 'Nama Barang', 'Qty', 'Netto'];
                 }
 
                 // Buat elemen thead baru

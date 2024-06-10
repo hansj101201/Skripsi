@@ -112,8 +112,7 @@ class pembelianController extends Controller
 
             $bukti = $this->generateBukti($request->tanggal);
             $nomorpo = $this->generateNOPO($bukti, $request->periode);
-            $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
-            $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
+            $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal, new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
 
             if ($tanggalFormatted > $tglClosing) {

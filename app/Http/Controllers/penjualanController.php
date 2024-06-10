@@ -21,63 +21,64 @@ class penjualanController extends Controller
 {
     //
 
-    public function index(){
-        $barang = barang::all();
-        $gudang = gudang::where('ID_DEPO',getIdDepo())->get();
-        $customer = customer::all();
+    public function index()
+    {
         $tglClosing = DB::table('closing')
-        ->where('ID_DEPO',getIdDepo())
-        ->orderBy('TGL_CLOSING', 'desc')
-        ->value('TGL_CLOSING');
-        $gudang = gudang::where('ID_DEPO', getIdDepo())->get();
-        return view('layout.transaksi.penjualan.index', compact('barang','gudang','customer','tglClosing'));
+            ->where('ID_DEPO', getIdDepo())
+            ->orderBy('TGL_CLOSING', 'desc')
+            ->value('TGL_CLOSING');
+        return view('layout.transaksi.penjualan.index', compact('tglClosing'));
     }
 
-    public function datatable(){
+    public function datatable()
+    {
         $trnsales = trnsales::where('KDTRN', '12')
-        ->where('trnsales.ID_DEPO',getIdDepo())
-        ->where(DB::raw('LEFT(BUKTI, 1)'), '0')
-        ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
-        ->select('trnsales.*', 'customer.NAMA AS nama_customer');
+            ->where('trnsales.ID_DEPO', getIdDepo())
+            ->where(DB::raw('LEFT(BUKTI, 1)'), '0')
+            ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
+            ->select('trnsales.*', 'customer.NAMA AS nama_customer');
 
         $tglClosing = DB::table('closing')
-        ->where('ID_DEPO',getIdDepo())
-        ->orderBy('TGL_CLOSING', 'desc')
-        ->value('TGL_CLOSING');
+            ->where('ID_DEPO', getIdDepo())
+            ->orderBy('TGL_CLOSING', 'desc')
+            ->value('TGL_CLOSING');
 
         return DataTables::of($trnsales)
-        ->editColumn('ID_CUSTOMER', function ($row) {
-            return $row->nama_customer;
-        })
-        ->addColumn('action', function ($row) {
-            $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="'.$row->BUKTI.'" data-periode="'.$row->PERIODE.'"><span class="fas fa-eye"></span></button> &nbsp;';
-            return $actionButtons;
-        })
-        ->rawColumns(["action"])
-        ->make(true);
+            ->editColumn('ID_CUSTOMER', function ($row) {
+                return $row->nama_customer;
+            })
+            ->addColumn('action', function ($row) {
+                $actionButtons = '<button class="btn btn-primary btn-sm view-detail" id="view-detail" data-toggle="modal" data-target="#addDataModal" data-mode="viewDetail" data-bukti="' . $row->BUKTI . '" data-periode="' . $row->PERIODE . '"><span class="fas fa-eye"></span></button> &nbsp;';
+                return $actionButtons;
+            })
+            ->rawColumns(["action"])
+            ->make(true);
     }
 
-    public function getData($bukti,$periode){
-        $data = trnsales::where('KDTRN','12')
-        ->where('PERIODE', $periode)
-        ->where('BUKTI',$bukti)
-        ->first();
+    public function getData($bukti, $periode)
+    {
+        $data = trnsales::where('KDTRN', '12')
+            ->where('PERIODE', $periode)
+            ->where('BUKTI', $bukti)
+            ->first();
         return response()->json($data);
     }
 
-    public function getDetail($bukti,$periode){
-        $data = trnjadi::where('KDTRN','12')
-        ->where('PERIODE', $periode)
-        ->where('BUKTI',$bukti)
-        ->join('barang','trnjadi.ID_BARANG','barang.ID_BARANG')
-        ->join('satuan','barang.ID_SATUAN','satuan.ID_SATUAN')
-        ->select('trnjadi.*','barang.NAMA AS nama_barang','satuan.NAMA AS nama_satuan')
-        ->orderBy('NOMOR','asc')
-        ->get();
+    public function getDetail($bukti, $periode)
+    {
+        $data = trnjadi::where('KDTRN', '12')
+            ->where('PERIODE', $periode)
+            ->where('BUKTI', $bukti)
+            ->join('barang', 'trnjadi.ID_BARANG', 'barang.ID_BARANG')
+            ->join('satuan', 'barang.ID_SATUAN', 'satuan.ID_SATUAN')
+            ->select('trnjadi.*', 'barang.NAMA AS nama_barang', 'satuan.NAMA AS nama_satuan')
+            ->orderBy('NOMOR', 'asc')
+            ->get();
         return response()->json($data);
     }
 
-    public function generateBukti($tanggal){
+    public function generateBukti($tanggal)
+    {
         $Tanggal = DateTime::createFromFormat('d-m-Y', $tanggal);
         $topBukti = trnsales::select('BUKTI')
             ->where('KDTRN', '12')
@@ -95,16 +96,16 @@ class penjualanController extends Controller
         return $formattedBukti;
     }
 
-    public function postPenjualan(Request $request){
+    public function postPenjualan(Request $request)
+    {
         $bukti = $this->generateBukti($request->tanggal);
         $currentDateTime = date('Y-m-d H:i:s');
         DB::beginTransaction();
         $customer = customer::where('ID_CUSTOMER', $request->customer)
-        ->value('NAMA');
+            ->value('NAMA');
         try {
             $bukti = $this->generateBukti($request->tanggal);
-            $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal);
-            $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
+            $Tanggal = DateTime::createFromFormat('d-m-Y', $request->tanggal, new DateTimeZone('Asia/Jakarta'));
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $data = $request->data;
             $nomor = 1;
@@ -136,14 +137,14 @@ class penjualanController extends Controller
                     'POTONGAN' => $item[3],
                     'JUMLAH' => $item[4],
                     'ID_DEPO' => getIdDepo(),
-                    'KET01' => 'Penjualan ke Customer '.$request->customer.' - '.$customer,
+                    'KET01' => 'Penjualan ke Customer ' . $request->customer . ' - ' . $customer,
                     'USERENTRY' => getUserLoggedIn()->ID_USER,
                     'TGLENTRY' => $currentDateTime,
                     'NOMOR' => $nomor++,
                 ]);
             }
             DB::commit();
-            return response()->json(['success'=> true, 'message' => 'Data Sudah Disimpan dengan No Bukti '. $bukti, 'bukti' => $bukti], 200);
+            return response()->json(['success' => true, 'message' => 'Data Sudah Disimpan dengan No Bukti ' . $bukti, 'bukti' => $bukti], 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => 'Error saat menyimpan data'], 500);

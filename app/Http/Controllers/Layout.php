@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\trnjadi;
 use App\Models\trnsales;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +17,7 @@ class Layout extends Controller
     public function index()
     {
         $tanggalAwal = date('Y-m-01');
-        $tanggalAkhir = date('Y-m-d');
+        $tanggalAkhir = (new DateTime('now', new DateTimeZone('Asia/Jakarta')))->format('Y-m-d');
 
         $idDepo = getIdDepo();
         if ($idDepo == 000) {

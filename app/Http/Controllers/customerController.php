@@ -134,7 +134,11 @@ class customerController extends Controller
     }
 
     public function getCustomerActive(){
-        $customer = customer::where('ACTIVE',1)->get();
+        $customer = customer::where('customer.ACTIVE',1)
+        ->join('salesman','customer.ID_SALES','salesman.ID_SALES')
+        ->where('salesman.ID_DEPO',getIdDepo())
+        ->select('customer.*')
+        ->get();
         return response()->json($customer);
     }
 

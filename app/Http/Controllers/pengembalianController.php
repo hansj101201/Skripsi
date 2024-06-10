@@ -53,8 +53,8 @@ class pengembalianController extends Controller
         try {
             // Generate BUKTI
             $bukti = $this->generateBukti($tanggal,$idSales);
-            $Tanggal = DateTime::createFromFormat('d-m-Y', $tanggal);
-            $Tanggal->setTimezone(new DateTimeZone('Asia/Jakarta'));
+            $Tanggal = DateTime::createFromFormat('d-m-Y', $tanggal, new DateTimeZone('Asia/Jakarta'));
+
             $tanggalFormatted = $Tanggal->format('Y-m-d');
             $nomor = 1; // Initialize the nomor counter
 
