@@ -66,7 +66,7 @@ class laporanSalesController extends Controller
                     ->on('trnsales.BUKTI', '=', 'trnjadi.BUKTI');
             })
             ->join('barang', 'trnjadi.ID_BARANG', 'barang.ID_BARANG')
-            ->join('gudang', 'trnjadi.ID_GUDANG_TUJUAN', 'gudang.ID_GUDANG')
+            ->join('gudang', 'trnsales.ID_GUDANG_TUJUAN', 'gudang.ID_GUDANG')
             ->select('trnsales.*', 'trnjadi.*', 'barang.NAMASINGKAT', 'gudang.NAMA') // Select semua kolom
             ->orderBy('trnsales.BUKTI', 'asc')
             ->get();
