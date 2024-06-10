@@ -27,6 +27,7 @@ class transferGudangController extends Controller
 
     public function datatable(){
         $trnsales = trnsales::where('KDTRN','15')
+        ->where('trnsales.ID_DEPO',getIdDepo())
         ->where('NOPERMINTAAN',null)
         ->whereNull('ID_SALESMAN')
         ->orWhere('ID_SALESMAN', '')

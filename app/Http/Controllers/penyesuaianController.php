@@ -27,6 +27,7 @@ class penyesuaianController extends Controller
 
     public function datatable(){
         $trnsales = trnsales::where('KDTRN', '09')
+        ->where('trnsales.ID_DEPO', getIdDepo())
         ->join('gudang','trnsales.ID_GUDANG', 'gudang.ID_GUDANG')
         ->select('trnsales.*', 'gudang.NAMA AS nama_gudang');
 

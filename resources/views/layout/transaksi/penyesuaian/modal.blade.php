@@ -170,6 +170,7 @@
         let arrBarang = [];
 
         function clearModal() {
+            $('#tanggal').val("");
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');
             $('#gudang').prop('disabled', false);
@@ -455,6 +456,30 @@
             })
         }
 
+        function enableDatepicker() {
+            var tanggalPenutupanCompact = "{{ $tglClosing }}";
+            if (tanggalPenutupanCompact === "a") {
+
+                $('#tanggal').datepicker({
+                    format: 'dd-mm-yyyy', // Set your desired date format
+                    autoclose: true // Close the datepicker when a date is selected
+                });
+            } else {
+                var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+                tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+                var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan
+                    .getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+                $('#tanggal').datepicker({
+                    format: 'dd-mm-yyyy', // Set your desired date format
+                    startDate: tanggalMulai,
+                    autoclose: true // Close the datepicker when a date is selected
+                });
+                $('#datepicker').on('click', function() {
+                    $('#tanggal').datepicker('show');
+                });
+            }
+        }
+
         $(document).ready(function() {
             // Function to fetch data based on user input
 
@@ -472,6 +497,7 @@
             var editModeValue;
             var isSaveButtonActive = false;
             $('#addDataModal').on('show.bs.modal', function(event) {
+                clearModal();
                 var button = $(event.relatedTarget);
                 var mode = button.data('mode');
                 var modal = $(this);
@@ -503,49 +529,22 @@
                 } else {
                     updateGudangOptions(getGudangActiveUrl, function() {
                         var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                        $('#tanggal').val(
-                            today
-                            ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                        if (!$('#tanggal').val()) {
+                            $('#tanggal').val(
+                                today
+                            );
+                        }
                         $('#tambahDataButton').show();
                         modal.find('.modal-title').text('Add Data');
-                        var tanggalPenutupanCompact = "{{ $tglClosing }}";
-
-                        var tanggalPenutupan = new Date(tanggalPenutupanCompact);
-
-                        // Menambahkan satu hari ke tanggal penutupan
-                        tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
-
-                        // Mengonversi tanggal menjadi format yang sesuai untuk datepicker (dd-mm-yyyy)
-                        var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + (
-                                "0" + (
-                                    tanggalPenutupan.getMonth() + 1)).slice(-2) + "-" +
-                            tanggalPenutupan
-                            .getFullYear();
-
-                        $('#tanggal').datepicker({
-                            format: 'dd-mm-yyyy', // Set your desired date format
-                            startDate: tanggalMulai,
-                            defaultDate: 'now', // Set default date to 'now'
-                            autoclose: true // Close the datepicker when a date is selected
-                        });
-                        $('#datepicker').on('click', function() {
-                            $('#tanggal').datepicker('show');
-                        });
+                        enableDatepicker();
                         $('#saveBtn').attr('onclick', 'simpanData()');
                     });
 
                 }
             });
 
-            $('#addDataModal').on('hide.bs.modal', function(event) {
-                clearModal();
-            });
-
-            $('#dataModal').on('hide.bs.modal', function(event) {
-                clearModalBarang();
-            });
-
             $('#dataModal').on('show.bs.modal', function(event) {
+                clearModalBarang();
                 var tanggal = $('#tanggal').val();
                 var gudang = $('#gudang').val();
                 var kode;

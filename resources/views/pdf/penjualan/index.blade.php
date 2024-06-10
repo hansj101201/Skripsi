@@ -104,9 +104,9 @@
             var depo = $('#depoSelect').val();
 
             // Lakukan pengecekan tanggal_awal dan tanggal_akhir
-            if (tanggal_awal === '' || tanggal_akhir === '') {
+            if (tanggal_awal === '' || tanggal_akhir === '' || depo === '') {
                 // Tampilkan pesan toastr jika tanggal belum diinput
-                toastr.error('Mohon lengkapi tanggal sebelum membuat PDF.');
+                toastr.error('Mohon lengkapi tanggal dan depo sebelum membuat PDF.');
                 return; // Hentikan eksekusi fungsi jika tanggal belum diinput
             }
 

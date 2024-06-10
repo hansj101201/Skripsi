@@ -93,6 +93,7 @@ class Layout extends Controller
                 ->get();
 
             $stok = DB::table('stkjadi')
+            ->where('stkjadi.ID_DEPO', getIdDepo())
             ->join('barang', 'stkjadi.ID_BARANG', 'barang.ID_BARANG')
             ->select('stkjadi.ID_BARANG', 'barang.NAMA', DB::raw('SUM(stkjadi.SALDO) as total_saldo'))
             ->groupBy('stkjadi.ID_BARANG', 'barang.NAMA')

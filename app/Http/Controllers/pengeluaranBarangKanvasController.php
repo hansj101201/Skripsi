@@ -31,6 +31,7 @@ class pengeluaranBarangKanvasController extends Controller
         ->value('TGL_CLOSING');
         $trnsales = trnsales::where('KDTRN','15')
         ->where('NOPERMINTAAN','!=','')
+        ->where('trnsales.ID_DEPO',getIdDepo())
         ->join('gudang as G1', 'trnsales.ID_GUDANG', '=', 'G1.ID_GUDANG')
         ->join('salesman', 'trnsales.ID_GUDANG_TUJUAN', '=', 'salesman.ID_GUDANG')
         ->select('trnsales.*', 'G1.NAMA as NAMA_GUDANG', 'salesman.NAMA as NAMA_GUDANG_TUJUAN');
@@ -275,13 +276,14 @@ class pengeluaranBarangKanvasController extends Controller
         }
     }
 
-    public function getPermintaanActive(){
-        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->where('STATUS',0)->whereDate('TANGGAL', '<=', Carbon::now('Asia/Jakarta'))->get();
+    public function getPermintaanActive(Request $request){
+        $tanggal = Carbon::createFromFormat('d-m-Y', $request->TANGGAL)->format('Y-m-d');
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->where('STATUS',0)->whereDate('TANGGAL', '<=', $tanggal)->get();
         return response()->json($trnsales);
     }
 
-    public function getPermintaanAll(){
-        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->whereDate('TANGGAL', '<=', Carbon::now('Asia/Jakarta'))->get();
+    public function getPermintaanAll(Request $request){
+        $trnsales = trnsales::where('KDTRN','30')->where('ID_DEPO', getIdDepo())->get();
         return response()->json($trnsales);
     }
 }

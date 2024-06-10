@@ -294,12 +294,13 @@
         let arrBarang = [];
 
         function clearModal() {
+            $('#tanggal').val("");
             $('#nomorpo').val(null).trigger('change').empty();
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');
             $('#supplier').val("");
             $('#detailBarang').empty();
-            $('#keterangan').empty();
+            $('#keterangan').val("");
         }
 
         function clearDetail() {
@@ -347,7 +348,7 @@
                     var idBarang = $(row).find('td:eq(0)').text();
                     var qtyKirim = $(row).find('td:eq(5)').text().replace(/[^\d]/g, '');
 
-                    if(qtyKirim != 0){
+                    if (qtyKirim != 0) {
                         arrBarang.push([idBarang, qtyKirim]);
                     }
                 });
@@ -641,20 +642,31 @@
         $(document).ready(function() {
 
             $('#addDataModal').on('show.bs.modal', function(event) {
+                clearModal();
                 var urlGudang = "{{ url('setup/gudang/getGudangActive') }}";
                 var urlPo = "{{ url('transaksi/gudang/getNomorPo') }}";
                 updateGudangOptions(urlGudang, function() {
-                    getNomorPO(urlPo, function() {
+                    var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
+                    if (!$('#tanggal').val()) {
+                        $('#tanggal').val(
+                            today
+                        ); // Set the input value to today's date only if it is empty
+                        var requestBody = {
+                            TANGGAL: $('#tanggal').val()
+                        };
+                        getNomorPO(urlPo, requestBody);
+                    }
+                    enableDatepicker();
 
-                        var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                        $('#tanggal').val(today);
-                    });
                 });
             });
-            $('#addDataModal').on('hide.bs.modal', function(event) {
-                clearModal();
-            });
 
+
+            $('#tanggal').on('change', function() {
+                var urlPo = "{{ url('transaksi/gudang/getNomorPo') }}";
+            var requestBody = { TANGGAL: $(this).val() };
+            getNomorPO(urlPo, requestBody);
+        });
             var bukti;
             var periode;
             $('#gudang, #nomorpo').select2({
@@ -676,21 +688,44 @@
                 $('#nomorpo').removeClass('is-invalid');
             })
 
-            var tanggalPenutupanCompact = "{{ $tglClosing }}";
-            var tanggalPenutupan = new Date(tanggalPenutupanCompact);
-            tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
-            var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan
-                .getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
-            $('.datepicker').datepicker({
-                format: 'dd-mm-yyyy',
-                startDate: tanggalMulai,
-                defaultDate: 'now',
-                autoclose: true
-            });
+            function enableDatepicker() {
+                var tanggalPenutupanCompact = "{{ $tglClosing }}";
+                console.log(tanggalPenutupanCompact);
+                if (tanggalPenutupanCompact === "a") {
 
-            $('#datepicker').on('click', function() {
-                $('#tanggal').datepicker('show');
-            });
+                    $('#tanggal').datepicker({
+                        format: 'dd-mm-yyyy', // Set your desired date format
+                        autoclose: true // Close the datepicker when a date is selected
+                    });
+                } else {
+                    var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+                    tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+                    var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan
+                        .getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+                    $('#tanggal').datepicker({
+                        format: 'dd-mm-yyyy', // Set your desired date format
+                        startDate: tanggalMulai,
+                        autoclose: true // Close the datepicker when a date is selected
+                    });
+                    $('#datepicker').on('click', function() {
+                        $('#tanggal').datepicker('show');
+                    });
+                }
+            }
+            // var tanggalPenutupanCompact = "{{ $tglClosing }}";
+            // var tanggalPenutupan = new Date(tanggalPenutupanCompact);
+            // tanggalPenutupan.setDate(tanggalPenutupan.getDate() + 1);
+            // var tanggalMulai = ("0" + tanggalPenutupan.getDate()).slice(-2) + "-" + ("0" + (tanggalPenutupan
+            //     .getMonth() + 1)).slice(-2) + "-" + tanggalPenutupan.getFullYear();
+            // $('.datepicker').datepicker({
+            //     format: 'dd-mm-yyyy',
+            //     startDate: tanggalMulai,
+            //     autoclose: true
+            // });
+
+            // $('#datepicker').on('click', function() {
+            //     $('#tanggal').datepicker('show');
+            // });
 
             $('#editDataModal').on('click', '.btn-primary', function() {
                 event.preventDefault();

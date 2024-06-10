@@ -35,6 +35,7 @@ class penjualanController extends Controller
 
     public function datatable(){
         $trnsales = trnsales::where('KDTRN', '12')
+        ->where('trnsales.ID_DEPO',getIdDepo())
         ->where(DB::raw('LEFT(BUKTI, 1)'), '0')
         ->join('customer', 'trnsales.ID_CUSTOMER', 'customer.ID_CUSTOMER')
         ->select('trnsales.*', 'customer.NAMA AS nama_customer');

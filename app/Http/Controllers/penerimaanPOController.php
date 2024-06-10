@@ -24,17 +24,21 @@ class penerimaanPOController extends Controller
         ->where('ID_DEPO',getIdDepo())
         ->orderBy('TGL_CLOSING', 'desc')
         ->value('TGL_CLOSING');
+
+        $tglClosing = $tglClosing ?? "a";
         // dd($gudang);
         return view('layout.transaksi.penerimaanpo.index', compact('tglClosing'));
     }
 
-    public function getNomorPo()
+    public function getNomorPo(Request $request)
     {
+        $tanggal = Carbon::createFromFormat('d-m-Y', $request->TANGGAL)->format('Y-m-d');
+        // dd($tanggal);
         $idDepo = trim(getIdDepo());
         if ($idDepo != '000') {
-            $trnorder = trninvorder::where('STATUS', '!=', 2)->where('ID_DEPO',getIdDepo())->whereDate('TANGGAL', '<=', Carbon::now())->get();
+            $trnorder = trninvorder::where('STATUS', '!=', 2)->where('ID_DEPO',getIdDepo())->whereDate('TANGGAL', '<=', $tanggal)->get();
         } else {
-            $trnorder = trninvorder::where('STATUS', '!=', 2)->whereDate('TANGGAL', '<=', Carbon::now())->get();
+            $trnorder = trninvorder::where('STATUS', '!=', 2)->whereDate('TANGGAL', '<=', $tanggal)->get();
         }
 
         return response()->json($trnorder);

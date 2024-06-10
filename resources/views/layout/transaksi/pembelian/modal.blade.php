@@ -216,7 +216,7 @@
         var editData = false;
 
         function clearModal() {
-            // $('#tanggal').val("");
+            $('#tanggal').val("");
             $('#bukti').val("");
             $('#supplier').val(null).trigger('change');
             $('#depo').val(null).trigger('change');
@@ -498,6 +498,7 @@
         }
 
         function editTableBarang(mode) {
+            console.log(mode);
             var kode = $('#barang_id_barang').val();
             var nama = $('#barang_nama').val();
             var satuan = $('#barang_satuan').val();
@@ -525,7 +526,7 @@
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(harga)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(potongan)}</td>
                 <td class="text-right" style="padding-right: 10px;">${formatHarga(jumlah)}</td>`;
-            if (editData) {
+            if (editData || mode == "editAdd") {
                 createRow +=
                     `<td class="text-center"><button class="btn btn-primary btn-sm edit-button" id="edit-button" data-toggle="modal" data-target="#dataModal"
                     data-kode="${kode}"
@@ -533,6 +534,7 @@
                     data-potongan="${potongan}"
                     data-harga="${harga}"
                     data-jumlah="${jumlah}"
+                    data-mode = "editAdd"
                     ><i class="fas fa-pencil-alt"></i></button>
                 &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${kode}')"><i class="fas fa-trash"></i></button></td>`;
             } else {
@@ -622,7 +624,6 @@
 
                 $('#tanggal').datepicker({
                     format: 'dd-mm-yyyy', // Set your desired date format
-                    defaultDate: 'now', // Set default date to 'now'
                     autoclose: true // Close the datepicker when a date is selected
                 });
             } else {
@@ -633,7 +634,6 @@
                 $('#tanggal').datepicker({
                     format: 'dd-mm-yyyy', // Set your desired date format
                     startDate: tanggalMulai,
-                    defaultDate: 'now', // Set default date to 'now'
                     autoclose: true // Close the datepicker when a date is selected
                 });
                 $('#datepicker').on('click', function() {
@@ -702,12 +702,13 @@
                     }
 
                 } else {
-                    updateSupplierOptions(getSupplierActiveUrl, function(){
-                        updateDepoOptions(getDepoActiveUrl, function(){
+                    updateSupplierOptions(getSupplierActiveUrl, function() {
+                        updateDepoOptions(getDepoActiveUrl, function() {
                             var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                            $('#tanggal').val(
-                                today); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
-
+                            if (!$('#tanggal').val()) {
+                                $('#tanggal').val(
+                                today); // Set the input value to today's date only if it is empty
+                            }
                             enableDatepicker();
                             //console.log($('#tanggal').val());
                             $('#tambahDataButton').show();
@@ -781,6 +782,7 @@
                             var harga = button.data('harga');
                             var jumlah = button.data('jumlah');
                             var potongan = button.data('potongan');
+                            var mode = button.data('mode');
                             //console.log(qty);
                             //console.log(harga);
                             //console.log(jumlah);
@@ -788,7 +790,7 @@
                             $('#barang_id_barang').val(kode).trigger('change');
                             $('#barang_id_barang').prop('disabled', true);
                             getData(kode, tanggal);
-                            $('#saveButton').attr('onclick', 'editTableBarang()');
+                            $('#saveButton').attr('onclick', 'editTableBarang("' + mode + '")');
                             $('#editMode').val(editModeValue);
                             $('#barang_qty').val(formatHarga(parseFloat(qty)));
                             $('#barang_harga').val(formatHarga(parseFloat(harga)));

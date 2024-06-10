@@ -193,11 +193,12 @@ function updateCustomerOptions(urlPass, callback) {
     });
 }
 
-function getNomorPO(urlPass, callback) {
+function getNomorPO(urlPass,requestBody, callback) {
     var url = urlPass;
     $.ajax({
         url: url,
         method: 'GET',
+        data: requestBody,
         success: function(data) {
             console.log(data);
             // Kosongkan dulu opsi gudang yang ada
@@ -257,11 +258,12 @@ function updateGudangTujuanOptions(urlPass,callback) {
     });
 }
 
-function updateNomorPo(urlPass,callback) {
+function updateNomorPo(urlPass, requestBody,callback) {
     var url = urlPass;
     $.ajax({
         url: url,
         method: 'GET',
+        data: requestBody,
         success: function(data) {
             console.log(data);
             // Kosongkan dulu opsi gudang yang ada

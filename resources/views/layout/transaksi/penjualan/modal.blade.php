@@ -219,7 +219,7 @@
         let arrBarang = [];
 
         function clearModal() {
-            // $('#tanggal').val("");
+            $('#tanggal').val("");
             $('#bukti').val("");
             $('#gudang').val(null).trigger('change');
             $('#customer').val(null).trigger('change');
@@ -598,6 +598,7 @@
             var isSaveBtnActive = false;
 
             $('#addDataModal').on('show.bs.modal', function(event) {
+                clearModal();
                 var button = $(event.relatedTarget);
                 var mode = button.data('mode');
                 var modal = $(this);
@@ -630,9 +631,11 @@
                     updateCustomerOptions(getCustomerActiveUrl, function() {
                         updateGudangOptions(getGudangActiveUrl, function() {
                             var today = moment().tz('Asia/Jakarta').format('DD-MM-YYYY');
-                            $('#tanggal').val(
-                                today
-                                ); // Set nilai input dengan ID 'tanggal' menjadi tanggal yang telah diformat
+                            if (!$('#tanggal').val()) {
+                                $('#tanggal').val(
+                                    today
+                                );
+                            }
                             $('#tambahDataButton').show();
                             $('#diskon').val(0);
                             modal.find('.modal-title').text('Entry Penjualan');
@@ -647,6 +650,7 @@
             });
 
             $('#dataModal').on('show.bs.modal', function(event) {
+                clearModalBarang();
                 var tanggal = $('#tanggal').val();
                 var gudang = $('#gudang').val();
                 var customer = $('#customer').val();
@@ -722,13 +726,6 @@
             });
 
 
-            $('#addDataModal').on('hide.bs.modal', function(event) {
-                clearModal();
-            });
-            $('#dataModal').on('hide.bs.modal', function(event) {
-                clearModalBarang();
-            });
-
             $('#diskon').on('input', function() {
                 validateNumberInput(this);
                 var subtotalString = $('#subtotal').val().replace(/[^\d]/g, '');
@@ -773,10 +770,10 @@
                     // Hitung nilai jumlah
                     var hasil = qty * harga - potongan;
                     if (hasil > 0) {
-                        if(qty < saldo){
-                        $('#barang_jumlah').val(formatHarga(parseFloat(hasil)));
-                        $(this).val(formatHarga(parseFloat(potongan)));
-                        isSaveButtonActive = true;
+                        if (qty < saldo) {
+                            $('#barang_jumlah').val(formatHarga(parseFloat(hasil)));
+                            $(this).val(formatHarga(parseFloat(potongan)));
+                            isSaveButtonActive = true;
                         } else {
                             isSaveButtonActive = false;
                         }
