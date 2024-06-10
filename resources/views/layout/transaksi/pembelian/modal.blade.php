@@ -536,7 +536,7 @@
                     ><i class="fas fa-pencil-alt"></i></button>
                 &nbsp <button class="btn btn-danger btn-sm" data-toggle="modal" onClick="deleteRow('${kode}')"><i class="fas fa-trash"></i></button></td>`;
             } else {
-                createTable += `<td></td>`
+                createRow += `<td></td>`
             }
 
 
