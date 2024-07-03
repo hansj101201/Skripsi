@@ -270,6 +270,7 @@ class laporanController extends Controller
         $trnjadis = trnjadi::where('ID_BARANG', $idBarang)
             ->where('ID_GUDANG', $idGudang)
             ->where('PERIODE', $periode)
+            ->where('trnjadi.KDTRN','!=','30')
             ->select('trnjadi.KDTRN', 'trnjadi.TANGGAL', 'trnjadi.BUKTI', 'trnjadi.KET01', 'trnjadi.QTY')
             ->orderBy('TANGGAL')
             ->orderBy('BUKTI')
