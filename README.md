@@ -1,4 +1,4 @@
-An Laravel Website for warehouse management system
+A Laravel Website for warehouse management system
 
 # Skripsi
 - Use Jeroennoten AdminLTE
