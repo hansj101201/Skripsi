@@ -1,3 +1,5 @@
+An Laravel Website for warehouse management system
+
 # Skripsi
 - Use Jeroennoten AdminLTE
 - Use YajraDatatables
